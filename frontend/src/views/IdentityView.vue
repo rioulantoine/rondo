@@ -60,7 +60,10 @@ async function logout() {
 
     <section class="body">
       <button v-if="chosen" class="btn btn-ghost back" @click="chosen = null"><ChevronLeft :size="20" :stroke-width="1.7" /> Retour</button>
-      <h1>{{ title }}</h1>
+      <div class="intro">
+        <h1>{{ title }}</h1>
+        <p class="muted">{{ chosen === 'owner' ? 'Ressaisis le mot de passe de l’établissement.' : chosen ? 'Entre ton code PIN à 4 chiffres.' : `Touche ton nom pour ouvrir le registre de ${session.restaurant?.name || 'l’établissement'}.` }}</p>
+      </div>
 
       <template v-if="!chosen">
         <p v-if="loadError" class="error-text" role="alert">{{ loadError }}</p>
@@ -107,16 +110,20 @@ async function logout() {
 <style scoped>
 .who { min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; background: var(--sand-dark); }
 .top { display: flex; justify-content: space-between; align-items: center; padding: calc(16px + env(safe-area-inset-top)) 20px 16px; }
-.body { width: 100%; max-width: 720px; margin: 0 auto; padding: 16px; display: grid; align-content: start; gap: 24px; }
+.body { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px; display: grid; align-content: start; gap: 24px; }
+.intro { display: grid; gap: 6px; }
+.intro h1 { font-size: clamp(28px, 4vw, 36px); line-height: 1.1; letter-spacing: -0.025em; }
+@media (min-width: 900px) { .body { align-content: center; padding-bottom: 8vh; } }
 .back { justify-self: start; padding: 0 8px; margin: -8px 0 -16px -8px; font-weight: 500; }
 .people { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
 .person {
-  width: 100%; min-height: 128px; display: grid; justify-items: start; align-content: start; gap: 4px;
+  width: 100%; transition: transform var(--dur-press) var(--ease-out), border-color var(--dur-press) ease, box-shadow var(--dur-press) ease; min-height: 128px; display: grid; justify-items: start; align-content: start; gap: 4px;
   padding: 16px; text-align: left; background: var(--sand); color: var(--ink);
   border: 1px solid var(--line); border-radius: var(--r-l);
   transition: transform 160ms var(--ease-out), border-color 160ms var(--ease-out);
 }
 .person:active { transform: scale(.97); }
+@media (hover: hover) and (pointer: fine) { .person:hover { transform: translateY(-2px); box-shadow: var(--shadow); } }
 @media (hover: hover) and (pointer: fine) { .person:hover { border-color: var(--sea-deep); } }
 .person .visa { width: 40px; height: 40px; font-size: 14px; margin-bottom: 8px; }
 .owner .visa { background: var(--tint); color: var(--accent-deep); }
