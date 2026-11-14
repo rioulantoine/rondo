@@ -146,7 +146,7 @@ async function validate(e) {
 .ico-info { color: var(--accent-deep); flex: none; }
 .calm { justify-self: start; }
 .sub { font-size: 16px; padding-top: 14px; }
-.small { min-height: 40px; font-size: 14px; padding: 0 14px; }
+.small { min-height: 44px; font-size: 14px; padding: 0 14px; }
 .ico { width: 44px; height: 44px; border-radius: var(--r-m); background: var(--mist); color: var(--sea-deep); display: grid; place-items: center; flex: none; }
 .space .title { font-weight: 600; }
 .count { color: var(--ink-soft); }

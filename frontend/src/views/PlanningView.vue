@@ -200,7 +200,7 @@ button.shift:active { background: var(--tint); }
 .t { font-weight: 500; font-size: 14px; white-space: nowrap; }
 .who { display: flex; align-items: center; gap: 8px; font-size: 14px; }
 .visa.sm { width: 24px; height: 24px; font-size: 10px; }
-.add { width: 100%; min-height: 40px; margin-top: 6px; font-size: 14px; font-weight: 500; color: var(--ink-soft); }
+.add { width: 100%; min-height: 44px; margin-top: 6px; font-size: 14px; font-weight: 500; color: var(--ink-soft); }
 .rest { padding: 2px 0; }
 .sub { font-size: 16px; margin-bottom: 4px; }
 .tot { display: flex; gap: 8px; align-items: baseline; padding: 10px 0; }

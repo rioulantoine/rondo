@@ -222,7 +222,7 @@ async function declareTablet() {
 .note { display: flex; gap: 12px; padding: 14px 16px; color: var(--ink); }
 .note > svg { flex: none; color: var(--sea-deep); }
 .note > span { display: grid; gap: 10px; justify-items: start; }
-.small { min-height: 40px; font-size: 14px; }
+.small { min-height: 44px; font-size: 14px; }
 .back { justify-self: start; padding: 0 8px; margin: -8px 0 -8px -8px; font-weight: 500; }
 .center { justify-items: center; text-align: center; }
 .center .back { justify-self: start; }

@@ -162,6 +162,6 @@ function setPosition() {
 .pos { display: flex; align-items: center; gap: 12px; }
 .pos > svg { flex: none; color: var(--sea-deep); }
 .pos .grow { display: grid; gap: 2px; }
-.small { min-height: 40px; font-size: 14px; }
+.small { min-height: 44px; font-size: 14px; }
 @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
 </style>

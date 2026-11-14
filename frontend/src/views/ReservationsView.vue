@@ -131,7 +131,7 @@ async function copyLink() {
 .icon { width: 44px; padding: 0; }
 .sum { display: flex; justify-content: space-between; align-items: center; color: var(--ink-soft); }
 .sum > span { display: flex; align-items: center; gap: 6px; }
-.small { min-height: 40px; font-size: 14px; padding: 0 12px; }
+.small { min-height: 44px; font-size: 14px; padding: 0 12px; }
 .pad { padding: 16px; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .row-btns { display: flex; gap: 10px; }

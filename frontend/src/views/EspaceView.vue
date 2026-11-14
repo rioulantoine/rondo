@@ -283,7 +283,7 @@ async function removeTrace(e) {
 .sk { height: 240px; background: var(--sand-dark); }
 
 .tabs { display: flex; gap: 4px; padding: 4px; background: var(--sand-dark); border-radius: var(--r-m); overflow-x: auto; scrollbar-width: none; }
-.tab { flex: 1 0 auto; min-height: 40px; padding: 0 10px; border: none; border-radius: var(--r-s); background: transparent; color: var(--ink-soft); font-weight: 500; font-size: 15px; }
+.tab { flex: 1 0 auto; min-height: 44px; padding: 0 10px; border: none; border-radius: var(--r-s); background: transparent; color: var(--ink-soft); font-weight: 500; font-size: 15px; }
 .tab.on { background: var(--sand); color: var(--sea-deep); font-weight: 600; box-shadow: 0 1px 2px rgb(28 42 74 / .08); }
 
 .quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -318,9 +318,9 @@ async function removeTrace(e) {
 .task-label.done { color: var(--ink-soft); }
 
 .seg { display: flex; flex-wrap: wrap; gap: 8px; }
-.seg-btn { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--sand); color: var(--ink); font-size: 14px; font-weight: 500; }
+.seg-btn { min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--sand); color: var(--ink); font-size: 14px; font-weight: 500; }
 .seg-btn.on { background: var(--tint-strong); border-color: var(--tint-strong); color: var(--accent-deep); }
 @media (prefers-color-scheme: dark) { .seg-btn.on { color: var(--sea-deep); } }
 .row-btns { display: flex; gap: 10px; }
-.small { min-height: 40px; padding: 0 12px; font-size: 14px; }
+.small { min-height: 44px; padding: 0 12px; font-size: 14px; }
 </style>
