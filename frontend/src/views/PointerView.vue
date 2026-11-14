@@ -140,7 +140,7 @@ async function declareTablet() {
       <section v-else-if="step === 'person'" class="stack">
         <button class="btn btn-ghost back" @click="reset"><ChevronLeft :size="20" :stroke-width="1.7" /> Retour</button>
         <h2>{{ actionLabel }} : qui es-tu ?</h2>
-        <ul class="people">
+        <ul class="people rise-list">
           <li v-for="m in people" :key="m.id">
             <button class="person" @click="choosePerson(m)">
               <span class="visa">{{ initials(m.name) }}</span>

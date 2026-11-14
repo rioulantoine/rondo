@@ -103,11 +103,11 @@ async function book() {
         </div>
         <p v-if="f.party >= resto.maxPartySize" class="caption">Au-delà de {{ resto.maxPartySize }} personnes, appelle directement le restaurant.</p>
 
-        <div v-if="!slots" class="sk" aria-busy="true" />
+        <div v-if="!slots" class="skeleton sk" aria-busy="true" />
         <template v-else>
           <div v-for="[label, list] in groups" :key="label" class="slot-group">
             <h2 class="g">{{ label }}</h2>
-            <div class="slots">
+            <div class="slots rise-list">
               <button v-for="s in list" :key="s.slot" type="button" class="slot data" :class="{ on: f.slot === s.slot }" :disabled="s.count < 1" :aria-pressed="f.slot === s.slot" @click="f.slot = s.slot">{{ s.slot }}</button>
             </div>
           </div>
@@ -160,7 +160,7 @@ async function book() {
 .stepper { display: flex; align-items: center; gap: 8px; }
 .sq { width: 48px; padding: 0; }
 .n { min-width: 2ch; text-align: center; font-size: 20px; }
-.sk { height: 120px; border-radius: var(--r-m); background: var(--sand-dark); }
+.sk { height: 120px; }
 .g { font-size: 15px; margin-bottom: 8px; }
 .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
 .slot { min-height: 44px; border-radius: var(--r-m); border: 1px solid var(--line); background: var(--sand); color: var(--ink); font-size: 15px; }
