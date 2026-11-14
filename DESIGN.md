@@ -35,7 +35,16 @@ Schibsted Grotesk (400–700) pour tout ; IBM Plex Mono pour °C, heures, lots, 
 
 ## Formes et mouvement
 
-Rayons 6 / 10 / 14 px. Retours tactiles en 160 ms, `cubic-bezier(.23,1,.32,1)`, pression à 97 %. Aucune animation sur les gestes répétés cent fois par jour (pointage, cases à cocher).
+Rayons 6 / 10 / 14 px (18 px pour les grandes surfaces de démonstration). Jetons : `--ease-out` (entrées, retours), `--ease-in-out` (déplacement à l'écran), `--ease-drawer` (ouverture), durées 160 / 220 / 320 ms.
+
+- **Jamais d'animation** sur les gestes répétés cent fois par jour : pointage, cases à cocher, pavé PIN, onglets.
+- **Occasionnel** : changement d'écran (fondu + 6 px), apparition des listes (`.rise-list`, 40 ms par ligne, 8 max), ouverture d'un formulaire sur place (`open`), menu ancré au bouton (`pop`), toast, squelettes de chargement (`.skeleton`).
+- **Démonstration** (page de présentation, connexion) : le registre qui se remplit entrée par entrée, apparitions au défilement. Seul endroit où le mouvement explique.
+- Uniquement `transform` et `opacity` ; survols réservés aux pointeurs fins ; mouvement réduit : fondus conservés, déplacements retirés.
+
+## Parcours visiteur
+
+`/bienvenue` (présentation : promesse, registre en démonstration, cycle ouverture / service / fermeture, comparatif des offres, questions) → `/connexion` (connexion ou création, offre reprise de l'URL) → `/qui` → l'appli. Prix « à venir » tant qu'ils ne sont pas fixés ; aucune affirmation non vérifiable (ni témoignage, ni chiffre).
 
 ## Icônes
 
