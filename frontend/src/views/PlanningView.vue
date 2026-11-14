@@ -68,6 +68,7 @@ async function save() {
   }
 }
 async function remove() {
+  if (!confirm(`Supprimer le créneau de ${form.value.staff} le ${dayLabel(form.value.fromDate)} ?`)) return
   busy.value = true
   try {
     await api(`/planning/creneaux/${form.value.id}?date=${form.value.fromDate}`, { method: 'DELETE' })
@@ -119,6 +120,7 @@ async function publish() {
       </ul>
 
       <!-- formulaire de créneau -->
+      <Transition name="open">
       <form v-if="form" class="panel pad stack" @submit.prevent="save">
         <h2>{{ form.id ? 'Modifier le créneau' : 'Nouveau créneau' }}</h2>
         <div class="grid2">
@@ -140,8 +142,9 @@ async function publish() {
           <button class="btn btn-primary" :disabled="busy">Enregistrer</button>
         </div>
       </form>
+      </Transition>
 
-      <div class="days">
+      <div class="days rise-list">
         <section v-for="day in byDay" :key="day.date" class="day" :class="{ today: day.date === todayParis() }">
           <h2 class="day-h">{{ dayLabel(day.date) }}</h2>
           <ul class="shifts">
