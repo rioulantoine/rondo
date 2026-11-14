@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { House, BookOpenCheck, CalendarDays, Clock4 } from 'lucide-vue-next'
 import { api, session, setSession, initials } from './api'
 import RondoLogo from './components/RondoLogo.vue'
+import AppToast from './components/AppToast.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -62,6 +63,7 @@ async function logout() {
     </main>
   </div>
   <RouterView v-else />
+  <AppToast />
 </template>
 
 <style scoped>

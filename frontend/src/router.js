@@ -5,6 +5,8 @@ const routes = [
   { path: '/connexion', component: () => import('./views/LoginView.vue'), meta: { public: true } },
   { path: '/qui', component: () => import('./views/IdentityView.vue'), meta: { needsRestaurant: true } },
   { path: '/', component: () => import('./views/HomeView.vue'), meta: { shell: true } },
+  { path: '/registres', component: () => import('./views/RegistresView.vue'), meta: { shell: true } },
+  { path: '/registres/:sp(cuisine|salle|bar)', component: () => import('./views/EspaceView.vue'), meta: { shell: true, permFromParam: 'sp' } },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
@@ -16,6 +18,6 @@ router.beforeEach(async (to) => {
   if (!session.restaurant) return '/connexion'
   if (to.meta.needsRestaurant) return true
   if (!session.person) return '/qui'
-  if (to.meta.perm && !can(to.meta.perm)) return '/'
+  if (to.meta.permFromParam && !can(to.params[to.meta.permFromParam])) return '/registres'
   return true
 })
