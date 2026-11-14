@@ -10,6 +10,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "lucide-vue-next": "^1.0.0",
     "vue": "^3.5.44",
     "vue-router": "^4.6.5"
