@@ -1,11 +1,27 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { ChevronRight, CookingPot, Wine, UtensilsCrossed } from 'lucide-vue-next'
-import { api } from '../api'
+import { ref, reactive, onMounted } from 'vue'
+import { ChevronRight, CookingPot, Wine, UtensilsCrossed, FileDown } from 'lucide-vue-next'
+import { api, session } from '../api'
+import { todayParis } from '../format'
+import { toast } from '../toast'
 
 const ICONS = { cuisine: CookingPot, salle: UtensilsCrossed, bar: Wine }
 const spaces = ref(null)
 const error = ref('')
+const report = reactive({ du: todayParis().slice(0, 8) + '01', au: todayParis(), busy: false })
+
+async function exportReport() {
+  report.busy = true
+  try {
+    const [data, { haccpReport }] = await Promise.all([api(`/rapport-haccp?du=${report.du}&au=${report.au}`), import('../report.js')])
+    haccpReport(data)
+    toast('Rapport PDF téléchargé.')
+  } catch (e) {
+    toast(e.message, 'alert')
+  } finally {
+    report.busy = false
+  }
+}
 
 onMounted(async () => {
   try {
@@ -42,6 +58,15 @@ function alertLine(s) {
         </RouterLink>
       </li>
     </ul>
+    <section v-if="session.person.owner" class="panel report">
+      <h2>Rapport pour le contrôle sanitaire</h2>
+      <p class="caption">Cuisine, salle et bar réunis : relevés numérotés, traçabilité, nettoyage. Trois mois au plus.</p>
+      <div class="dates">
+        <label class="field"><span class="label">Du</span><input v-model="report.du" type="date" class="input data" /></label>
+        <label class="field"><span class="label">Au</span><input v-model="report.au" type="date" class="input data" /></label>
+      </div>
+      <button class="btn btn-secondary" :disabled="report.busy" @click="exportReport"><FileDown :size="20" :stroke-width="1.7" /> {{ report.busy ? 'Préparation…' : 'Télécharger le PDF' }}</button>
+    </section>
     <p v-if="spaces && !spaces.length" class="muted">Aucun espace ne t'est ouvert. Demande au responsable de t'en donner l'accès.</p>
   </div>
 </template>
@@ -54,6 +79,8 @@ function alertLine(s) {
 .name { font-weight: 600; }
 .txt .state { justify-self: start; margin-top: 4px; }
 .count { color: var(--ink-soft); }
+.report { padding: 16px; display: grid; gap: 12px; justify-items: start; }
+.dates { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 420px; }
 .count.done { color: var(--ok); }
 .chev { color: var(--ink-soft); flex: none; }
 .sk { height: 76px; margin: 0 -16px; background: linear-gradient(90deg, var(--sand) 0, var(--sand-dark) 50%, var(--sand) 100%); }
