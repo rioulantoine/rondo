@@ -5,6 +5,7 @@ import { House, BookOpenCheck, CalendarDays, Clock4 } from 'lucide-vue-next'
 import { api, session, setSession, initials } from './api'
 import RondoLogo from './components/RondoLogo.vue'
 import AppToast from './components/AppToast.vue'
+import AppBanners from './components/AppBanners.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -35,6 +36,7 @@ async function logout() {
 </script>
 
 <template>
+  <AppBanners />
   <div v-if="route.meta.shell && session.person" class="shell">
     <header class="bar">
       <RouterLink to="/" class="home-link"><RondoLogo :size="22" /></RouterLink>
