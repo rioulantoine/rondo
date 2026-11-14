@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "scripts": {
+    "emulators": "firebase emulators:start --project demo-rondo --only firestore,auth",
+    "seed": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 FIREBASE_PROJECT_ID=demo-rondo php backend/bin/seed-demo.php",
+    "backend:emu": "cd backend && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 FIREBASE_PROJECT_ID=demo-rondo FIREBASE_API_KEY=demo-key php -S localhost:8000 -t public",
+    "backend": "cd backend && php -S localhost:8000 -t public",
+    "frontend": "cd frontend && npm run dev"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.35.1"
+  }
+}
