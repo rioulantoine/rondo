@@ -44,7 +44,8 @@ Flight::route('POST /api/restaurants', function () {
     $now = Clock::now();
     App::store()->set("restaurant:$code", [
         'name' => $name, 'ownerUid' => $auth['uid'], 'recoveryEmail' => $email, 'cguAcceptedAt' => Clock::iso(),
-        'plan' => 'trial', 'subscriptionStatus' => 'trialing', 'trialStartedAt' => Clock::iso(),
+        'plan' => 'trial', 'plannedOffer' => in_array($b['offre'] ?? '', ['essentiel', 'equipe', 'complet'], true) ? $b['offre'] : null,
+        'subscriptionStatus' => 'trialing', 'trialStartedAt' => Clock::iso(),
         'trialEndsAt' => Clock::iso($now->modify('+14 days')), 'stripeCustomerId' => null,
     ], ['ownerUid' => $auth['uid']]);
     $_SESSION['person'] = Team::owner();
