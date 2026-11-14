@@ -23,7 +23,7 @@
   --alert: #B42318; --alert-bg: #FCE9E7;
   /* typo */
   --font-ui: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
-  --font-data: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-data: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   /* formes et mouvement */
   --r-s: 6px; --r-m: 10px; --r-l: 14px;
   --ease-out: cubic-bezier(.23, 1, .32, 1);
