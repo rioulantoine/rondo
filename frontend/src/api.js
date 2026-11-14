@@ -1,9 +1,10 @@
 import { reactive } from 'vue'
 
 export class ApiError extends Error {
-  constructor(message, status) {
+  constructor(message, status, code) {
     super(message)
     this.status = status
+    this.code = code
   }
 }
 
@@ -22,8 +23,9 @@ export async function api(path, { method = 'GET', body } = {}) {
   }
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {
-    if (res.status === 401 && session.restaurant && path !== '/identity') await loadSession()
-    throw new ApiError(data.error || 'Erreur inattendue, réessaie.', res.status)
+    // session expirée côté serveur : on resynchronise (un PIN refusé n'en est pas une)
+    if (res.status === 401 && !data.code && session.restaurant && path !== '/identity') await loadSession()
+    throw new ApiError(data.error || 'Erreur inattendue, réessaie.', res.status, data.code)
   }
   return data
 }
