@@ -26,4 +26,8 @@ foreach (range(0, 6) as $i) {
     $shifts[] = ['id' => "s-tom-$i", 'staff' => 'Tom Riou', 'date' => $d, 'start' => '18:00', 'end' => '01:00', 'space' => 'bar'];
 }
 $fs->set("log:$code:planning:$m", $shifts);
+$publish = [];
+foreach ([0, 7] as $plus) $publish[\Rondo\Planning::weekStart(date('Y-m-d', strtotime("+$plus day")))] = ['publishedAt' => date('c'), 'publishedBy' => 'Responsable', 'snapshot' => []];
+$fs->set("config:$code:planningPublish", $publish);
+$fs->set("config:$code:alerts", [['id' => 'alert-1', 'message' => 'Contrôle sanitaire possible cette semaine : registres à jour avant chaque service.', 'target' => 'tous', 'active' => true, 'createdAt' => date('c'), 'createdBy' => 'Responsable']]);
 echo "Établissement « sumo-beach » / mot de passe « rondo123 » — PIN Léa 1234, Tom 2345, Hugo 3456\n";
