@@ -1,0 +1,49 @@
+/* Jetons de la charte Rondo v2. Les noms reprennent ceux de la v1 (--sea-deep, --sand…).
+   La couleur choisie par chaque restaurant remplace --sea-deep dans son espace. */
+:root {
+  /* marque */
+  --sea-deep: #1C2A4A;
+  --sea: #2B3D66;
+  --sea-light: #3E5487;
+  --on-sea: #FFFFFF;
+  --on-dark-soft: #AFC0EA;
+  --tint: #EAF5F2;
+  --tint-strong: #BFE3DC;
+  --accent-deep: #1F5F57;
+  /* neutres */
+  --sand: #FFFFFF;
+  --sand-dark: #F7F8FA;
+  --mist: #EDEFF3;
+  --line: #DCDFE5;
+  --ink: #23272F;
+  --ink-soft: #5A606B;
+  /* états */
+  --ok: #2A7449;   --ok-bg: #E7F3EC;
+  --warn: #9A5B00; --warn-bg: #FBF0DC;
+  --alert: #B42318; --alert-bg: #FCE9E7;
+  /* typo */
+  --font-ui: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-data: 'IBM Plex Mono', ui-monospace, monospace;
+  /* formes et mouvement */
+  --r-s: 6px; --r-m: 10px; --r-l: 14px;
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --shadow: 0 1px 2px rgb(28 42 74 / .06), 0 8px 24px -12px rgb(28 42 74 / .18);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* en sombre, le céladon porte les actions (texte #0E1422) */
+    --sea-deep: #BFE3DC;
+    --sea: #A9D6CD;
+    --on-sea: #0E1422;
+    --on-dark-soft: #9AA3B5;
+    --tint: #1F3A3B; --tint-strong: #2C5452;
+    --accent-deep: #BFE3DC;
+    --sand: #0E1422; --sand-dark: #161D2E; --mist: #1C2438;
+    --line: #27314A; --ink: #E8EAEF; --ink-soft: #9AA3B5;
+    --ok: #7FD1A3; --ok-bg: #15301F; --warn: #F2B45A; --warn-bg: #33260F; --alert: #FF9B8E; --alert-bg: #3A1A1A;
+    --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px -12px rgb(0 0 0 / .5);
+    color-scheme: dark;
+  }
+}
