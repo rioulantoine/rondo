@@ -43,8 +43,8 @@ function alertLine(s) {
   <div class="stack">
     <h1>Registres</h1>
     <p v-if="error" class="error-text" role="alert">{{ error }}</p>
-    <ul class="register spaces panel" :aria-busy="!spaces">
-      <template v-if="!spaces"><li v-for="i in 3" :key="i" class="sk" aria-hidden="true" /></template>
+    <ul class="register spaces panel rise-list" :aria-busy="!spaces">
+      <template v-if="!spaces"><li v-for="i in 3" :key="i" class="skeleton sk" aria-hidden="true" /></template>
       <li v-for="s in spaces" :key="s.space">
         <RouterLink :to="`/registres/${s.space}`" class="row">
           <span class="ico"><component :is="ICONS[s.space]" :size="22" :stroke-width="1.7" /></span>
@@ -83,5 +83,5 @@ function alertLine(s) {
 .dates { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 420px; }
 .count.done { color: var(--ok); }
 .chev { color: var(--ink-soft); flex: none; }
-.sk { height: 76px; margin: 0 -16px; background: linear-gradient(90deg, var(--sand) 0, var(--sand-dark) 50%, var(--sand) 100%); }
+.sk { height: 64px; margin: 6px 0; }
 </style>

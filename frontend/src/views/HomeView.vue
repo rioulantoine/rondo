@@ -65,11 +65,11 @@ async function validate(e) {
 
     <RouterLink v-if="badge" to="/pointer" class="btn btn-primary btn-block big">{{ badge }}</RouterLink>
     <p v-if="error" class="error-text" role="alert">{{ error }}</p>
-    <div v-if="!d && !error" class="sk" aria-busy="true" />
+    <div v-if="!d && !error" class="skeleton sk" aria-busy="true" />
 
     <template v-if="d">
       <!-- messages du responsable -->
-      <ul v-if="d.alerts.length" class="register panel pad">
+      <ul v-if="d.alerts.length" class="register panel pad rise-list">
         <li v-for="a in d.alerts" :key="a.id" class="row">
           <Megaphone :size="20" :stroke-width="1.7" class="ico-info" />
           <span class="grow"><span class="title">{{ a.message }}</span><span class="caption">{{ TARGET[a.target] || a.target }} · {{ a.createdBy }}</span></span>
@@ -77,7 +77,7 @@ async function validate(e) {
       </ul>
 
       <!-- à traiter -->
-      <ul v-if="todo.length" class="register panel pad">
+      <ul v-if="todo.length" class="register panel pad rise-list">
         <li v-for="t in todo" :key="t.key">
           <RouterLink :to="`/registres/${t.sp}`" class="row link">
             <TriangleAlert :size="20" :stroke-width="1.7" :class="`ico-${t.cls}`" />
@@ -101,7 +101,7 @@ async function validate(e) {
       <p v-if="!todo.length && !d.owner?.pendingBadges.length" class="state state-ok calm"><Check :size="16" :stroke-width="2" /> Rien à traiter pour l'instant.</p>
 
       <!-- espaces -->
-      <ul class="register panel pad">
+      <ul class="register panel pad rise-list">
         <li v-for="s in d.spaces" :key="s.space">
           <RouterLink :to="`/registres/${s.space}`" class="row link space">
             <span class="ico"><component :is="ICONS[s.space]" :size="22" :stroke-width="1.7" /></span>
@@ -134,7 +134,7 @@ async function validate(e) {
 .hello { display: grid; gap: 4px; }
 .date::first-letter { text-transform: uppercase; }
 .big { min-height: 56px; font-size: 17px; }
-.sk { height: 280px; border-radius: var(--r-l); background: var(--sand-dark); }
+.sk { height: 280px; }
 .pad { padding: 0 16px; }
 .row { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 0; }
 .link { color: var(--ink); text-decoration: none; }

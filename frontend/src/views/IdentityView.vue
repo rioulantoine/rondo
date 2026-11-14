@@ -64,7 +64,7 @@ async function logout() {
 
       <template v-if="!chosen">
         <p v-if="loadError" class="error-text" role="alert">{{ loadError }}</p>
-        <ul v-else class="people" aria-busy="!people">
+        <ul v-else class="people rise-list" :aria-busy="!people">
           <template v-if="!people">
             <li v-for="i in 4" :key="i" class="person skeleton" aria-hidden="true" />
           </template>
