@@ -86,6 +86,7 @@ async function copyLink() {
         <button v-if="!form" class="btn btn-primary small" @click="form = reactive({ slot: d.slots[0], party: 2, firstName: '', lastName: '', phone: '', notes: '' })"><Plus :size="18" :stroke-width="1.7" /> Ajouter</button>
       </div>
 
+      <Transition name="open">
       <form v-if="form" class="panel pad stack" @submit.prevent="addManual">
         <h2>Réservation au téléphone</h2>
         <div class="grid">
@@ -102,8 +103,9 @@ async function copyLink() {
           <button class="btn btn-primary" :disabled="busy">Enregistrer</button>
         </div>
       </form>
+      </Transition>
 
-      <ul class="register panel list">
+      <ul class="register panel list rise-list">
         <li v-for="r in d.reservations" :key="r.id" class="resa" :class="{ off: r.status === 'annulee' }">
           <span class="data t">{{ r.slot }}</span>
           <span class="grow txt">

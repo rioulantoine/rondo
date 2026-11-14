@@ -82,6 +82,7 @@ function setPosition() {
     </div>
     <p v-if="error" class="error-text" role="alert">{{ error }}</p>
 
+    <Transition name="open">
     <form v-if="form" class="panel pad stack" @submit.prevent="save">
       <h2>{{ form.id ? form.name : 'Nouvelle personne' }}</h2>
       <div class="grid2">
@@ -114,8 +115,9 @@ function setPosition() {
         <button class="btn btn-primary" :disabled="busy">Enregistrer</button>
       </div>
     </form>
+    </Transition>
 
-    <ul v-if="d" class="register panel list">
+    <ul v-if="d" class="register panel list rise-list">
       <li v-for="m in d.members" :key="m.id">
         <button class="member" @click="edit(m)">
           <span class="visa">{{ initials(m.name) }}</span>
