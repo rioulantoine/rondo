@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { session, loadSession, can } from './api'
 
 const routes = [
+  { path: '/bienvenue', component: () => import('./views/LandingView.vue'), meta: { public: true, entry: true } },
   { path: '/connexion', component: () => import('./views/LoginView.vue'), meta: { public: true } },
   { path: '/qui', component: () => import('./views/IdentityView.vue'), meta: { needsRestaurant: true } },
   { path: '/', component: () => import('./views/HomeView.vue'), meta: { shell: true } },
@@ -19,8 +20,9 @@ export const router = createRouter({ history: createWebHistory(), routes, scroll
 
 router.beforeEach(async (to) => {
   if (!session.ready) await loadSession()
-  if (to.meta.public) return session.person && to.path === '/connexion' ? '/' : true
-  if (!session.restaurant) return '/connexion'
+  // déjà connecté : pas de page d'accueil commerciale ni de connexion
+  if (to.meta.public) return session.person && (to.meta.entry || to.path === '/connexion') ? '/' : true
+  if (!session.restaurant) return '/bienvenue'
   if (to.meta.needsRestaurant) return true
   if (!session.person) return '/qui'
   if (to.meta.owner && !session.person.owner) return '/'
