@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<title>Check ton bar</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#123B3A">
+<script>try{var c=JSON.parse(localStorage.getItem("ctr_theme_cache")||"null");if(c&&c.vars){var r=document.documentElement.style;for(var k in c.vars)r.setProperty(k,c.vars[k]);var m=document.querySelector('meta[name="theme-color"]');if(m&&c.vars["--sea-deep"])m.setAttribute("content",c.vars["--sea-deep"]);}}catch(e){}</script>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Check ton resto">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sea-deep:#123B3A;
+    --sea:#1C5C57;
+    --sea-light:#2E8079;
+    --sand:#F7F1E6;
+    --sand-dark:#EDE3D0;
+    --ink:#20302E;
+    --ink-soft:#5A6B67;
+    --ok:#3E8E63;
+    --ok-bg:#E4F1E8;
+    --alert:#B2432B;
+    --alert-bg:#FBE7E1;
+    --warn:#C08A2E;
+    --warn-bg:#FBF0DD;
+    --line:#E1D8C4;
+    --radius:16px;
+   --tint:#EAF2EE; --tint-strong:#B9D6D1; --on-dark-soft:#9FC2BC;}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--sand);color:var(--ink);font-family:'Inter',sans-serif;height:100%;overflow-x:hidden;}
+  #root{display:flex;flex-direction:column;min-height:100vh;max-width:900px;margin:0 auto;background:var(--sand);}
+
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0;letter-spacing:-0.01em;}
+
+  /* Header */
+  header.topbar{
+    background:var(--sea-deep);
+    color:var(--sand);
+    padding:18px 20px 16px;
+    position:sticky;top:0;z-index:20;
+  }
+  .topbar-row{display:flex;justify-content:space-between;align-items:flex-start;}
+  .brand{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:#fff;line-height:1.15;}
+  .brand small{display:block;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:var(--on-dark-soft);letter-spacing:.04em;text-transform:uppercase;margin-top:2px;}
+  .staff-chip{
+    background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18);
+    color:#fff; padding:7px 12px; border-radius:999px; font-size:13px; font-weight:600;
+    display:flex; align-items:center; gap:6px; cursor:pointer;
+  }
+  .staff-chip .dot{width:7px;height:7px;border-radius:50%;background:#7FD9AE;}
+  .page-nav-wrap{position:relative; margin-top:12px;}
+  .page-nav{
+    width:100%; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.22);
+    color:#fff; padding:11px 34px 11px 14px; border-radius:10px; font-size:13.5px; font-weight:700;
+    font-family:'Inter',sans-serif; -webkit-appearance:none; appearance:none; cursor:pointer;
+  }
+  .page-nav option{color:var(--ink);}
+  .page-nav-wrap::after{
+    content:''; position:absolute; right:14px; top:50%; width:9px; height:9px;
+    border-right:2px solid #fff; border-bottom:2px solid #fff; transform:translateY(-65%) rotate(45deg); pointer-events:none;
+  }
+
+  main{flex:1; padding:18px 16px 100px; }
+
+  /* Wave progress */
+  .tide-card{
+    background:linear-gradient(180deg, var(--sea) 0%, var(--sea-deep) 100%);
+    border-radius:var(--radius); padding:20px; color:#fff; position:relative; overflow:hidden; margin-bottom:16px;
+  }
+  .tide-card h3{color:#fff;font-size:15px;font-weight:600;opacity:.85;margin-bottom:2px;}
+  .tide-pct{font-family:'Fraunces',serif; font-size:40px; font-weight:600; line-height:1;}
+  .tide-sub{font-size:13px; color:var(--tint-strong); margin-top:4px;}
+  .tide-wave-wrap{position:absolute; left:0; right:0; bottom:0; height:100%; z-index:0; opacity:.35; pointer-events:none;}
+  .tide-content{position:relative; z-index:1;}
+  .tide-alert{
+    margin-top:12px; background:rgba(178,67,43,.85); border-radius:10px; padding:8px 12px; font-size:13px; font-weight:600;
+    display:flex; align-items:center; gap:8px;
+  }
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;}
+  .quick-btn{
+    background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; text-align:left; cursor:pointer;
+    display:flex; flex-direction:column; gap:6px; transition:transform .1s ease;
+  }
+  .quick-btn:active{transform:scale(.97);}
+  .quick-btn .qb-label{font-weight:700; font-size:14px;}
+  .quick-btn .qb-sub{font-size:12px; color:var(--ink-soft);}
+
+  section.card{background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-bottom:14px;}
+  .card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .card-head h2{font-size:18px;}
+  .link-btn{background:none;border:none;color:var(--sea); font-weight:700; font-size:13px; cursor:pointer; padding:6px 0;}
+
+  .badge{display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:999px; font-size:12px; font-weight:700;}
+  .badge.ok{background:var(--ok-bg); color:var(--ok);}
+  .badge.alert{background:var(--alert-bg); color:var(--alert);}
+  .badge.warn{background:var(--warn-bg); color:var(--warn);}
+  .badge.neutral{background:var(--sand-dark); color:var(--ink-soft);}
+
+  .row{display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-top:1px solid var(--line);}
+  .row:first-of-type{border-top:none;}
+  .row-main{display:flex; flex-direction:column; gap:3px;}
+  .row-title{font-weight:600; font-size:14.5px;}
+  .row-sub{font-size:12.5px; color:var(--ink-soft);}
+
+  button.primary{
+    background:var(--sea-deep); color:#fff; border:none; border-radius:12px; padding:13px 18px; font-size:15px; font-weight:700;
+    width:100%; cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  button.primary:active{background:var(--sea);}
+  button.secondary{
+    background:var(--sand-dark); color:var(--ink); border:none; border-radius:12px; padding:13px 18px; font-size:15px; font-weight:700;
+    width:100%; cursor:pointer;
+  }
+  button.ghost{background:none;border:1px solid var(--line); border-radius:12px; padding:12px; font-weight:600; cursor:pointer; color:var(--ink);}
+
+  input, select, textarea{
+    width:100%; border:1.5px solid var(--line); border-radius:10px; padding:12px; font-size:15px; font-family:'Inter',sans-serif;
+    background:#fff; color:var(--ink);
+  }
+  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--sea);}
+  label.field-label{font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; margin-bottom:6px; display:block;}
+  .field{margin-bottom:14px;}
+
+  /* Bottom nav */
+  nav.bottombar{
+    position:fixed; bottom:0; left:0; right:0; z-index:30;
+    background:#fff; border-top:1px solid var(--line);
+    display:flex; justify-content:space-around; padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+    max-width:900px; margin:0 auto;
+  }
+  .nav-btn{
+    background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:4px;
+    color:var(--ink-soft); font-size:10.5px; font-weight:700; padding:6px 10px; cursor:pointer; border-radius:10px;
+  }
+  .nav-btn.active{color:var(--sea-deep);}
+  .nav-btn svg{width:22px;height:22px;}
+
+  /* Modal / sheet */
+  .sheet-backdrop{
+    position:fixed; inset:0; background:rgba(18,29,28,.45); z-index:50; display:flex; align-items:flex-end;
+  }
+  .sheet{
+    background:var(--sand); width:100%; max-height:88vh; overflow-y:auto; border-radius:20px 20px 0 0; padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    max-width:900px; margin:0 auto;
+  }
+  .sheet-handle{width:40px;height:4px;background:var(--line);border-radius:2px;margin:0 auto 14px;position:relative;}
+  .sheet-handle::before{content:'';position:absolute;top:-16px;left:-30px;right:-30px;bottom:-16px;}
+  .sheet-title{font-size:19px; margin-bottom:16px;}
+
+  .photo-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+  .photo-thumb{position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; border:1px solid var(--line);}
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;}
+  .photo-thumb .cap{position:absolute; bottom:0;left:0;right:0; background:rgba(18,29,28,.65); color:#fff; font-size:10px; padding:3px 5px;}
+
+  .camera-wrap{width:100%; aspect-ratio:3/4; background:#000; border-radius:14px; overflow:hidden; position:relative;}
+  .camera-wrap video{width:100%; height:100%; object-fit:cover;}
+  .print-btn{display:inline-flex; align-items:center; gap:5px; background:var(--sand-dark); border:none; border-radius:8px; padding:6px 10px; font-size:11.5px; font-weight:700; color:var(--ink); cursor:pointer; white-space:nowrap;}
+  .month-nav{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+  .month-nav .m-btn{background:#fff; border:1px solid var(--line); border-radius:10px; width:38px; height:38px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:var(--sea-deep); cursor:pointer;}
+  .month-nav .m-btn:disabled{opacity:.3;}
+  .month-nav .m-label{font-weight:700; font-size:14.5px; text-transform:capitalize;}
+  .row-actions{display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0;}
+  .empty{text-align:center; padding:30px 10px; color:var(--ink-soft);}
+  .empty svg{width:36px;height:36px;opacity:.4; margin-bottom:8px;}
+
+  .task-group-title{font-size:12.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--sea); margin:16px 0 6px;}
+  .task-group-title:first-child{margin-top:0;}
+  .check-row{display:flex; align-items:center; gap:12px; padding:11px 0; border-top:1px solid var(--line);}
+  .check-row:first-of-type{border-top:none;}
+  .checkbox{
+    width:24px;height:24px;border-radius:7px;border:2px solid var(--line); flex-shrink:0; display:flex;align-items:center;justify-content:center;
+    background:#fff;
+  }
+  .checkbox.done{background:var(--ok); border-color:var(--ok);}
+  .check-label{flex:1; font-size:14.5px; font-weight:600;}
+  .check-label.done{text-decoration:line-through; color:var(--ink-soft); font-weight:500;}
+  .check-meta{font-size:11.5px;color:var(--ink-soft);}
+
+  .toast{
+    position:fixed; bottom:90px; left:16px; right:16px; max-width:420px; margin:0 auto; background:var(--ink); color:#fff; padding:12px 18px;
+    border-radius:16px; font-size:13.5px; font-weight:600; z-index:60; box-shadow:0 6px 18px rgba(0,0,0,.2); text-align:center;
+  }
+  .loading{padding:40px; text-align:center; color:var(--ink-soft);}
+  .kicker{font-size:12px;font-weight:700;color:var(--sea);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+/* ---------- filet de sécurité global : affiche l'erreur exacte au lieu d'un écran vide muet ---------- */
+window.addEventListener('error', function(ev){ showFatalAppError(ev.error || ev.message); });
+window.addEventListener('unhandledrejection', function(ev){ showFatalAppError(ev.reason); });
+function showFatalAppError(err){
+  const root = document.getElementById('root');
+  if(!root || root.dataset.fatalErrorShown) return;
+  root.dataset.fatalErrorShown = '1';
+  root.innerHTML = `
+    <div style="max-width:480px;margin:24px auto;padding:24px;background:#fff;border:1px solid #ddd;border-radius:16px;font-family:sans-serif;">
+      <h2 style="margin-top:0;color:#B23B3B;">Erreur d'affichage</h2>
+      <p style="font-size:13px;">Détail technique (à transmettre si le problème persiste) :</p>
+      <pre style="white-space:pre-wrap;font-size:11px;background:var(--sand);padding:10px;border-radius:8px;overflow-x:auto;">${String((err && err.stack) || err || 'Erreur inconnue').replace(/</g,'&lt;')}</pre>
+      <button onclick="location.reload()" style="margin-top:14px;width:100%;background:var(--sea-deep);color:#fff;border:none;padding:12px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;">Réessayer</button>
+    </div>`;
+}
+</script>
+
+<script>
+const SPACE = 'bar';
+const SPACE_LABEL = 'Bar';
+
+// ---------- helpers propres à cet espace ----------
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function monthKey(d){ return (d||new Date()).toISOString().slice(0,7); }
+function fmtDate(iso){
+  const d = new Date(iso+'T00:00:00');
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+}
+function fmtTime(ts){
+  return new Date(ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ---------- default config ----------
+const DEFAULT_EQUIPMENTS = [
+  {id:'frigo-bar', name:'Réfrigérateur bar', min:0, max:4},
+  {id:'chambre-bar', name:'Chambre froide bar', min:0, max:3},
+  {id:'vitrine-garnitures', name:'Vitrine fruits & garnitures', min:0, max:4},
+  {id:'congelo-bar', name:'Congélateur (glace pilée...)', min:-25, max:-18},
+];
+const PERIODS = ['Avant service du matin', 'Après le service du midi', 'Avant fermeture'];
+function currentPeriodGuess(){
+  const h = new Date().getHours();
+  if(h < 11) return PERIODS[0];
+  if(h < 16) return PERIODS[1];
+  return PERIODS[2];
+}
+const DEFAULT_TASKS = [
+  {id:'t1', label:'Relever les températures des froids du bar', moment:PERIODS[0]},
+  {id:'t2', label:'Contrôler les DLC des fruits et garnitures', moment:PERIODS[0]},
+  {id:'t3', label:'Vérifier la propreté du plan de travail bar', moment:PERIODS[0]},
+  {id:'t4', label:'Nettoyer le plan de travail entre chaque commande', moment:PERIODS[1]},
+  {id:'t5', label:'Changer régulièrement l\'eau du bac à glaçons', moment:PERIODS[1]},
+  {id:'t6', label:'Nettoyage complet du bar et du sol', moment:PERIODS[2]},
+  {id:'t7', label:'Nettoyage et désinfection de la tireuse à bière', moment:PERIODS[2]},
+  {id:'t8', label:'Vider et nettoyer le bac à glaçons', moment:PERIODS[2]},
+  {id:'t9', label:'Sortir et trier les poubelles', moment:PERIODS[2]},
+];
+const TASK_MOMENTS = PERIODS;
+const TRACE_TYPES = [
+  {id:'dlc', label:'DLC produit ouvert'},
+  {id:'lot', label:'Numéro de lot (bouteille, glaçons...)'},
+  {id:'reception', label:'Réception fournisseur'},
+];
+
+// ---------- icons ----------
+const ICONS = {
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke-linecap="round"/>',
+  user:'<circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3.5-6 7-6s7 2.5 7 6" stroke-linecap="round"/>',
+  home:'<path d="M3 11.5 12 4l9 7.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9" stroke-linecap="round" stroke-linejoin="round"/>',
+  therm:'<path d="M12 14.5V5a2 2 0 1 0-4 0v9.5a4 4 0 1 0 4 0Z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="17" r="1.4"/>',
+  tasks:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8 12 2.5 2.5L16 9" stroke-linecap="round" stroke-linejoin="round"/>',
+  tag:'<path d="M12 2 2 12v6a2 2 0 0 0 2 2h6l10-10a2 2 0 0 0 0-2.8L14.8 2A2 2 0 0 0 12 2Z" stroke-linejoin="round"/><circle cx="8" cy="16" r="1.2"/>',
+  camera:'<path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.2"/>',
+  alert:'<path d="M12 3 2 20h20L12 3Z" stroke-linejoin="round"/><path d="M12 10v4" stroke-linecap="round"/><circle cx="12" cy="17" r="0.8" fill="currentColor"/>',
+  plus:'<path d="M12 5v14M5 12h14" stroke-linecap="round"/>',
+  close:'<path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/>',
+  check:'<path d="M5 12.5 10 17 19 7" stroke-linecap="round" stroke-linejoin="round"/>',
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.9 7.9 0 0 0 0-2l2-1.5-2-3.4-2.3.9a8 8 0 0 0-1.7-1L15 3h-4l-.4 2.5a8 8 0 0 0-1.7 1l-2.3-.9-2 3.4L6.6 11a7.9 7.9 0 0 0 0 2l-2 1.6 2 3.4 2.3-.9a8 8 0 0 0 1.7 1L10 21h4l.4-2.5a8 8 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5Z" stroke-linejoin="round"/>',
+  download:'<path d="M12 3v12m0 0-4-4m4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/>',
+  printer:'<path d="M6 9V4h12v5" stroke-linecap="round" stroke-linejoin="round"/><rect x="3.5" y="9" width="17" height="8" rx="2"/><path d="M8 13h8v7H8z" stroke-linejoin="round"/>',
+  chevronL:'<path d="M15 5 8 12l7 7" stroke-linecap="round" stroke-linejoin="round"/>',
+  chevronR:'<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>',
+};
+function icon(name, size){ return `<svg viewBox="0 0 24 24" width="${size||22}" height="${size||22}" fill="none" stroke="currentColor" stroke-width="1.8">${ICONS[name]}</svg>`; }
+
+// ---------- app state ----------
+const state = {
+  tab: 'dashboard',
+  returnTab: null,     // onglet à retrouver après une action lancée depuis un raccourci de l'accueil
+  staff: null,
+  staffList: [],
+  equipments: [],
+  tasks: [],
+  taskLog: {},        // {taskId: {done,ts,staff}}
+  tempEntries: [],     // this month
+  traceEntries: [],
+  photoEntries: [],
+  sheet: null,         // which modal sheet is open
+  toast: null,
+  loaded: false,
+  viewMonth: new Date(), // mois actuellement consulté (Températures/Traçabilité/Photos)
+};
+
+let activeStream = null; // flux caméra en cours
+
+function isCurrentMonthView(){ return monthKey(state.viewMonth) === monthKey(new Date()); }
+function monthLabel(d){ return d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'}); }
+
+async function reloadMonthData(mk){
+  const [temp, trace, photos] = await Promise.all([
+    getData(`log:${RESTAURANT_ID}:${SPACE}:temp:${mk}`, true, []),
+    getData(`log:${RESTAURANT_ID}:${SPACE}:trace:${mk}`, true, []),
+    getData(`log:${RESTAURANT_ID}:${SPACE}:photos:${mk}`, true, []),
+  ]);
+  state.tempEntries = temp; state.traceEntries = trace; state.photoEntries = photos;
+}
+
+async function loadAll(){
+  const [staffList, equipments, tasks, taskLog, tempEntries, traceEntries, photoEntries] = await Promise.all([
+    getData(`config:${RESTAURANT_ID}:${SPACE}:staff`, true, ['Chef de bar','Barman','Barmaid']),
+    getData(`config:${RESTAURANT_ID}:${SPACE}:equipments`, true, DEFAULT_EQUIPMENTS),
+    getData(`config:${RESTAURANT_ID}:${SPACE}:tasks`, true, DEFAULT_TASKS),
+    getData(`log:${RESTAURANT_ID}:${SPACE}:tasks:${todayISO()}`, true, {}),
+    getData(`log:${RESTAURANT_ID}:${SPACE}:temp:${monthKey()}`, true, []),
+    getData(`log:${RESTAURANT_ID}:${SPACE}:trace:${monthKey()}`, true, []),
+    getData(`log:${RESTAURANT_ID}:${SPACE}:photos:${monthKey()}`, true, []),
+  ]);
+  state.staffList = staffList; state.equipments = equipments.map(e=>({...e, min: Math.min(e.min,e.max), max: Math.max(e.min,e.max)})); state.tasks = tasks;
+  state.taskLog = taskLog; state.tempEntries = tempEntries; state.traceEntries = traceEntries; state.photoEntries = photoEntries;
+  state.loaded = true;
+  syncTodayTaskSnapshot();
+}
+function syncTodayTaskSnapshot(){
+  setData(`log:${RESTAURANT_ID}:${SPACE}:taskdefs:${todayISO()}`, state.tasks, true);
+}
+
+function showToast(msg){
+  state.toast = msg; render();
+  const duration = msg.includes('⚠️') ? 6000 : 2200;
+  setTimeout(()=>{ state.toast = null; render(); }, duration);
+}
+
+// ---------- historique de navigation entre onglets (bouton/geste retour du téléphone) ----------
+function applyTabHistory(tabId){
+  // Le retour (bouton physique/geste du téléphone) doit toujours ramener à l'Accueil,
+  // quel que soit l'onglet visité entre-temps : on ne crée une entrée d'historique
+  // qu'en quittant l'Accueil ; on remplace l'entrée courante pour toute navigation
+  // entre onglets secondaires (Températures/Tâches/Traçabilité/Photos).
+  try{
+    const cur = history.state;
+    if((!cur || cur.tab==='dashboard') && tabId!=='dashboard'){
+      history.pushState({tab: tabId}, '', location.href);
+    } else {
+      history.replaceState({tab: tabId}, '', location.href);
+    }
+  }catch(err){}
+}
+async function onTabPopState(e){
+  if(!state.loaded) return;
+  state.tab = (e.state && e.state.tab) || 'dashboard';
+  if(state.tab==='dashboard' && !isCurrentMonthView()){
+    state.viewMonth = new Date();
+    await reloadMonthData(monthKey());
+  }
+  render();
+}
+window.addEventListener('popstate', onTabPopState);
+
+// ---------- render root ----------
+async function render(){
+  const root = document.getElementById('root');
+  if(!state.loaded){
+    root.innerHTML = `<div class="loading">Chargement…</div>`;
+    return;
+  }
+  root.innerHTML = `
+    ${Header()}
+    <main id="main">${MainContent()}</main>
+    ${BottomNav()}
+    ${state.sheet ? Sheet() : ''}
+    ${state.toast ? `<div class="toast">${state.toast}</div>` : ''}
+  `;
+  attachHandlers();
+  wireTempFormExtras();
+  if(state.sheet && state.sheet.type==='add-photo' && !state.sheet.capturedImage && !state.sheet.cameraError && !state.sheet.useFallbackPicker && !state.sheet._camAttempted){
+    state.sheet._camAttempted = true;
+    startCamera();
+  } else if(!(state.sheet && state.sheet.type==='add-photo')){
+    stopCamera();
+  }
+  syncBodyScrollLock();
+}
+/* ---------- verrouillage du défilement de fond pendant qu'une fenêtre (sheet) est ouverte ----------
+   Sans ça, un glissement du doigt sur la fenêtre peut faire défiler l'écran EN DESSOUS plutôt que
+   la fenêtre elle-même — la technique position:fixed est celle qui fonctionne de façon fiable sur
+   iOS Safari (un simple overflow:hidden sur body ne suffit pas toujours). */
+function syncBodyScrollLock(){
+  if(state.sheet){
+    if(!document.body.dataset.scrollLocked){
+      const y = window.scrollY || window.pageYOffset || 0;
+      document.body.dataset.scrollLocked = String(y);
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${y}px`;
+      document.body.style.width = '100%';
+    }
+  } else if(document.body.dataset.scrollLocked){
+    const y = parseInt(document.body.dataset.scrollLocked, 10) || 0;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    delete document.body.dataset.scrollLocked;
+    window.scrollTo(0, y);
+  }
+}
+
+
+async function startCamera(){
+  try{
+    activeStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
+    const video = document.getElementById('camera-video');
+    if(video) video.srcObject = activeStream;
+  }catch(err){
+    if(state.sheet && state.sheet.type==='add-photo'){ state.sheet.cameraError = true; render(); }
+  }
+}
+function stopCamera(){
+  if(activeStream){ activeStream.getTracks().forEach(t=>t.stop()); activeStream = null; }
+}
+
+function Header(){
+  return `
+  <header class="topbar">
+    <div class="topbar-row">
+      <a class="brand" href="index.html" style="text-decoration:none;">Check ton bar<small>${escapeHtml(RESTAURANT_NAME||'')} · ${SPACE_LABEL}</small></a>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="staff-chip" data-action="pick-staff" style="border:1px solid rgba(255,255,255,.18);"><span class="dot"></span>${state.staff || 'Choisir'}</button>
+        <button class="staff-chip" data-action="switch-person" style="padding:9px 12px;border:1px solid rgba(255,255,255,.18);gap:6px;" title="${state.tab==='dashboard' ? "Retour à l'accueil général" : "Retour à l'accueil"}">${icon('user',15)}<span style="font-size:12.5px;font-weight:700;">Retour</span></button>
+        <button class="staff-chip" data-action="logout" style="padding:9px;border:1px solid rgba(255,255,255,.18);" title="Verrouiller">${icon('lock',15)}</button>
+      </div>
+    </div>
+    <div class="page-nav-wrap">
+      <select class="page-nav" id="page-nav-select">
+        <option value="check-ta-cuisine.html">Check ta cuisine</option>
+        <option value="check-ta-salle.html">Check ta salle</option>
+        <option value="check-ton-bar.html" selected>Check ton bar</option>
+        <option value="planning.html">Planning d'équipe</option>
+        <option value="reservation.html">Réservations</option>
+        <option value="index.html">← Accueil de la suite</option>
+      </select>
+    </div>
+  </header>`;
+}
+
+function BottomNav(){
+  const tabs = [
+    {id:'dashboard', label:'Accueil', icon:'home'},
+    {id:'temp', label:'Températures', icon:'therm'},
+    {id:'tasks', label:'Tâches', icon:'tasks'},
+    {id:'trace', label:'Traçabilité', icon:'tag'},
+    {id:'photos', label:'Photos', icon:'camera'},
+  ];
+  return `<nav class="bottombar">
+    ${tabs.map(t=>`
+      <button class="nav-btn ${state.tab===t.id?'active':''}" data-action="tab" data-tab="${t.id}">
+        ${icon(t.icon,22)}<span>${t.label}</span>
+      </button>`).join('')}
+  </nav>`;
+}
+
+function MainContent(){
+  switch(state.tab){
+    case 'dashboard': return Dashboard();
+    case 'temp': return TempTab();
+    case 'tasks': return TasksTab();
+    case 'trace': return TraceTab();
+    case 'photos': return PhotosTab();
+    default: return '';
+  }
+}
+
+// ---------- computations ----------
+function todaysTempEntries(){ return state.tempEntries.filter(e=>e.ts.slice(0,10)===todayISO()); }
+function tempAlertsToday(){ return todaysTempEntries().filter(e=>!e.ok); }
+function tasksDoneCount(){ return state.tasks.filter(t=>state.taskLog[t.id]?.done).length; }
+function completionPct(){
+  const totalTasks = state.tasks.length || 1;
+  const done = tasksDoneCount();
+  return Math.round((done/totalTasks)*100);
+}
+function daysUntilDLC(dateStr){
+  if(!dateStr) return null;
+  return Math.round((new Date(dateStr+'T00:00:00') - new Date(todayISO()+'T00:00:00')) / 86400000);
+}
+function dlcStatus(diff){
+  if(diff < 0) return {level:'expired', label:'DLC dépassée — jeter', short:'Dépassée'};
+  if(diff === 0) return {level:'today', label:'À retirer et jeter aujourd\'hui', short:'Aujourd\'hui : jeter'};
+  if(diff === 1) return {level:'urgent', label:'DLC demain', short:'J-1'};
+  if(diff === 2) return {level:'warn', label:'DLC dans 2 jours', short:'J-2'};
+  if(diff === 3) return {level:'warn', label:'DLC dans 3 jours', short:'J-3'};
+  return {level:'ok', label:'DLC ok', short:'OK'};
+}
+function dlcAlerts(){
+  return state.traceEntries
+    .filter(e=>e.type==='dlc' && e.date)
+    .map(e=>({entry:e, diff:daysUntilDLC(e.date), status:null}))
+    .map(x=>({...x, status:dlcStatus(x.diff)}))
+    .filter(x=>x.diff <= 3)
+    .sort((a,b)=>a.diff-b.diff);
+}
+
+// ---------- Dashboard ----------
+function Dashboard(){
+  const pct = completionPct();
+  const alerts = tempAlertsToday();
+  const dlcAlertList = dlcAlerts();
+  return `
+  <div class="tide-card">
+    <div class="tide-wave-wrap">${waveSVG(pct)}</div>
+    <div class="tide-content">
+      <h3>Avancement du jour</h3>
+      <div class="tide-pct">${pct}%</div>
+      <div class="tide-sub">${tasksDoneCount()}/${state.tasks.length} tâches faites · ${todaysTempEntries().length} relevé(s) température</div>
+      ${alerts.length ? `<div class="tide-alert">${icon('alert',16)} ${alerts.length} température${alerts.length>1?'s':''} hors norme aujourd'hui</div>` : ''}
+    </div>
+  </div>
+
+  ${dlcAlertList.length ? `
+  <section class="card" style="border-color:#B2432B;background:#FBE7E1;">
+    <div class="card-head"><h2 style="color:#B2432B;">⚠️ Fraîcheur — action requise</h2></div>
+    ${dlcAlertList.map(x=>`
+      <div class="row" style="border-top-color:rgba(178,67,43,.2);">
+        <div class="row-main">
+          <div class="row-title">${escapeHtml(x.entry.product)}</div>
+          <div class="row-sub">${x.status.label} · DLC ${fmtDate(x.entry.date)}</div>
+        </div>
+        <span class="badge ${x.status.level==='ok'?'ok':x.status.level==='warn'?'warn':'alert'}">${x.status.short}</span>
+      </div>`).join('')}
+  </section>` : ''}
+
+  <div class="grid2">
+    <button class="quick-btn" data-action="tab" data-tab="temp">
+      ${icon('therm',20)}<span class="qb-label">Relever une température</span><span class="qb-sub">${state.equipments.length} points de contrôle</span>
+    </button>
+    <button class="quick-btn" data-action="tab" data-tab="tasks">
+      ${icon('tasks',20)}<span class="qb-label">Tâches du jour</span><span class="qb-sub">${tasksDoneCount()}/${state.tasks.length} faites</span>
+    </button>
+    <button class="quick-btn" data-action="tab" data-tab="trace">
+      ${icon('tag',20)}<span class="qb-label">Traçabilité</span><span class="qb-sub">DLC, lots, réceptions</span>
+    </button>
+    <button class="quick-btn" data-action="tab" data-tab="photos">
+      ${icon('camera',20)}<span class="qb-label">Photo</span><span class="qb-sub">Non-conformité, étiquette</span>
+    </button>
+  </div>
+
+  <section class="card">
+    <div class="card-head"><h2>Dernières entrées</h2></div>
+    ${recentEntriesList()}
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Rapport PDF</h2></div>
+    <div class="row" style="padding-top:0;border-top:none;">
+      <div class="row-main"><div class="row-title">Rapport complet Cuisine + Salle + Bar</div><div class="row-sub">Document professionnel pour le contrôle sanitaire, période au choix</div></div>
+      <button class="ghost" data-action="open-export-report">${icon('download',18)}</button>
+    </div>
+  </section>
+  `;
+}
+
+function waveSVG(pct){
+  const h = Math.max(6, Math.min(94, pct));
+  return `<svg width="100%" height="100%" viewBox="0 0 400 140" preserveAspectRatio="none">
+    <path d="M0 ${140-h*1.1} C 60 ${140-h*1.1-14}, 120 ${140-h*1.1+14}, 200 ${140-h*1.1} C 280 ${140-h*1.1-14}, 340 ${140-h*1.1+14}, 400 ${140-h*1.1} L400 140 L0 140 Z" fill="#ffffff"/>
+  </svg>`;
+}
+
+function recentEntriesList(){
+  const items = [
+    ...state.tempEntries.map(e=>({ts:e.ts, label:`${e.equipmentName} · ${e.value}°C`, sub:`${e.staff} · ${fmtTime(e.ts)}`, badge: e.ok?'ok':'alert'})),
+    ...state.traceEntries.map(e=>({ts:e.ts, label:traceTypeLabel(e.type)+' · '+e.product, sub:`${e.staff} · ${fmtTime(e.ts)}`, badge:'neutral'})),
+  ].sort((a,b)=> new Date(b.ts)-new Date(a.ts)).slice(0,6);
+  if(!items.length) return emptyState('Aucune entrée pour l’instant');
+  return items.map(i=>`
+    <div class="row">
+      <div class="row-main"><div class="row-title">${i.label}</div><div class="row-sub">${i.sub}</div></div>
+      <span class="badge ${i.badge}">${i.badge==='ok'?'Conforme':i.badge==='alert'?'À revoir':'—'}</span>
+    </div>`).join('');
+}
+
+function traceTypeLabel(id){ return (TRACE_TYPES.find(t=>t.id===id)||{}).label || id; }
+
+function emptyState(msg){
+  return `<div class="empty">${icon('check',36)}<div>${msg}</div></div>`;
+}
+
+// ---------- Month navigation ----------
+function MonthNav(){
+  return `<div class="month-nav">
+    <button class="m-btn" data-action="month-prev">${icon('chevronL',18)}</button>
+    <div class="m-label">${monthLabel(state.viewMonth)}</div>
+    <button class="m-btn" data-action="month-next" ${isCurrentMonthView()?'disabled':''}>${icon('chevronR',18)}</button>
+  </div>`;
+}
+
+// ---------- Temp tab ----------
+function TempTab(){
+  const cur = isCurrentMonthView();
+  if(!cur){
+    return `
+    <div class="card-head" style="margin-bottom:10px;"><h2>Températures</h2></div>
+    ${MonthNav()}
+    <section class="card">
+      ${state.tempEntries.length ? [...state.tempEntries].reverse().map(e=>`
+        <div class="row">
+          <div class="row-main"><div class="row-title">${e.equipmentName}${e.period?` <span style="font-weight:500;color:var(--sea);">· ${e.period}</span>`:''}</div><div class="row-sub">${fmtDate(e.ts.slice(0,10))} ${fmtTime(e.ts)} · ${e.staff}${e.comment?' · '+escapeHtml(e.comment):''}</div></div>
+          <span class="badge ${e.ok?'ok':'alert'}">${e.value}°C</span>
+        </div>`).join('') : emptyState('Aucun relevé ce mois-ci')}
+    </section>`;
+  }
+  const today = todaysTempEntries();
+  return `
+  <div class="card-head" style="margin-bottom:10px;">
+    <h2>Températures</h2>
+    <button class="link-btn" data-action="manage-equipments">Gérer les points</button>
+  </div>
+  ${MonthNav()}
+  <section class="card">
+    ${state.equipments.map(eq=>{
+      const last = [...state.tempEntries].reverse().find(e=>e.equipmentId===eq.id);
+      const isToday = last && last.ts.slice(0,10)===todayISO();
+      return `
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">${eq.name}</div>
+          <div class="row-sub">Norme : ${eq.min}°C à ${eq.max}°C ${last?`· dernier relevé ${isToday?"aujourd'hui":fmtDate(last.ts.slice(0,10))} ${fmtTime(last.ts)}`:'· aucun relevé'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${last ? `<span class="badge ${last.ok?'ok':'alert'}">${last.value}°C</span>` : `<span class="badge neutral">—</span>`}
+          <button class="ghost" data-action="add-temp" data-eq="${eq.id}">${icon('plus',18)}</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </section>
+
+  <div class="card-head" style="margin-bottom:10px;"><h2>Relevés d'aujourd'hui</h2></div>
+  <section class="card">
+    ${today.length ? today.slice().reverse().map(e=>`
+      <div class="row">
+        <div class="row-main"><div class="row-title">${e.equipmentName}${e.period?` <span style="font-weight:500;color:var(--sea);">· ${e.period}</span>`:''}</div><div class="row-sub">${e.staff} · ${fmtTime(e.ts)}${e.comment?' · '+escapeHtml(e.comment):''}</div></div>
+        <span class="badge ${e.ok?'ok':'alert'}">${e.value}°C</span>
+      </div>`).join('') : emptyState('Aucun relevé aujourd’hui')}
+  </section>
+  `;
+}
+
+// ---------- Tasks tab ----------
+function TasksTab(){
+  return `
+  <div class="card-head" style="margin-bottom:10px;">
+    <h2>Tâches du jour</h2>
+    <button class="link-btn" data-action="manage-tasks">Gérer</button>
+  </div>
+  <section class="card">
+    ${TASK_MOMENTS.map(m=>{
+      const items = state.tasks.filter(t=>t.moment===m);
+      if(!items.length) return '';
+      return `<div class="task-group-title">${m}</div>` + items.map(t=>{
+        const log = state.taskLog[t.id];
+        const done = !!(log && log.done);
+        return `
+        <div class="check-row" data-action="toggle-task" data-task="${t.id}">
+          <div class="checkbox ${done?'done':''}">${done?icon('check',15):''}</div>
+          <div style="flex:1">
+            <div class="check-label ${done?'done':''}">${t.label}</div>
+            ${done ? `<div class="check-meta">${log.staff} · ${fmtTime(log.ts)}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+    }).join('')}
+  </section>
+  `;
+}
+
+// ---------- Trace tab ----------
+function TraceTab(){
+  const cur = isCurrentMonthView();
+  const sorted = [...state.traceEntries].sort((a,b)=> new Date(b.ts)-new Date(a.ts));
+  return `
+  <div class="card-head" style="margin-bottom:10px;">
+    <h2>Traçabilité</h2>
+    ${cur ? `<button class="link-btn" data-action="add-trace">+ Ajouter</button>` : ''}
+  </div>
+  ${MonthNav()}
+  <section class="card">
+    ${sorted.length ? sorted.map(e=>{
+      let dueBadge = '';
+      if(e.type==='dlc' && e.date){
+        const diff = daysUntilDLC(e.date);
+        const st = dlcStatus(diff);
+        dueBadge = `<span class="badge ${st.level==='ok'?'ok':st.level==='warn'?'warn':'alert'}">${st.short}</span>`;
+      }
+      return `
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">${traceTypeLabel(e.type)} · ${escapeHtml(e.product)}</div>
+          <div class="row-sub">${e.date?('Date : '+fmtDate(e.date)+' · '):''}${e.lot?('Lot '+escapeHtml(e.lot)+' · '):''}${e.supplier?(escapeHtml(e.supplier)+' · '):''}${(e.temp!==undefined && e.temp!=='' && e.temp!==null)?('Réception '+e.temp+'°C · '):''}${e.staff} · ${fmtTime(e.ts)}</div>
+        </div>
+        <div class="row-actions">
+          ${dueBadge}
+          <button class="print-btn" data-action="print-label" data-id="${e.id}">${icon('printer',14)} Étiquette</button>
+        </div>
+      </div>`;
+    }).join('') : emptyState('Aucune entrée de traçabilité ce mois-ci')}
+  </section>
+  `;
+}
+
+// ---------- Photos tab ----------
+function PhotosTab(){
+  const cur = isCurrentMonthView();
+  const ncOpen = state.photoEntries.filter(p=>p.isNonConformity && p.status==='ouverte').sort((a,b)=> new Date(b.ts)-new Date(a.ts));
+  const ncResolved = state.photoEntries.filter(p=>p.isNonConformity && p.status==='resolue').sort((a,b)=> new Date(b.ts)-new Date(a.ts));
+  const regular = state.photoEntries.filter(p=>!p.isNonConformity).sort((a,b)=> new Date(b.ts)-new Date(a.ts));
+  return `
+  <div class="card-head" style="margin-bottom:10px;">
+    <h2>Photos</h2>
+    ${cur ? `<button class="link-btn" data-action="add-photo">+ Ajouter</button>` : ''}
+  </div>
+  ${MonthNav()}
+  ${(ncOpen.length || ncResolved.length) ? `
+  <section class="card" style="margin-bottom:12px;">
+    <div class="card-head" style="margin-bottom:8px;"><h2 style="font-size:15px;">⚠️ Non-conformités${ncOpen.length?` (${ncOpen.length} ouverte${ncOpen.length>1?'s':''})`:''}</h2></div>
+    ${[...ncOpen, ...ncResolved].map(p=>`
+      <div class="row" data-action="view-photo" data-id="${p.id}" style="cursor:pointer;">
+        <img src="${p.dataUrl}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;">
+        <div class="row-main" style="margin-left:10px;">
+          <div class="row-title">${escapeHtml(p.caption||'Sans légende')}</div>
+          <div class="row-sub">${fmtDate(p.ts.slice(0,10))} · ${p.status==='ouverte'?'<span style="color:var(--red,#B23B3B);font-weight:700;">🔴 Ouverte</span>':'<span style="color:var(--green,#3E8E63);font-weight:700;">🟢 Résolue</span>'}</div>
+        </div>
+      </div>
+    `).join('')}
+  </section>
+  ` : ''}
+  <section class="card">
+    ${regular.length ? `<div class="photo-grid">${regular.map(p=>`
+      <div class="photo-thumb" data-action="view-photo" data-id="${p.id}">
+        <img src="${p.dataUrl}" alt="${escapeHtml(p.caption||'')}"/>
+        <div class="cap">${fmtDate(p.ts.slice(0,10))}${p.period?' · '+p.period:''}</div>
+      </div>`).join('')}</div>` : emptyState('Aucune photo ce mois-ci')}
+  </section>
+  `;
+}
+
+// ---------- Sheets (modals) ----------
+function Sheet(){
+  return `<div class="sheet-backdrop" data-action="close-sheet">
+    <div class="sheet" data-stop="1">
+      <div class="sheet-handle" data-action="close-sheet" style="cursor:pointer;"></div>
+      ${SheetContent()}
+    </div>
+  </div>`;
+}
+
+function SheetContent(){
+  const s = state.sheet;
+  if(s.type==='pick-staff') return StaffPicker();
+  if(s.type==='add-temp') return AddTempForm(s.eq);
+  if(s.type==='manage-equipments') return ManageEquipments();
+  if(s.type==='manage-tasks') return ManageTasks();
+  if(s.type==='add-trace') return AddTraceForm();
+  if(s.type==='add-photo') return AddPhotoForm();
+  if(s.type==='view-photo') return ViewPhoto(s.id);
+  if(s.type==='export-report') return ExportReportForm();
+  if(s.type==='change-password') return ChangePasswordForm();
+  if(s.type==='manage-staff') return ManageStaff();
+  return '';
+}
+
+function StaffPicker(){
+  return `
+  <h3 class="sheet-title">Qui es-tu ?</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+    ${state.staffList.map(n=>`<button class="ghost" style="flex:1 1 auto;min-width:90px;" data-action="set-staff" data-name="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join('')}
+  </div>
+  <div class="field">
+    <label class="field-label">Ajouter un prénom</label>
+    <input id="new-staff-name" placeholder="Prénom">
+  </div>
+  <button class="primary" data-action="add-staff">Ajouter et sélectionner</button>
+  <div style="display:flex;justify-content:center;gap:18px;margin-top:14px;">
+    <button class="link-btn" data-action="open-manage-staff">Gérer l'équipe</button>
+    <button class="link-btn" data-action="open-change-password">Changer le mot de passe</button>
+  </div>
+  `;
+}
+
+function ManageStaff(){
+  return `
+  <h3 class="sheet-title">Gérer l'équipe</h3>
+  <section style="margin-bottom:16px;">
+    ${state.staffList.map((n,i)=>`
+      <div class="row" style="gap:8px;">
+        <input class="staff-edit-input" data-idx="${i}" value="${escapeHtml(n)}" style="flex:1;border:1.5px solid var(--line);border-radius:8px;padding:9px 10px;font-size:14px;">
+        <button class="ghost" data-action="save-staff-edit" data-idx="${i}">${icon('check',16)}</button>
+        <button class="ghost" data-action="delete-staff" data-idx="${i}">${icon('close',16)}</button>
+      </div>`).join('')}
+    ${!state.staffList.length ? emptyState('Aucune personne enregistrée') : ''}
+  </section>
+  <div class="field"><label class="field-label">Ajouter une personne</label><input id="new-staff-name-manage" placeholder="Prénom"></div>
+  <button class="primary" data-action="add-staff-manage">Ajouter</button>
+  `;
+}
+
+function ChangePasswordForm(){
+  return `
+  <h3 class="sheet-title">Changer le mot de passe</h3>
+  <div class="field"><label class="field-label">Mot de passe actuel</label><input id="pwd-current" type="password"></div>
+  <div class="field"><label class="field-label">Nouveau mot de passe</label><input id="pwd-new" type="password"></div>
+  <div class="field"><label class="field-label">Confirmer le nouveau mot de passe</label><input id="pwd-confirm" type="password"></div>
+  <button class="primary" data-action="save-password">Enregistrer</button>
+  `;
+}
+
+function AddTempForm(eqId){
+  const eq = state.equipments.find(e=>e.id===eqId) || state.equipments[0];
+  const negDefault = eq.max <= 0;
+  return `
+  <h3 class="sheet-title">Relevé de température</h3>
+  <div class="field">
+    <label class="field-label">Point de contrôle</label>
+    <select id="temp-eq">
+      ${state.equipments.map(e=>`<option value="${e.id}" ${e.id===eq.id?'selected':''}>${e.name} (${e.min}°C – ${e.max}°C)</option>`).join('')}
+    </select>
+  </div>
+  <div class="field">
+    <label class="field-label">Moment</label>
+    <select id="temp-period">
+      ${PERIODS.map(p=>`<option value="${p}" ${p===currentPeriodGuess()?'selected':''}>${p}</option>`).join('')}
+    </select>
+  </div>
+  <div class="field">
+    <label class="field-label">Température relevée (°C)</label>
+    <div style="display:flex;gap:8px;">
+      <button type="button" id="temp-sign-btn" data-negative="${negDefault}" style="width:56px;flex-shrink:0;border:1.5px solid var(--line);border-radius:10px;background:${negDefault?'#FBE7E1':'#fff'};color:${negDefault?'#B2432B':'var(--ink)'};font-size:22px;font-weight:800;">${negDefault?'−':'+'}</button>
+      <input id="temp-value" type="number" step="0.1" inputmode="decimal" placeholder="ex : 3.5" style="flex:1;" autofocus>
+    </div>
+    <div style="font-size:11.5px;color:var(--ink-soft);margin-top:6px;">Tape juste le nombre (ex : 22). Utilise le bouton ± si la valeur doit être négative — le clavier iPhone n'a pas toujours le signe "−".</div>
+  </div>
+  <div class="field">
+    <label class="field-label">Action corrective (obligatoire si hors norme)</label>
+    <textarea id="temp-comment" rows="2" placeholder="ex : produit jeté, appareil signalé au technicien…"></textarea>
+  </div>
+  <button class="primary" data-action="save-temp">Enregistrer le relevé</button>
+  `;
+}
+
+function wireTempFormExtras(){
+  const signBtn = document.getElementById('temp-sign-btn');
+  if(!signBtn) return;
+  function paint(neg){
+    signBtn.dataset.negative = neg ? 'true' : 'false';
+    signBtn.textContent = neg ? '−' : '+';
+    signBtn.style.background = neg ? '#FBE7E1' : '#fff';
+    signBtn.style.color = neg ? '#B2432B' : 'var(--ink)';
+  }
+  signBtn.onclick = ()=> paint(signBtn.dataset.negative !== 'true');
+  const eqSelect = document.getElementById('temp-eq');
+  if(eqSelect){
+    eqSelect.onchange = ()=>{
+      const eq = state.equipments.find(e=>e.id===eqSelect.value);
+      if(eq) paint(eq.max <= 0);
+    };
+  }
+}
+
+function ManageEquipments(){
+  return `
+  <h3 class="sheet-title">Points de contrôle</h3>
+  <section style="margin-bottom:16px;">
+    ${state.equipments.map(e=>`
+      <div class="row">
+        <div class="row-main"><div class="row-title">${escapeHtml(e.name)}</div><div class="row-sub">${e.min}°C – ${e.max}°C</div></div>
+        <button class="ghost" data-action="delete-equipment" data-id="${e.id}">${icon('close',16)}</button>
+      </div>`).join('')}
+  </section>
+  <div class="field"><label class="field-label">Nom</label><input id="new-eq-name" placeholder="ex : Congélateur 2"></div>
+  <div class="grid2" style="margin-bottom:14px;">
+    <div><label class="field-label">Min °C</label><input id="new-eq-min" type="number" step="0.1" placeholder="0"></div>
+    <div><label class="field-label">Max °C</label><input id="new-eq-max" type="number" step="0.1" placeholder="4"></div>
+  </div>
+  <button class="primary" data-action="add-equipment">Ajouter ce point</button>
+  `;
+}
+
+function ManageTasks(){
+  return `
+  <h3 class="sheet-title">Tâches quotidiennes</h3>
+  <section style="margin-bottom:16px;">
+    ${state.tasks.map(t=>`
+      <div class="row" style="flex-direction:column;align-items:stretch;gap:8px;">
+        <input class="task-edit-label" data-id="${t.id}" value="${escapeHtml(t.label)}" style="border:1.5px solid var(--line);border-radius:8px;padding:9px 10px;font-size:14px;">
+        <div style="display:flex;gap:8px;">
+          <select class="task-edit-moment" data-id="${t.id}" style="flex:1;border:1.5px solid var(--line);border-radius:8px;padding:8px;">
+            ${TASK_MOMENTS.map(m=>`<option value="${m}" ${m===t.moment?'selected':''}>${m}</option>`).join('')}
+          </select>
+          <button class="ghost" data-action="save-task-edit" data-id="${t.id}">${icon('check',16)}</button>
+          <button class="ghost" data-action="delete-task" data-id="${t.id}">${icon('close',16)}</button>
+        </div>
+      </div>`).join('')}
+  </section>
+  <div class="field"><label class="field-label">Nouvelle tâche</label><input id="new-task-label" placeholder="ex : Vérifier les plats témoins"></div>
+  <div class="field">
+    <label class="field-label">Moment</label>
+    <select id="new-task-moment">${TASK_MOMENTS.map(m=>`<option value="${m}">${m}</option>`).join('')}</select>
+  </div>
+  <button class="primary" data-action="add-task">Ajouter cette tâche</button>
+  `;
+}
+
+function AddTraceForm(){
+  return `
+  <h3 class="sheet-title">Traçabilité</h3>
+  <div class="field">
+    <label class="field-label">Type</label>
+    <select id="trace-type">${TRACE_TYPES.map(t=>`<option value="${t.id}">${t.label}</option>`).join('')}</select>
+  </div>
+  <div class="field">
+    <label class="field-label">Moment</label>
+    <select id="trace-period">
+      ${PERIODS.map(p=>`<option value="${p}" ${p===currentPeriodGuess()?'selected':''}>${p}</option>`).join('')}
+    </select>
+  </div>
+  <div class="field"><label class="field-label">Produit</label><input id="trace-product" placeholder="ex : Crème fraîche, Bouteille d'eau 5L…"></div>
+  <div class="field"><label class="field-label">Date (DLC ou réception)</label><input id="trace-date" type="date" value="${todayISO()}"></div>
+  <div class="field"><label class="field-label">Numéro de lot (optionnel)</label><input id="trace-lot" placeholder="ex : L2308A"></div>
+  <div class="field"><label class="field-label">Fournisseur (optionnel)</label><input id="trace-supplier" placeholder="ex : Metro, source locale…"></div>
+  <div class="field"><label class="field-label">Température à réception, °C (si applicable)</label><input id="trace-temp" type="number" step="0.1" placeholder="ex : 3"></div>
+  <div class="grid2">
+    <button class="secondary" data-action="save-trace">Enregistrer</button>
+    <button class="primary" data-action="save-trace-print">Enregistrer + étiquette</button>
+  </div>
+  `;
+}
+
+function AddPhotoForm(){
+  const s = state.sheet;
+  const resolving = !!s.resolvingId;
+  if(s.capturedImage){
+    return `
+    <h3 class="sheet-title">${resolving?'Photo de résolution':'Aperçu'}</h3>
+    <img src="${s.capturedImage}" style="width:100%;border-radius:14px;margin-bottom:14px;display:block;">
+    ${!resolving ? `
+    <div class="field">
+      <label class="field-label">Moment</label>
+      <select id="photo-period">${PERIODS.map(p=>`<option value="${p}" ${p===currentPeriodGuess()?'selected':''}>${p}</option>`).join('')}</select>
+    </div>
+    <div class="field"><label class="field-label">Légende</label><input id="photo-caption" placeholder="ex : Étagère frigo 1, étiquette produit…"></div>
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;margin:4px 0 14px;">
+      <input type="checkbox" id="photo-is-nc" style="width:16px;height:16px;flex-shrink:0;"> ⚠️ Signaler comme non-conformité (à suivre jusqu'à résolution)
+    </label>
+    ` : `
+    <div class="field"><label class="field-label">Note de résolution (optionnel)</label><input id="nc-resolve-note" placeholder="ex : produit jeté, nettoyé, corrigé…"></div>
+    `}
+    <div class="grid2">
+      <button class="secondary" data-action="retake-photo">Reprendre</button>
+      <button class="primary" data-action="${resolving?'save-nc-resolved':'save-photo-captured'}">Enregistrer</button>
+    </div>
+    `;
+  }
+  if(s.useFallbackPicker){
+    return `
+    <h3 class="sheet-title">${resolving?'Photo de résolution':'Ajouter une photo'}</h3>
+    <div class="field">
+      <label class="field-label">Photo</label>
+      <input id="photo-file-fallback" type="file" accept="image/*" capture="environment">
+    </div>
+    ${!resolving ? `
+    <div class="field">
+      <label class="field-label">Moment</label>
+      <select id="photo-period">${PERIODS.map(p=>`<option value="${p}" ${p===currentPeriodGuess()?'selected':''}>${p}</option>`).join('')}</select>
+    </div>
+    <div class="field"><label class="field-label">Légende</label><input id="photo-caption" placeholder="ex : Étagère frigo 1, étiquette produit…"></div>
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;margin:4px 0 14px;">
+      <input type="checkbox" id="photo-is-nc-fallback" style="width:16px;height:16px;flex-shrink:0;"> ⚠️ Signaler comme non-conformité (à suivre jusqu'à résolution)
+    </label>
+    ` : `
+    <div class="field"><label class="field-label">Note de résolution (optionnel)</label><input id="nc-resolve-note-fallback" placeholder="ex : produit jeté, nettoyé, corrigé…"></div>
+    `}
+    <button class="primary" data-action="${resolving?'save-nc-resolved-fallback':'save-photo-fallback'}">Enregistrer</button>
+    `;
+  }
+  if(s.cameraError){
+    return `
+    <h3 class="sheet-title">Prendre une photo</h3>
+    <div class="camera-wrap" style="display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;">
+      <p style="color:#fff;font-size:14px;line-height:1.5;margin:0;">Caméra non accessible dans cet aperçu.<br>Ouvre le fichier directement dans Safari sur l'iPad pour que la caméra fonctionne normalement.</p>
+    </div>
+    <div class="grid2" style="margin-top:12px;">
+      <button class="secondary" data-action="retry-camera">Réessayer</button>
+      <button class="ghost" data-action="fallback-photo-picker">Choisir une photo</button>
+    </div>
+    `;
+  }
+  return `
+  <h3 class="sheet-title">Prendre une photo</h3>
+  <div class="camera-wrap"><video id="camera-video" autoplay playsinline muted></video></div>
+  <button class="primary" data-action="capture-photo" style="margin-top:12px;">${icon('camera',18)} Capturer</button>
+  `;
+}
+
+function ExportReportForm(){
+  const s = state.sheet;
+  const today = todayISO();
+  const monthStart = monthKey()+'-01';
+  return `
+  <h3 class="sheet-title">Rapport PDF complet</h3>
+  <p style="font-size:12.5px;color:var(--ink-soft);margin:-8px 0 16px;">Le rapport regroupe automatiquement Cuisine, Salle et Bar en un seul document.</p>
+  <div class="field">
+    <label class="field-label">Nom du restaurant</label>
+    <input id="report-restaurant-name" placeholder="ex : Le Sable Chaud" value="${escapeHtml(s.restaurantName||'')}">
+  </div>
+  <div class="field">
+    <label class="field-label">Période</label>
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <button type="button" class="ghost" data-action="report-preset" data-preset="month" style="flex:1;font-size:12px;padding:9px 4px;">Ce mois-ci</button>
+      <button type="button" class="ghost" data-action="report-preset" data-preset="lastmonth" style="flex:1;font-size:12px;padding:9px 4px;">Mois dernier</button>
+      <button type="button" class="ghost" data-action="report-preset" data-preset="week" style="flex:1;font-size:12px;padding:9px 4px;">7 derniers jours</button>
+    </div>
+    <div class="grid2">
+      <div><label class="field-label">Du</label><input id="report-start" type="date" value="${s.start||monthStart}"></div>
+      <div><label class="field-label">Au</label><input id="report-end" type="date" value="${s.end||today}"></div>
+    </div>
+  </div>
+  <div id="report-status" style="font-size:12.5px;color:var(--ink-soft);margin-bottom:12px;min-height:16px;"></div>
+  <button class="primary" id="report-generate-btn" data-action="generate-report">Générer le PDF</button>
+  `;
+}
+
+function ViewPhoto(id){
+  const p = state.photoEntries.find(x=>x.id===id);
+  if(!p) return '';
+  if(!p.isNonConformity){
+    return `
+    <h3 class="sheet-title">${escapeHtml(p.caption||'Photo')}</h3>
+    <img src="${p.dataUrl}" style="width:100%;border-radius:12px;margin-bottom:12px;">
+    <div class="row-sub" style="margin-bottom:16px;">${p.staff} · ${fmtDate(p.ts.slice(0,10))} ${fmtTime(p.ts)}${p.period?' · '+p.period:''}</div>
+    <button class="secondary" data-action="delete-photo" data-id="${p.id}">Supprimer cette photo</button>
+    `;
+  }
+  const isOpen = p.status==='ouverte';
+  return `
+  <h3 class="sheet-title">${escapeHtml(p.caption||'Non-conformité')}</h3>
+  <div style="margin-bottom:10px;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);">Avant</span>
+    <img src="${p.dataUrl}" style="width:100%;border-radius:12px;margin:4px 0 2px;">
+    <div class="row-sub">${p.staff} · ${fmtDate(p.ts.slice(0,10))} ${fmtTime(p.ts)}</div>
+  </div>
+  ${!isOpen ? `
+  <div style="margin-bottom:14px;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--green,#3E8E63);">Après — résolue</span>
+    <img src="${p.resolvedDataUrl}" style="width:100%;border-radius:12px;margin:4px 0 2px;">
+    <div class="row-sub">${escapeHtml(p.resolvedBy||'')} · ${fmtDate((p.resolvedAt||'').slice(0,10))} ${fmtTime(p.resolvedAt||'')}${p.resolvedNote?' · '+escapeHtml(p.resolvedNote):''}</div>
+  </div>
+  ` : `<p style="color:var(--red,#B23B3B);font-weight:700;font-size:13px;margin:10px 0 16px;">🔴 Non-conformité toujours ouverte</p>`}
+  <div class="grid2">
+    ${isOpen ? `<button class="primary" data-action="resolve-nc" data-id="${p.id}">Marquer comme résolue</button>` : ''}
+    <button class="secondary" data-action="delete-photo" data-id="${p.id}">Supprimer</button>
+  </div>
+  `;
+}
+
+// ---------- event handling ----------
+function attachHandlers(){
+  document.querySelectorAll('[data-action]').forEach(el=>{
+    el.addEventListener('click', onAction);
+  });
+  const backdrop = document.querySelector('.sheet-backdrop');
+  if(backdrop){
+    backdrop.querySelector('[data-stop]').addEventListener('click', e=>e.stopPropagation());
+  }
+  const nav = document.getElementById('page-nav-select');
+  if(nav){ nav.addEventListener('change', ()=>{ if(nav.value) window.location.href = nav.value; }); }
+}
+
+async function onAction(e){
+  const el = e.currentTarget;
+  const action = el.dataset.action;
+
+  if(action==='tab'){
+    const viaQuickShortcut = el.classList.contains('quick-btn') && state.tab==='dashboard';
+    state.returnTab = viaQuickShortcut ? 'dashboard' : null; // navigation libre par la barre du bas = pas de retour auto
+    const tabChanged = el.dataset.tab !== state.tab;
+    state.tab = el.dataset.tab;
+    if(state.tab==='dashboard' && !isCurrentMonthView()){
+      state.viewMonth = new Date();
+      await reloadMonthData(monthKey());
+    }
+    if(tabChanged) applyTabHistory(state.tab);
+    render(); return;
+  }
+  if(action==='close-sheet'){
+    const wasAddTemp = state.sheet && state.sheet.type==='add-temp';
+    state.sheet = null;
+    if(wasAddTemp && state.returnTab){ state.tab = state.returnTab; state.returnTab = null; applyTabHistory(state.tab); }
+    render(); return;
+  }
+  if(action==='pick-staff'){ state.sheet = {type:'pick-staff'}; render(); return; }
+  if(action==='set-staff'){ state.staff = el.dataset.name; state.sheet = null; render(); return; }
+  if(action==='add-staff'){
+    const val = document.getElementById('new-staff-name').value.trim();
+    if(!val) return;
+    if(!state.staffList.includes(val)) state.staffList.push(val);
+    await setData(`config:${RESTAURANT_ID}:${SPACE}:staff`, state.staffList, true);
+    state.staff = val; state.sheet = null; render(); return;
+  }
+  if(action==='logout'){
+    localStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem(REST_ID_KEY);
+    localStorage.removeItem(REST_NAME_KEY);
+    localStorage.removeItem(USER_ID_KEY);
+    localStorage.removeItem(USER_NAME_KEY);
+    localStorage.removeItem(USER_PERMS_KEY);
+    localStorage.removeItem(USER_OWNER_KEY);
+    RESTAURANT_ID = null; RESTAURANT_NAME = null; CURRENT_USER_PERMS = []; CURRENT_USER_IS_OWNER = false; CURRENT_USER_NAME = null;
+    state.sheet = null;
+    renderLoginScreen();
+    return;
+  }
+  if(action==='switch-person'){
+    if(state.tab!=='dashboard'){
+      state.tab = 'dashboard';
+      applyTabHistory('dashboard');
+      if(!isCurrentMonthView()){ state.viewMonth = new Date(); await reloadMonthData(monthKey()); }
+      render();
+      return;
+    }
+    // déjà sur l'accueil du module : direction le hub central (pas besoin de repasser par
+    // "Qui es-tu ?" puisque la session est déjà identifiée — "Changer de personne" reste
+    // disponible depuis le hub si besoin)
+    window.location.href = 'index.html';
+    return;
+  }
+  if(action==='open-change-password'){ state.sheet = {type:'change-password'}; render(); return; }
+  if(action==='open-manage-staff'){ state.sheet = {type:'manage-staff'}; render(); return; }
+  if(action==='add-staff-manage'){
+    const val = document.getElementById('new-staff-name-manage').value.trim();
+    if(!val) return;
+    if(!state.staffList.includes(val)) state.staffList.push(val);
+    const saved = await setData(`config:${RESTAURANT_ID}:${SPACE}:staff`, state.staffList, true);
+    if(!saved){ showToast('⚠️ '+(lastStorageError || 'Échec de sauvegarde')); return; }
+    render(); return;
+  }
+  if(action==='save-staff-edit'){
+    const idx = parseInt(el.dataset.idx, 10);
+    const input = document.querySelector(`.staff-edit-input[data-idx="${idx}"]`);
+    const newVal = input.value.trim();
+    if(!newVal) { showToast('Le prénom ne peut pas être vide'); return; }
+    const oldVal = state.staffList[idx];
+    state.staffList[idx] = newVal;
+    const saved = await setData(`config:${RESTAURANT_ID}:${SPACE}:staff`, state.staffList, true);
+    if(!saved){ showToast('⚠️ '+(lastStorageError || 'Échec de sauvegarde')); return; }
+    if(state.staff === oldVal) state.staff = newVal;
+    render(); showToast('Mis à jour ✓'); return;
+  }
+  if(action==='delete-staff'){
+    const idx = parseInt(el.dataset.idx, 10);
+    const removed = state.staffList[idx];
+    state.staffList.splice(idx, 1);
+    const saved = await setData(`config:${RESTAURANT_ID}:${SPACE}:staff`, state.staffList, true);
+    if(!saved){ showToast('⚠️ '+(lastStorageError || 'Échec de sauvegarde')); return; }
+    if(state.staff === removed) state.staff = null;
+    render(); return;
+  }
+  if(action==='save-password'){
+    const current = document.getElementById('pwd-current').value;
+    const next = document.getElementById('pwd-new').value;
+    const confirmPwd = document.getElementById('pwd-confirm').value;
+    const rec = await getData(`restaurant:${RESTAURANT_ID}`, true, null);
+    if(!rec || rec.password !== current){ showToast('Mot de passe actuel incorrect'); return; }
+    if(!next || next.length < 4){ showToast('Le nouveau mot de passe doit faire au moins 4 caractères'); return; }
+    if(next !== confirmPwd){ showToast('Les mots de passe ne correspondent pas'); return; }
+    const saved = await setData(`restaurant:${RESTAURANT_ID}`, {name:rec.name, password:next}, true);
+    if(!saved){ showToast('⚠️ '+(lastStorageError || 'Échec de sauvegarde')); return; }
+    state.sheet = null; render(); showToast('Mot de passe mis à jour ✓');
+    return;
+  }
+
+  if(action==='add-temp'){ state.sheet = {type:'add-temp', eq: el.dataset.eq}; render(); return; }
+  if(action==='save-temp'){
+    if(!ensureStaff()) return;
+    try{
+      const eqId = document.getElementById('temp-eq').value;
+      const rawVal = parseFloat(document.getElementById('temp-value').value);
+      if(isNaN(rawVal)){ showToast('Entre une température valide'); return; }
+      const signBtn = document.getElementById('temp-sign-btn');
+      const val = (signBtn && signBtn.dataset.negative==='true') ? -Math.abs(rawVal) : rawVal;
+      const eq = state.equipments.find(e=>e.id===eqId);
+      if(!eq){ showToast('Point de contrôle introuvable'); return; }
+      const period = document.getElementById('temp-period').value;
+      const comment = document.getElementById('temp-comment').value.trim();
+      const normMin = Math.min(eq.min, eq.max), normMax = Math.max(eq.min, eq.max);
+      const isOk = (val>=normMin && val<=normMax);
+      if(!isOk && !comment){ showToast('Relevé hors norme : indique une action corrective'); return; }
+      const entry = { id:uid(), ts:new Date().toISOString(), equipmentId:eq.id, equipmentName:eq.name,
+        value:val, min:normMin, max:normMax, ok:isOk, staff:state.staff, comment, period };
+      const newList = [...state.tempEntries, entry];
+      const saved = await setData(`log:${RESTAURANT_ID}:${SPACE}:temp:${monthKey()}`, newList, true);
+      if(!saved){ showToast('⚠️ '+(lastStorageError || 'Échec de sauvegarde')); return; }
+      state.tempEntries = newList;
+      state.sheet = null;
+      if(state.returnTab){ state.tab = state.returnTab; state.returnTab = null; applyTabHistory(state.tab); }
+      render();
+      showToast(isOk ? 'Relevé enregistré ✓' : 'Relevé enregistré — hors norme');
+      if(!isOk){
+        sendCriticalAlert(
+          `⚠️ Température hors norme — ${eq.name} (Bar)`,
+          `${eq.name} : ${val}°C (norme attendue ${normMin}°C à ${normMax}°C)\nRelevé par ${state.staff}\nAction corrective indiquée : ${comment}`
+        );
+      }
+    }catch(err){
+      showToast('⚠️ Erreur : '+err.message);
+      console.error('save-temp error', err);
+    }
+    return;
+  }
+
+  if(action==='manage-equipments'){ state.sheet = {type:'manage-equipments'}; render(); return; }
+  if(action==='add-equipment'){
+    const name = document.getElementById('new-eq-name').value.trim();
+    const min = parseFloat(document.getElementById('new-eq-min').value);
+    const max = parseFloat(document.getElementById('new-eq-max').value);
+    if(!name || isNaN(min) || isNaN(max)){ showToast('Complète tous les champs'); return; }
+    state.equipments.push({id:uid(), name, min: Math.min(min,max), max: Math.max(min,max)});
+    await setData(`config:${RESTAURANT_ID}:${SPACE}:equipments`, state.equipments, true);
+    render(); return;
+  }
+  if(action==='delete-equipment'){
+    state.equipments = state.equipments.filter(e=>e.id!==el.dataset.id);
+    await setData(`config:${RESTAURANT_ID}:${SPACE}:equipments`, state.equipments, true);
+    render(); return;
+  }
+
+  if(action==='manage-tasks'){ state.sheet = {type:'manage-tasks'}; render(); return; }
+  if(action==='add-task'){
+    const label = document.getElementById('new-task-label').value.trim();
+    const moment = document.getElementById('new-task-moment').value;
+    if(!label) return;
+    state.tasks.push({id:uid(), label, moment});
+    await setData(`config:${RESTAURANT_ID}:${SPACE}:tasks`, state.tasks, true);
+    syncTodayTaskSnapshot();
+    render(); return;
+  }
+  if(action==='save-task-edit'){
+    const id = el.dataset.id;
+    const labelInput = document.querySelector(`.task-edit-label[data-id="${id}"]`);
+    const momentSelect = document.querySelector(`.task-edit-moment[data-id="${id}"]`);
+    const newLabel = labelInput.value.trim();
+    if(!newLabel){ showToast('Le libellé ne peut pas être vide'); return; }
+    const task = state.tasks.find(t=>t.id===id);
+    if(!task) return;
+    task.label = newLabel;
+    task.moment = momentSelect.value;
+    const saved = await setData(`config:${RESTAURANT_ID}:${SPACE}:tasks`, state.tasks, true);
+    if(!saved){ showToast('⚠️ '+(lastStorageError || 'Échec de sauvegarde')); return; }
+    syncTodayTaskSnapshot();
+    render(); showToast('Tâche mise à jour ✓'); return;
+  }
+  if(action==='delete-task'){
+    state.tasks = state.tasks.filter(t=>t.id!==el.dataset.id);
+    await setData(`config:${RESTAURANT_ID}:${SPACE}:tasks`, state.tasks, true);
+    syncTodayTaskSnapshot();
+    render(); return;
+  }
+  if(action==='toggle-task'){
+    if(!ensureStaff()) return;
+    const id = el.dataset.task;
+    const cur = state.taskLog[id];
+    if(cur && cur.done){ delete state.taskLog[id]; }
+    else{ state.taskLog[id] = {done:true, ts:new Date().toISOString(), staff:state.staff}; }
+    await setData(`log:${RESTAURANT_ID}:${SPACE}:tasks:${todayISO()}`, state.taskLog, true);
+    render(); return;
+  }
+
+  if(action==='add-trace'){ state.sheet = {type:'add-trace'}; render(); return; }
+  if(action==='save-trace' || action==='save-trace-print'){
+    if(!ensureStaff()) return;
+    const type = document.getElementById('trace-type').value;
+    const period = document.getElementById('trace-period').value;
+    const product = document.getElementById('trace-product').value.trim();
+    const date = document.getElementById('trace-date').value;
+    const lot = document.getElementById('trace-lot').value.trim();
+    const supplier = document.getElementById('trace-supplier').value.trim();
+    const tempRaw = document.getElementById('trace-temp').value;
+    const temp = tempRaw==='' ? null : parseFloat(tempRaw);
+    if(!product){ showToast('Indique le produit'); return; }
+    const entry = {id:uid(), ts:new Date().toISOString(), type, product, date, lot, supplier, temp, staff:state.staff, period};
+    state.traceEntries.push(entry);
+    await setData(`log:${RESTAURANT_ID}:${SPACE}:trace:${monthKey()}`, state.traceEntries, true);
+    state.sheet = null; render(); showToast('Entrée enregistrée ✓');
+    if(action==='save-trace-print'){ printLabel(entry); }
+    return;
+  }
+  if(action==='print-label'){
+    const entry = state.traceEntries.find(x=>x.id===el.dataset.id);
+    if(entry) printLabel(entry);
+    return;
+  }
+
+  if(action==='add-photo'){ state.sheet = {type:'add-photo'}; render(); return; }
+  if(action==='capture-photo'){
+    const video = document.getElementById('camera-video');
+    if(!video || !video.videoWidth){ showToast('Caméra pas encore prête, réessaie'); return; }
+    const maxW = 900;
+    const scale = Math.min(1, maxW/video.videoWidth);
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth*scale; canvas.height = video.videoHeight*scale;
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+    stopCamera();
+    state.sheet.capturedImage = dataUrl;
+    render(); return;
+  }
+  if(action==='retake-photo'){
+    state.sheet.capturedImage = null;
+    state.sheet._camAttempted = false;
+    render(); return;
+  }
+  if(action==='retry-camera'){
+    state.sheet = {type:'add-photo', resolvingId: state.sheet.resolvingId};
+    render(); return;
+  }
+  if(action==='fallback-photo-picker'){
+    state.sheet.useFallbackPicker = true;
+    render(); return;
+  }
+  if(action==='save-photo-fallback'){
+    if(!ensureStaff()) return;
+    const fileInput = document.getElementById('photo-file-fallback');
+    const file = fileInput.files[0];
+    if(!file){ showToast('Choisis une photo'); return; }
+    const caption = document.getElementById('photo-caption').value.trim();
+    const period = document.getElementById('photo-period').value;
+    const isNC = document.getElementById('photo-is-nc-fallback').checked;
+    const dataUrl = await fileToDataUrl(file);
+    const entry = {id:uid(), ts:new Date().toISOString(), caption, staff:state.staff, dataUrl, period};
+    if(isNC){ entry.isNonConformity = true; entry.status = 'ouverte'; }
+    state.photoEntries.push(entry);
+    await setData(`log:${RESTAURANT_ID}:${SPACE}:photos:${monthKey()}`, state.photoEntries, true);
+    state.sheet = null; render(); showToast(isNC ? 'Non-conformité signalée ✓' : 'Photo enregistrée ✓'); return;
+  }
+  if(action==='save-photo-captured'){
+    if(!ensureStaff()) return;
+    const caption = document.getElementById('photo-caption').value.trim();
+    const period = document.getElementById('photo-period').value;
+    const isNC = document.getElementById('photo-is-nc').checked;
+    const entry = {id:uid(), ts:new Date().toISOString(), caption, staff:state.staff, dataUrl:state.sheet.capturedImage, period};
+    if(isNC){ entry.isNonConformity = true; entry.status = 'ouverte'; }
+    state.photoEntries.push(entry);
+    await setData(`log:${RESTAURANT_ID}:${SPACE}:photos:${monthKey()}`, state.photoEntries, true);
+    state.sheet = null; render(); showToast(isNC ? 'Non-conformité signalée ✓' : 'Photo enregistrée ✓'); return;
+  }
+  if(action==='resolve-nc'){
+    state.sheet = {type:'add-photo', resolvingId: el.dataset.id};
+    render(); return;
+  }
+  if(action==='save-nc-resolved'){
+    if(!ensureStaff()) return;
+    const entry = state.photoEntries.find(p=>p.id===state.sheet.resolvingId);
+    if(entry){
+      entry.status = 'resolue';
+      entry.resolvedDataUrl = state.sheet.capturedImage;
+      entry.resolvedNote = document.getElementById('nc-resolve-note').value.trim();
+      entry.resolvedAt = new Date().toISOString();
+      entry.resolvedBy = state.staff;
+      await setData(`log:${RESTAURANT_ID}:${SPACE}:photos:${monthKey()}`, state.photoEntries, true);
+    }
+    state.sheet = null; render(); showToast('Non-conformité marquée comme résolue ✓'); return;
+  }
+  if(action==='save-nc-resolved-fallback'){
+    if(!ensureStaff()) return;
+    const fileInput = document.getElementById('photo-file-fallback');
+    const file = fileInput.files[0];
+    if(!file){ showToast('Choisis une photo'); return; }
+    const entry = state.photoEntries.find(p=>p.id===state.sheet.resolvingId);
+    if(entry){
+      entry.status = 'resolue';
+      entry.resolvedDataUrl = await fileToDataUrl(file);
+      entry.resolvedNote = document.getElementById('nc-resolve-note-fallback').value.trim();
+      entry.resolvedAt = new Date().toISOString();
+      entry.resolvedBy = state.staff;
+      await setData(`log:${RESTAURANT_ID}:${SPACE}:photos:${monthKey()}`, state.photoEntries, true);
+    }
+    state.sheet = null; render(); showToast('Non-conformité marquée comme résolue ✓'); return;
+  }
+  if(action==='view-photo'){ state.sheet = {type:'view-photo', id:el.dataset.id}; render(); return; }
+  if(action==='delete-photo'){
+    state.photoEntries = state.photoEntries.filter(p=>p.id!==el.dataset.id);
+    await setData(`log:${RESTAURANT_ID}:${SPACE}:photos:${monthKey()}`, state.photoEntries, true);
+    state.sheet = null; render(); return;
+  }
+
+  if(action==='month-prev' || action==='month-next'){
+    const d = new Date(state.viewMonth);
+    d.setDate(1);
+    d.setMonth(d.getMonth() + (action==='month-next'?1:-1));
+    if(d > new Date()) return;
+    state.viewMonth = d;
+    await reloadMonthData(monthKey(d));
+    render(); return;
+  }
+
+  if(action==='open-export-report'){
+    state.sheet = {type:'export-report', restaurantName: RESTAURANT_NAME || ''};
+    render();
+    return;
+  }
+  if(action==='report-preset'){
+    const preset = el.dataset.preset;
+    const startEl = document.getElementById('report-start');
+    const endEl = document.getElementById('report-end');
+    const now = new Date();
+    let start, end;
+    if(preset==='month'){
+      start = monthKey()+'-01'; end = todayISO();
+    } else if(preset==='lastmonth'){
+      const d = new Date(now.getFullYear(), now.getMonth()-1, 1);
+      start = monthKey(d)+'-01';
+      const lastDay = new Date(d.getFullYear(), d.getMonth()+1, 0).getDate();
+      end = monthKey(d)+'-'+String(lastDay).padStart(2,'0');
+    } else if(preset==='week'){
+      const d = new Date(); d.setDate(d.getDate()-6);
+      start = d.toISOString().slice(0,10); end = todayISO();
+    }
+    if(startEl) startEl.value = start;
+    if(endEl) endEl.value = end;
+    return;
+  }
+  if(action==='generate-report'){
+    const btn = document.getElementById('report-generate-btn');
+    const statusEl = document.getElementById('report-status');
+    const nameInput = document.getElementById('report-restaurant-name');
+    const restaurantName = nameInput.value.trim() || 'Restaurant';
+    const start = document.getElementById('report-start').value;
+    const end = document.getElementById('report-end').value;
+    if(!start || !end || start > end){ showToast('Vérifie les dates sélectionnées'); return; }
+    btn.disabled = true; btn.textContent = 'Génération en cours…';
+    if(statusEl) statusEl.textContent = 'Récupération des données de Cuisine, Salle et Bar…';
+    try{
+      await generateHaccpReport(start, end, restaurantName, statusEl);
+      state.sheet = null; render();
+      showToast('Rapport PDF généré ✓');
+    }catch(err){
+      console.error('report error', err);
+      showToast('⚠️ Erreur PDF : '+err.message);
+      if(btn){ btn.disabled = false; btn.textContent = 'Générer le PDF'; }
+    }
+    return;
+  }
+}
+
+function ensureStaff(){
+  if(!state.staff){ state.sheet = {type:'pick-staff'}; render(); showToast('Choisis ton prénom d’abord'); return false; }
+  return true;
+}
+
+// ---------- Étiquette DLC / traçabilité ----------
+function fileToDataUrl(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const maxW = 900;
+        const scale = Math.min(1, maxW/img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width*scale; canvas.height = img.height*scale;
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function buildLabelCanvas(entry){
+  const W = 720, H = 480; // ratio 3:2 = 60mm x 40mm
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = themeVar('--ink'); ctx.lineWidth = 4;
+  ctx.strokeRect(6,6,W-12,H-12);
+
+  let y = 46;
+  ctx.fillStyle = themeVar('--sea-deep');
+  ctx.font = '800 26px Inter, sans-serif';
+  ctx.fillText((traceTypeLabel(entry.type)||'').toUpperCase(), 28, y);
+  y += 44;
+
+  ctx.fillStyle = themeVar('--ink');
+  ctx.font = '700 32px Inter, sans-serif';
+  y = wrapText(ctx, (entry.product||'').toUpperCase(), 28, y, W-56, 38);
+  y += 8;
+
+  ctx.font = '500 19px Inter, sans-serif';
+  ctx.fillText('Ouvert / préparé le : '+fmtDate(entry.ts.slice(0,10)), 28, y);
+  y += 32;
+
+  if(entry.date){
+    ctx.fillStyle = '#B2432B';
+    ctx.font = '800 34px Inter, sans-serif';
+    ctx.fillText('DLC : '+new Date(entry.date+'T00:00:00').toLocaleDateString('fr-FR'), 28, y);
+    y += 40;
+  }
+
+  ctx.fillStyle = themeVar('--ink');
+  ctx.font = '500 18px Inter, sans-serif';
+  if(entry.lot){ ctx.fillText('Lot : '+entry.lot, 28, y); y += 26; }
+  if(entry.supplier){ ctx.fillText('Fournisseur : '+entry.supplier, 28, y); y += 26; }
+  if(entry.temp!==undefined && entry.temp!==null && entry.temp!==''){ ctx.fillText('Température réception : '+entry.temp+'°C', 28, y); y += 26; }
+
+  ctx.font = '600 19px Inter, sans-serif';
+  ctx.fillText('Par : '+entry.staff, 28, y);
+  y += 24;
+
+  ctx.font = '400 14px Inter, sans-serif';
+  ctx.fillStyle = themeVar('--ink-soft');
+  ctx.fillText((RESTAURANT_NAME?RESTAURANT_NAME+' · ':'')+SPACE_LABEL, 28, Math.min(y, H-16));
+  return canvas;
+}
+function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+  const words = text.split(' ');
+  let line = ''; let cy = y;
+  for(let n=0;n<words.length;n++){
+    const test = line + words[n] + ' ';
+    if(ctx.measureText(test).width > maxWidth && n>0){
+      ctx.fillText(line, x, cy); line = words[n]+' '; cy += lineHeight;
+    } else { line = test; }
+  }
+  ctx.fillText(line, x, cy);
+  return cy + lineHeight;
+}
+function printLabel(entry){
+  const canvas = buildLabelCanvas(entry);
+  canvas.toBlob(async (blob)=>{
+    if(!blob) return;
+    const file = new File([blob], `etiquette-${entry.id}.png`, {type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file], title:'Étiquette '+ (entry.product||'')}); return; }
+      catch(err){ /* utilisateur a annulé ou API indisponible : on bascule sur l'impression directe */ }
+    }
+    const dataUrl = canvas.toDataURL('image/png');
+    const w = window.open('', '_blank');
+    if(!w){ showToast('Autorise les pop-up pour imprimer'); return; }
+    w.document.write(`<!DOCTYPE html><html><head><title>Étiquette</title><style>
+      @page{ size:60mm 40mm; margin:0; }
+      html,body{margin:0;padding:0;}
+      body{display:flex;align-items:center;justify-content:center;}
+      img{width:100%;}
+    </style></head><body><img src="${dataUrl}" onload="setTimeout(()=>window.print(),150)"></body></html>`);
+    w.document.close();
+  }, 'image/png');
+}
+
+// ---------- Rapport PDF professionnel (Cuisine + Salle + Bar) ----------
+function fmtDateFR(iso){
+  const d = new Date(iso+'T00:00:00');
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function pad2(n){ return String(n).padStart(2,'0'); }
+function monthsInRange(start, end){
+  const months = [];
+  const d = new Date(start+'T00:00:00'); d.setDate(1);
+  const endD = new Date(end+'T00:00:00');
+  while(d <= endD){
+    months.push(d.getFullYear()+'-'+pad2(d.getMonth()+1));
+    d.setMonth(d.getMonth()+1);
+  }
+  return months;
+}
+function daysInRange(start, end){
+  const days = [];
+  const d = new Date(start+'T00:00:00');
+  const endD = new Date(end+'T00:00:00');
+  while(d <= endD){
+    days.push(d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()));
+    d.setDate(d.getDate()+1);
+  }
+  return days;
+}
+function inRange(ts, start, end){
+  const day = ts.slice(0,10);
+  return day >= start && day <= end;
+}
+
+async function generateHaccpReport(start, end, restaurantName, statusEl){
+  if(!window.jspdf){ throw new Error('Librairie PDF non chargée, vérifie ta connexion'); }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'mm', format:'a4'});
+  const SPACES = [
+    {key:'cuisine', label:'Cuisine'},
+    {key:'salle', label:'Salle'},
+    {key:'bar', label:'Bar'},
+  ];
+  const months = monthsInRange(start, end);
+  const days = daysInRange(start, end);
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const margin = 14;
+
+  doc.setFillColor(...THEME_RGB.primary);
+  doc.rect(0,0,pageW,pageH,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(26);
+  doc.text(restaurantName, pageW/2, 110, {align:'center'});
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(14);
+  doc.text('Rapport HACCP', pageW/2, 124, {align:'center'});
+  doc.setFontSize(11);
+  doc.text(`Période du ${fmtDateFR(start)} au ${fmtDateFR(end)}`, pageW/2, 134, {align:'center'});
+  doc.setFontSize(9);
+  doc.setTextColor(...THEME_RGB.onDark);
+  doc.text('Cuisine  ·  Salle  ·  Bar', pageW/2, 146, {align:'center'});
+  doc.text(`Document généré le ${fmtDateFR(todayISO())} via Check ton resto`, pageW/2, pageH-15, {align:'center'});
+
+  for(const sp of SPACES){
+    if(statusEl) statusEl.textContent = `Préparation de la section ${sp.label}…`;
+    doc.addPage();
+    let y = margin;
+    doc.setTextColor(...THEME_RGB.primary);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(18);
+    doc.text(sp.label, margin, y);
+    doc.setFontSize(9.5);
+    doc.setTextColor(...THEME_RGB.inkSoft);
+    doc.setFont('helvetica','normal');
+    doc.text(`${restaurantName}  ·  Suivi HACCP  ·  ${fmtDateFR(start)} - ${fmtDateFR(end)}`, margin, y+6);
+    y += 16;
+
+    const [tempArrays, traceArrays, photoArrays, taskDefs, taskLogsRaw, taskDefsPerDay] = await Promise.all([
+      Promise.all(months.map(m=>getData(`log:${RESTAURANT_ID}:${sp.key}:temp:${m}`, true, []))),
+      Promise.all(months.map(m=>getData(`log:${RESTAURANT_ID}:${sp.key}:trace:${m}`, true, []))),
+      Promise.all(months.map(m=>getData(`log:${RESTAURANT_ID}:${sp.key}:photos:${m}`, true, []))),
+      getData(`config:${RESTAURANT_ID}:${sp.key}:tasks`, true, []),
+      Promise.all(days.map(d=>getData(`log:${RESTAURANT_ID}:${sp.key}:tasks:${d}`, true, {}))),
+      Promise.all(days.map(d=>getData(`log:${RESTAURANT_ID}:${sp.key}:taskdefs:${d}`, true, null))),
+    ]);
+    const temp = tempArrays.flat().filter(e=>inRange(e.ts, start, end)).sort((a,b)=>new Date(a.ts)-new Date(b.ts));
+    const trace = traceArrays.flat().filter(e=>inRange(e.ts, start, end)).sort((a,b)=>new Date(a.ts)-new Date(b.ts));
+    const photos = photoArrays.flat().filter(e=>inRange(e.ts, start, end)).sort((a,b)=>new Date(a.ts)-new Date(b.ts));
+
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(...THEME_RGB.primary);
+    doc.text('Relevés de température', margin, y); y += 5;
+    if(temp.length){
+      doc.autoTable({
+        startY: y, margin:{left:margin, right:margin},
+        head:[['Date','Moment','Point de contrôle','Valeur','Norme','Conformité','Employé','Action corrective']],
+        body: temp.map(e=>[fmtDateFR(e.ts.slice(0,10)), e.period||'—', e.equipmentName, e.value+'°C', `${e.min}°C à ${e.max}°C`, e.ok?'Conforme':'Non conforme', e.staff, e.comment||'']),
+        styles:{fontSize:8, cellPadding:2}, headStyles:{fillColor:THEME_RGB.primary, textColor:255, fontStyle:'bold'},
+        alternateRowStyles:{fillColor:THEME_RGB.bg},
+        didParseCell:(d)=>{ if(d.section==='body' && d.column.index===5){ d.cell.styles.textColor = d.cell.raw==='Non conforme' ? [178,67,43] : [62,142,99]; d.cell.styles.fontStyle='bold'; } }
+      });
+      y = doc.lastAutoTable.finalY + 4;
+      const nc = temp.filter(e=>!e.ok).length;
+      doc.setFont('helvetica','italic'); doc.setFontSize(8.5); doc.setTextColor(...THEME_RGB.inkSoft);
+      doc.text(`${temp.length} relevé(s) sur la période, dont ${nc} hors norme.`, margin, y); y += 9;
+    } else {
+      doc.setFont('helvetica','italic'); doc.setFontSize(9); doc.setTextColor(...THEME_RGB.inkSoft);
+      doc.text('Aucun relevé de température sur cette période.', margin, y); y += 9;
+    }
+    if(y > pageH-40){ doc.addPage(); y = margin; }
+
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(...THEME_RGB.primary);
+    doc.text('Traçabilité', margin, y); y += 5;
+    if(trace.length){
+      doc.autoTable({
+        startY: y, margin:{left:margin, right:margin},
+        head:[['Date','Moment','Type','Produit','Lot','Fournisseur','Temp. réception','Employé']],
+        body: trace.map(e=>[fmtDateFR(e.ts.slice(0,10)), e.period||'—', traceTypeLabel(e.type), e.product, e.lot||'—', e.supplier||'—', (e.temp!==undefined && e.temp!==null && e.temp!=='')?e.temp+'°C':'—', e.staff]),
+        styles:{fontSize:8, cellPadding:2}, headStyles:{fillColor:THEME_RGB.primary, textColor:255, fontStyle:'bold'},
+        alternateRowStyles:{fillColor:THEME_RGB.bg},
+      });
+      y = doc.lastAutoTable.finalY + 4;
+      doc.setFont('helvetica','italic'); doc.setFontSize(8.5); doc.setTextColor(...THEME_RGB.inkSoft);
+      doc.text(`${trace.length} entrée(s) de traçabilité sur la période.`, margin, y); y += 9;
+    } else {
+      doc.setFont('helvetica','italic'); doc.setFontSize(9); doc.setTextColor(...THEME_RGB.inkSoft);
+      doc.text('Aucune entrée de traçabilité sur cette période.', margin, y); y += 9;
+    }
+    if(y > pageH-40){ doc.addPage(); y = margin; }
+
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(...THEME_RGB.primary);
+    doc.text('Tâches quotidiennes', margin, y); y += 5;
+    const taskRows = [];
+    days.forEach((d,i)=>{
+      const log = taskLogsRaw[i] || {};
+      const dayTasks = taskDefsPerDay[i] || taskDefs;
+      dayTasks.forEach(t=>{
+        const done = log[t.id];
+        taskRows.push([fmtDateFR(d), t.moment, t.label, done?'Faite':'Non faite', done?done.staff:'—', done?fmtTime(done.ts):'—']);
+      });
+    });
+    if(taskRows.length){
+      doc.autoTable({
+        startY: y, margin:{left:margin, right:margin},
+        head:[['Date','Moment','Tâche','Statut','Employé','Heure']],
+        body: taskRows,
+        styles:{fontSize:7.5, cellPadding:2}, headStyles:{fillColor:THEME_RGB.primary, textColor:255, fontStyle:'bold'},
+        alternateRowStyles:{fillColor:THEME_RGB.bg},
+        didParseCell:(d)=>{ if(d.section==='body' && d.column.index===3){ d.cell.styles.textColor = d.cell.raw==='Non faite' ? [178,67,43] : [62,142,99]; } }
+      });
+      y = doc.lastAutoTable.finalY + 4;
+      const doneCount = taskRows.filter(r=>r[3]==='Faite').length;
+      const pct = taskRows.length ? Math.round(doneCount/taskRows.length*100) : 0;
+      doc.setFont('helvetica','italic'); doc.setFontSize(8.5); doc.setTextColor(...THEME_RGB.inkSoft);
+      doc.text(`${doneCount}/${taskRows.length} tâches réalisées sur la période (${pct}%).`, margin, y); y += 9;
+    } else {
+      doc.setFont('helvetica','italic'); doc.setFontSize(9); doc.setTextColor(...THEME_RGB.inkSoft);
+      doc.text('Aucune tâche configurée pour cet espace.', margin, y); y += 9;
+    }
+    if(y > pageH-40){ doc.addPage(); y = margin; }
+
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(...THEME_RGB.primary);
+    doc.text('Photos', margin, y); y += 5;
+    if(photos.length){
+      doc.autoTable({
+        startY: y, margin:{left:margin, right:margin},
+        head:[['Date','Moment','Légende','Employé']],
+        body: photos.map(p=>[fmtDateFR(p.ts.slice(0,10)), p.period||'—', p.caption||'—', p.staff]),
+        styles:{fontSize:8, cellPadding:2}, headStyles:{fillColor:THEME_RGB.primary, textColor:255, fontStyle:'bold'},
+        alternateRowStyles:{fillColor:THEME_RGB.bg},
+      });
+      y = doc.lastAutoTable.finalY + 4;
+      doc.setFont('helvetica','italic'); doc.setFontSize(8.5); doc.setTextColor(...THEME_RGB.inkSoft);
+      doc.text(`${photos.length} photo(s) sur la période (photos consultables dans l'application).`, margin, y);
+    } else {
+      doc.setFont('helvetica','italic'); doc.setFontSize(9); doc.setTextColor(...THEME_RGB.inkSoft);
+      doc.text('Aucune photo sur cette période.', margin, y);
+    }
+  }
+
+  const pageCount = doc.internal.getNumberOfPages();
+  for(let i=2;i<=pageCount;i++){
+    doc.setPage(i);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(150,150,150);
+    doc.text(`${restaurantName} — Rapport HACCP — page ${i-1}/${pageCount-1}`, pageW/2, pageH-8, {align:'center'});
+  }
+
+  const safeName = restaurantName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+  doc.save(`rapport-haccp-${safeName || 'restaurant'}-${start}-au-${end}.pdf`);
+}
+
+const REQUIRED_PERM = 'bar';
+const MODULE_TITLE = 'Check ton bar';
+async function onIdentityGranted(){
+  await loadAll();
+  state.staff = state.staff || CURRENT_USER_NAME;
+  try{ history.replaceState({tab: state.tab}, '', location.href); }catch(err){}
+  render();
+}
+initAuth();
+
+document.addEventListener('visibilitychange', async ()=>{
+  if(document.visibilityState==='visible' && state.loaded){
+    if(state.tab==='dashboard'){
+      state.viewMonth = new Date();
+      await reloadMonthData(monthKey());
+    } else if(['temp','trace','photos'].includes(state.tab)){
+      await reloadMonthData(monthKey(state.viewMonth));
+    } else if(state.tab==='tasks'){
+      state.taskLog = await getData(`log:${RESTAURANT_ID}:${SPACE}:tasks:${todayISO()}`, true, {});
+    }
+    render();
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<title>Planning d'équipe</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#123B3A">
+<script>try{var c=JSON.parse(localStorage.getItem("ctr_theme_cache")||"null");if(c&&c.vars){var r=document.documentElement.style;for(var k in c.vars)r.setProperty(k,c.vars[k]);var m=document.querySelector('meta[name="theme-color"]');if(m&&c.vars["--sea-deep"])m.setAttribute("content",c.vars["--sea-deep"]);}}catch(e){}</script>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Check ton resto">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sea-deep:#123B3A; --sea:#1C5C57; --sea-light:#2E8079;
+    --sand:#F7F1E6; --sand-dark:#EDE3D0;
+    --ink:#20302E; --ink-soft:#5A6B67;
+    --ok:#3E8E63; --ok-bg:#E4F1E8;
+    --alert:#B2432B; --alert-bg:#FBE7E1;
+    --warn:#C08A2E; --warn-bg:#FBF0DD;
+    --line:#E1D8C4; --radius:16px;
+   --tint:#EAF2EE; --tint-strong:#B9D6D1; --on-dark-soft:#9FC2BC;}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--sand);color:var(--ink);font-family:'Inter',sans-serif;height:100%;overflow-x:hidden;}
+  #root{display:flex;flex-direction:column;min-height:100vh;max-width:900px;margin:0 auto;background:var(--sand);}
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0;letter-spacing:-0.01em;}
+  header.topbar{background:var(--sea-deep);color:var(--sand);padding:18px 20px 16px;position:sticky;top:0;z-index:20;}
+  .topbar-row{display:flex;justify-content:space-between;align-items:flex-start;}
+  .brand{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:#fff;line-height:1.15;text-decoration:none;}
+  .brand small{display:block;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:var(--on-dark-soft);letter-spacing:.04em;text-transform:uppercase;margin-top:2px;}
+  .staff-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;padding:9px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;}
+  .page-nav-wrap{position:relative;margin-top:12px;}
+  .page-nav{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:#fff;padding:11px 34px 11px 14px;border-radius:10px;font-size:13.5px;font-weight:700;font-family:'Inter',sans-serif;-webkit-appearance:none;appearance:none;cursor:pointer;}
+  .page-nav option{color:var(--ink);}
+  .page-nav-wrap::after{content:'';position:absolute;right:14px;top:50%;width:9px;height:9px;border-right:2px solid #fff;border-bottom:2px solid #fff;transform:translateY(-65%) rotate(45deg);pointer-events:none;}
+  main{flex:1;padding:18px 16px 40px;}
+  section.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
+  .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+  .card-head h2{font-size:16px;}
+  .link-btn{background:none;border:none;color:var(--sea);font-weight:700;font-size:13px;cursor:pointer;padding:6px 0;}
+  button.primary{background:var(--sea-deep);color:#fff;border:none;border-radius:12px;padding:13px 18px;font-size:15px;font-weight:700;width:100%;cursor:pointer;font-family:'Inter',sans-serif;}
+  button.secondary{background:var(--sand-dark);color:var(--ink);border:none;border-radius:12px;padding:13px 18px;font-size:15px;font-weight:700;width:100%;cursor:pointer;}
+  button.ghost{background:none;border:1px solid var(--line);border-radius:12px;padding:12px;font-weight:600;cursor:pointer;color:var(--ink);}
+  input,select,textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:12px;font-size:15px;font-family:'Inter',sans-serif;background:#fff;color:var(--ink);box-sizing:border-box;}
+  input[type="date"],input[type="time"],input[type="month"]{-webkit-appearance:none;appearance:none;}
+  label.field-label{font-size:12.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;display:block;}
+  .field{margin-bottom:14px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .week-nav .m-btn{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:var(--sea-deep);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  .week-nav .m-label{font-weight:700;font-size:14.5px;text-align:center;}
+  .day-block{margin-bottom:20px;}
+  .space-group{border-left:3px solid var(--line); padding-left:10px; margin-bottom:10px;}
+  .space-group.sg-cuisine{border-left-color:var(--sea);}
+  .space-group.sg-salle{border-left-color:var(--warn);}
+  .space-group.sg-bar{border-left-color:#7A3E7A;}
+  .space-group.sg-autre{border-left-color:var(--ink-soft);}
+  .space-group-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+  .sg-cuisine .space-group-label{color:var(--sea-deep);}
+  .sg-salle .space-group-label{color:var(--warn);}
+  .sg-bar .space-group-label{color:#7A3E7A;}
+  .sg-autre .space-group-label{color:var(--ink-soft);}
+  .tpl-day-tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:2px;}
+  .tpl-day-tab{flex:1;min-width:44px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 4px;font-size:12px;font-weight:700;color:var(--ink-soft);cursor:pointer;}
+  .tpl-day-tab.active{background:var(--sea-deep);border-color:var(--sea-deep);color:#fff;}
+  .tpl-day-tab.closed:not(.active){background:var(--alert-bg);border-color:#E3B6A8;color:var(--alert);}
+  .tpl-day-tab.closed.active{background:var(--alert);border-color:var(--alert);}
+  .day-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .day-title{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.03em;color:var(--sea);}
+  .shift-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);gap:8px;}
+  .shift-row:first-of-type{border-top:none;}
+  .shift-main{flex:1;}
+  .shift-name{font-weight:700;font-size:14px;}
+  .shift-time{font-size:12.5px;color:var(--ink-soft);}
+  .badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:10.5px;font-weight:700;background:var(--sand-dark);color:var(--ink-soft);}
+  .shift-actions{display:flex;gap:6px;}
+  .icon-btn{background:none;border:1px solid var(--line);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-soft);flex-shrink:0;}
+  .empty{text-align:center;padding:16px 10px;color:var(--ink-soft);font-size:13px;}
+  .rest-group{border-left:3px solid var(--line); padding-left:10px; margin-top:6px;}
+  .rest-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin-bottom:4px;}
+  .rest-name-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px;}
+  .rest-name-row:active{background:var(--sand);}
+  .rest-name-row:first-of-type{border-top:none;}
+  .rest-tag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);background:var(--sand-dark);padding:3px 9px;border-radius:999px;}
+  .sheet-backdrop{position:fixed;inset:0;background:rgba(18,29,28,.45);z-index:50;display:flex;align-items:flex-end;}
+  .sheet{background:var(--sand);width:100%;max-height:88vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));max-width:900px;margin:0 auto;}
+  .sheet-handle{width:40px;height:4px;background:var(--line);border-radius:2px;margin:0 auto 14px;position:relative;}
+  .sheet-handle::before{content:'';position:absolute;top:-16px;left:-30px;right:-30px;bottom:-16px;}
+  .sheet-title{font-size:19px;margin-bottom:16px;}
+  .toast{position:fixed;bottom:24px;left:16px;right:16px;max-width:420px;margin:0 auto;background:var(--ink);color:#fff;padding:12px 18px;border-radius:16px;font-size:13.5px;font-weight:600;z-index:60;box-shadow:0 6px 18px rgba(0,0,0,.2);text-align:center;}
+  .loading{padding:40px;text-align:center;color:var(--ink-soft);}
+  .auth-card{max-width:340px;width:100%;background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px 24px;text-align:center;}
+  .auth-icon{width:56px;height:56px;border-radius:16px;background:var(--sea-deep);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:#fff;}
+  .auth-input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:13px;font-size:16px;margin-bottom:10px;box-sizing:border-box;}
+  .auth-btn{width:100%;background:var(--sea-deep);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;}
+  .auth-error{color:var(--alert);font-size:12.5px;margin:0 0 14px;}
+  .auth-link{background:none;border:none;color:var(--sea);font-weight:700;font-size:13px;margin-top:14px;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="shared.js"></script>
+<script>
+// ---------- helpers propres à cette page ----------
+function pad2(n){ return String(n).padStart(2,'0'); }
+function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+function fmtISODate(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+function fmtDateFR(iso){ const d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'2-digit'}); }
+function fmtDateShort(iso){ const d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function monthKeyOf(iso){ return iso.slice(0,7); }
+function startOfWeek(d){
+  const date = new Date(d); date.setHours(0,0,0,0);
+  const day = date.getDay();
+  const diff = (day===0 ? -6 : 1-day);
+  date.setDate(date.getDate()+diff);
+  return date;
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+const ICONS = {
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke-linecap="round"/>',
+  user:'<circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3.5-6 7-6s7 2.5 7 6" stroke-linecap="round"/>',
+  plus:'<path d="M12 5v14M5 12h14" stroke-linecap="round"/>',
+  close:'<path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/>',
+  chevronL:'<path d="M15 5 8 12l7 7" stroke-linecap="round" stroke-linejoin="round"/>',
+  chevronR:'<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>',
+  download:'<path d="M12 3v12m0 0-4-4m4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/>',
+  calendar:'<rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17" stroke-linecap="round"/>',
+  copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke-linecap="round" stroke-linejoin="round"/>',
+  layers:'<path d="M12 3 3 8l9 5 9-5-9-5Z" stroke-linejoin="round"/><path d="M3 12l9 5 9-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 16l9 5 9-5" stroke-linecap="round" stroke-linejoin="round"/>',
+  paste:'<rect x="7" y="6" width="10" height="14" rx="2"/><path d="M10 6V4.5A1.5 1.5 0 0 1 11.5 3h1A1.5 1.5 0 0 1 14 4.5V6" stroke-linecap="round"/>',
+};
+function icon(name, size){ return `<svg viewBox="0 0 24 24" width="${size||20}" height="${size||20}" fill="none" stroke="currentColor" stroke-width="1.8">${ICONS[name]}</svg>`; }
+
+const STAFF_COLORS = ['#8B5E3C','#3E7C6B','#B2542B','#5C6FA6','#A64B7A','#6B8E23','#B23B3B','#4A7A96','#8A6D3B','#6B4A96'];
+function staffColor(name){
+  let h = 0;
+  for(let i=0;i<name.length;i++) h = (h*31 + name.charCodeAt(i)) >>> 0;
+  return STAFF_COLORS[h % STAFF_COLORS.length];
+}
+
+// ---------- auth ----------
+const REQUIRED_PERM = 'planning';
+const MODULE_TITLE = "Planning d'équipe";
+async function onIdentityGranted(){
+  try{
+    await loadAll();
+    render();
+  }catch(e){
+    console.error('onIdentityGranted error', e);
+    document.getElementById('root').innerHTML = `
+      <div class="card" style="padding:24px;margin-top:20px;">
+        <h2 style="margin-top:0;color:#B23B3B;">Erreur de chargement</h2>
+        <p style="font-size:13px;">Détail technique (à transmettre si le problème persiste) :</p>
+        <pre style="white-space:pre-wrap;font-size:11px;background:var(--sand);padding:10px;border-radius:8px;">${(e && e.stack || e || '').toString().replace(/</g,'&lt;')}</pre>
+        <button class="primary" onclick="location.reload()" style="margin-top:10px;">Réessayer</button>
+      </div>`;
+  }
+}
+function logout(){
+  performLogout();
+  state.sheet = null;
+  renderLoginScreen();
+}
+
+// ---------- state ----------
+const state = {
+  weekStart: startOfWeek(new Date()),
+  staffList: [],
+  teamFull: [],
+  shifts: [],       // shifts for the currently loaded weeks' months
+  incidents: [],    // renvois/incidents signés (peu nombreux : chargés une fois pour toute la session)
+  absences: [],     // absences justifiées (idem)
+  staffFilter: 'all',
+  sheet: null,
+  toast: null,
+  loaded: false,
+  clipboard: (function(){ try{ return JSON.parse(localStorage.getItem('ctr_shiftClipboard') || 'null'); }catch(e){ return null; } })(), // {staff, start, end, space, note}
+};
+
+async function loadAll(){
+  const team = (await getData(`config:${RESTAURANT_ID}:team`, true, [])).map(normalizeMember);
+  state.teamFull = team;
+  state.staffList = team.map(m=>m.name);
+  state.incidents = await getData(`config:${RESTAURANT_ID}:incidents`, true, []);
+  state.absences = await getData(`config:${RESTAURANT_ID}:absences`, true, []);
+  state.publishRecord = await getData(`config:${RESTAURANT_ID}:planningPublish`, true, {});
+  await loadShiftsForWeek();
+  state.loaded = true;
+}
+async function loadShiftsForWeek(){
+  const days = weekDays(state.weekStart);
+  const months = [...new Set(days.map(d=>monthKeyOf(fmtISODate(d))))];
+  const arrays = await Promise.all(months.map(m=>getData(`log:${RESTAURANT_ID}:planning:${m}`, true, [])));
+  state.shifts = arrays.flat();
+}
+function weekDays(weekStart){
+  const days = [];
+  for(let i=0;i<7;i++){ const d = new Date(weekStart); d.setDate(d.getDate()+i); days.push(d); }
+  return days;
+}
+
+/* ---------- publication du planning ----------
+   Un employé ne voit (dans "Mon planning", côté index.html) que les semaines explicitement publiées.
+   Le statut "à jour / modifié" se calcule en comparant l'état actuel des créneaux de la semaine à
+   l'instantané enregistré lors de la dernière publication — pas besoin de suivre un "updatedAt" sur
+   chaque créneau, la comparaison se refait à chaque affichage. */
+function weekShiftsSnapshot(weekStartIso, allShiftsForWeek){
+  const byEmployee = {};
+  allShiftsForWeek.forEach(s=>{ (byEmployee[s.staff] = byEmployee[s.staff] || []).push(`${s.date}|${s.start||''}|${s.end||''}|${s.note||''}`); });
+  Object.keys(byEmployee).forEach(k=>byEmployee[k].sort());
+  return byEmployee;
+}
+function weekPublishStatus(weekStartIso){
+  const days = weekDays(new Date(weekStartIso+'T00:00:00')).map(fmtISODate);
+  const weekShifts = state.shifts.filter(s=>days.includes(s.date));
+  const current = weekShiftsSnapshot(weekStartIso, weekShifts);
+  const rec = state.publishRecord[weekStartIso];
+  if(!rec) return {published:false, upToDate:false};
+  const changed = JSON.stringify(current) !== JSON.stringify(rec.snapshot);
+  return {published:true, upToDate:!changed, publishedAt:rec.publishedAt, publishedBy:rec.publishedBy};
+}
+async function publishCurrentWeek(){
+  const weekStartIso = fmtISODate(state.weekStart);
+  const days = weekDays(state.weekStart).map(fmtISODate);
+  const weekShifts = state.shifts.filter(s=>days.includes(s.date));
+  const current = weekShiftsSnapshot(weekStartIso, weekShifts);
+  const prevRec = state.publishRecord[weekStartIso];
+  const prevSnapshot = prevRec ? prevRec.snapshot : {};
+
+  // détermine qui est concerné par un changement depuis la dernière publication (ajout, modif ou suppression de créneau)
+  const affected = new Set();
+  new Set([...Object.keys(current), ...Object.keys(prevSnapshot)]).forEach(name=>{
+    if(JSON.stringify(current[name]||[]) !== JSON.stringify(prevSnapshot[name]||[])) affected.add(name);
+  });
+
+  state.publishRecord[weekStartIso] = { publishedAt: new Date().toISOString(), publishedBy: CURRENT_USER_NAME||'Responsable', snapshot: current };
+  await setData(`config:${RESTAURANT_ID}:planningPublish`, state.publishRecord, true);
+
+  if(affected.size){
+    const notices = await getData(`config:${RESTAURANT_ID}:planningNotices`, true, []);
+    affected.forEach(name=>{
+      notices.push({ id: uid(), employeeName: name, weekStart: weekStartIso, createdAt: new Date().toISOString(), seenAt: null });
+    });
+    await setData(`config:${RESTAURANT_ID}:planningNotices`, notices, true);
+  }
+  return affected.size;
+}
+
+/* ===================== modèle de planning (génération automatique) ===================== */
+const TEMPLATE_SPACES = [['cuisine','Cuisine'],['salle','Salle'],['bar','Bar']];
+const TEMPLATE_PERIODS = [['matin',"Avant service du matin"],['midi',"Après le service du midi"],['soir',"Avant fermeture"]];
+const WEEKDAY_LABELS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+const WEEKDAY_SHORT = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+function defaultDayTemplate(){
+  return {
+    closed: false,
+    cuisine: { matin:{start:'08:00', end:'11:30', count:2}, midi:{start:'11:30', end:'16:00', count:3}, soir:{start:'16:00', end:'23:00', count:2} },
+    salle:   { matin:{start:'09:00', end:'12:00', count:1}, midi:{start:'12:00', end:'16:00', count:3}, soir:{start:'18:00', end:'23:30', count:3} },
+    bar:     { matin:{start:'10:00', end:'12:00', count:1}, midi:{start:'12:00', end:'17:00', count:2}, soir:{start:'17:00', end:'23:59', count:2} },
+  };
+}
+function defaultTemplate(){
+  const tpl = {};
+  for(let i=0;i<7;i++) tpl[i] = defaultDayTemplate();
+  return tpl;
+}
+function mondayIndex(date){ const d = date.getDay(); return d===0 ? 6 : d-1; } // JS: 0=dim..6=sam → 0=lun..6=dim
+
+// Calcule, pour chaque employé, un binôme de 2 jours de repos consécutifs, en tournant
+// entre deux groupes autour du jour de fermeture (ou, en semaine 7j/7, en priorisant
+// lundi/mardi/mercredi plutôt que jeu-ven-sam-dim).
+function computeRestDayAssignments(tpl, days, team){
+  const closedIdx = [];
+  for(let i=0;i<7;i++){ if(tpl[i] && tpl[i].closed) closedIdx.push(i); }
+
+  let pairA = null, pairB = null;
+  if(closedIdx.length === 1){
+    const c = closedIdx[0];
+    pairA = [(c+6)%7, c];       // veille + jour de fermeture
+    pairB = [c, (c+1)%7];       // jour de fermeture + lendemain
+  } else if(closedIdx.length === 0){
+    pairA = [0,1]; // lundi-mardi
+    pairB = [1,2]; // mardi-mercredi
+  }
+  // 2+ jours de fermeture : pas de règle spécifique, on laisse le repos hebdo simple gérer ça.
+
+  const restDays = {};
+  const weekAnchor = Math.floor(days[0].getTime()/86400000);
+  const weekParity = Math.floor(weekAnchor/7) % 2;
+  const eligibleTeam = team.filter(m=>m.postes && m.postes.length);
+  eligibleTeam.forEach((m,idx)=>{
+    if(!pairA){ restDays[m.name] = new Set(); return; }
+    const useA = (idx + weekParity) % 2 === 0;
+    restDays[m.name] = new Set(useA ? pairA : pairB);
+  });
+  return restDays;
+}
+
+function generateWeekShifts(tpl, days, team){
+  const LEGAL_LIMITS = {
+    maxDailyMin: 10*60,   // 10h/jour (Code du travail, limite générale)
+    maxWeeklyMin: 48*60,  // 48h/semaine (limite absolue)
+    minRestMin: 11*60,    // 11h de repos entre deux jours travaillés
+    maxDaysBeforeRest: 6, // repos hebdomadaire obligatoire
+  };
+  const spaceLabel = {cuisine:'Cuisine', salle:'Salle', bar:'Bar'};
+  const eligibleBySpace = {
+    cuisine: team.filter(m=>m.postes.includes('cuisine')),
+    salle:   team.filter(m=>m.postes.includes('salle')),
+    bar:     team.filter(m=>m.postes.includes('bar')),
+  };
+  function minutesOf(hhmm){ const [h,m] = hhmm.split(':').map(Number); return h*60+m; }
+  function durationMin(start,end){ let d = minutesOf(end)-minutesOf(start); if(d<=0) d += 24*60; return d; }
+
+  const weeklyMin = {}; const dailyMin = {}; const daysWorked = {}; const lastEnd = {}; const dayIntervals = {};
+  team.forEach(m=>{ weeklyMin[m.name]=0; dailyMin[m.name]={}; daysWorked[m.name]=new Set(); lastEnd[m.name]=null; dayIntervals[m.name]={}; });
+  const restDays = computeRestDayAssignments(tpl, days, team);
+
+  const newShifts = [];
+  const warnings = [];
+
+  days.forEach(dateObj=>{
+    const dateIso = fmtISODate(dateObj);
+    const wIdx = mondayIndex(dateObj);
+    const dayTpl = tpl[wIdx] || defaultDayTemplate();
+    if(dayTpl.closed) return; // établissement fermé ce jour-là : aucun créneau généré
+    const periodQualified = {}; // suivi : une personne "Ouverture/Fermeture+Caisse" est-elle déjà prévue ce moment-là ?
+
+    TEMPLATE_PERIODS.forEach(([pKey,pLabel])=>{
+      const needsQualif = (pKey==='matin' || pKey==='soir');
+      TEMPLATE_SPACES.forEach(([spKey])=>{
+        const conf = dayTpl[spKey] && dayTpl[spKey][pKey];
+        if(!conf || !conf.count) return;
+        const pool = eligibleBySpace[spKey];
+        if(!pool.length){
+          warnings.push(`${spaceLabel[spKey]} — ${pLabel} le ${dateIso} : personne n'a le poste "${spaceLabel[spKey]}"`);
+          return;
+        }
+        const dur = durationMin(conf.start, conf.end);
+        const startDT = new Date(dateIso+'T'+conf.start+':00');
+        let endDT = new Date(dateIso+'T'+conf.end+':00');
+        if(endDT <= startDT) endDT = new Date(endDT.getTime()+24*3600000);
+
+        const usedThisSlot = new Set(); // empêche d'assigner 2x la même personne sur ce créneau exact
+        for(let i=0;i<conf.count;i++){
+          let candidates = pool.slice();
+          let flagRestDay=false, flagRest=false, flagWeekly=false;
+
+          // --- règles STRICTES : jamais contournées, quitte à laisser le créneau vacant ---
+          candidates = candidates.filter(m=> !usedThisSlot.has(m.name));
+          if(candidates.length===0){
+            warnings.push(`${spaceLabel[spKey]} — ${pLabel} le ${dateIso} : ${conf.count} personne(s) demandée(s) mais seulement ${usedThisSlot.size} disponible(s) au poste "${spaceLabel[spKey]}"`);
+            break;
+          }
+          candidates = candidates.filter(m=>{
+            const ivs = dayIntervals[m.name][dateIso] || [];
+            return !ivs.some(iv => startDT < iv.end && endDT > iv.start); // pas de chevauchement, même sur un autre espace
+          });
+          if(candidates.length===0){
+            warnings.push(`${spaceLabel[spKey]} — ${pLabel} le ${dateIso} : personne de libre à cet horaire (tout le monde est déjà occupé sur ce créneau ailleurs)`);
+            continue;
+          }
+          candidates = candidates.filter(m=> (dailyMin[m.name][dateIso]||0)+dur <= LEGAL_LIMITS.maxDailyMin );
+          if(candidates.length===0){
+            warnings.push(`${spaceLabel[spKey]} — ${pLabel} le ${dateIso} : personne ne peut prendre ce créneau sans dépasser 10h ce jour-là (créneau non pourvu)`);
+            continue;
+          }
+
+          // --- règles souples : priorisées, mais contournées avec alerte si vraiment aucune alternative ---
+          let step = candidates.filter(m=> !restDays[m.name] || !restDays[m.name].has(wIdx) );
+          if(step.length===0) flagRestDay=true; else candidates=step;
+
+          step = candidates.filter(m=> !lastEnd[m.name] || (startDT-lastEnd[m.name]) >= LEGAL_LIMITS.minRestMin*60000 );
+          if(step.length===0) flagRest=true; else candidates=step;
+
+          step = candidates.filter(m=> weeklyMin[m.name]+dur <= LEGAL_LIMITS.maxWeeklyMin );
+          if(step.length===0) flagWeekly=true; else candidates=step;
+
+          step = candidates.filter(m=> daysWorked[m.name].size < LEGAL_LIMITS.maxDaysBeforeRest || daysWorked[m.name].has(dateIso) );
+          if(step.length>0) candidates=step;
+
+          const periodKey = dateIso+'|'+pKey;
+          candidates.sort((a,b)=>{
+            if(needsQualif && !periodQualified[periodKey]){
+              const aQ = (a.postes||[]).includes('ouvfer') ? 0 : 1;
+              const bQ = (b.postes||[]).includes('ouvfer') ? 0 : 1;
+              if(aQ!==bQ) return aQ-bQ;
+            }
+            const targetA = (a.weeklyHours||35)*60, targetB = (b.weeklyHours||35)*60;
+            return (weeklyMin[a.name]/targetA) - (weeklyMin[b.name]/targetB);
+          });
+          const chosen = candidates[0];
+          if(!chosen){
+            warnings.push(`${spaceLabel[spKey]} — ${pLabel} le ${dateIso} : aucune personne disponible dans le respect des limites (repos/heures)`);
+            continue;
+          }
+          usedThisSlot.add(chosen.name);
+          if(needsQualif && (chosen.postes||[]).includes('ouvfer')) periodQualified[periodKey] = true;
+
+          newShifts.push({id:uid('r'), staff:chosen.name, date:dateIso, start:conf.start, end:conf.end, space:spaceLabel[spKey], note:'Généré automatiquement'});
+          weeklyMin[chosen.name] += dur;
+          dailyMin[chosen.name][dateIso] = (dailyMin[chosen.name][dateIso]||0) + dur;
+          daysWorked[chosen.name].add(dateIso);
+          lastEnd[chosen.name] = endDT;
+          (dayIntervals[chosen.name][dateIso] = dayIntervals[chosen.name][dateIso] || []).push({start:startDT, end:endDT});
+
+          if(flagRestDay) warnings.push(`${chosen.name} : travaille sur un jour prévu comme repos consécutif (${dateIso}) — organisation à vérifier`);
+          if(flagRest) warnings.push(`${chosen.name} : moins de 11h de repos avant ce créneau (${dateIso})`);
+          if(flagWeekly) warnings.push(`${chosen.name} : dépasserait 48h sur la semaine`);
+          if(daysWorked[chosen.name].size > LEGAL_LIMITS.maxDaysBeforeRest) warnings.push(`${chosen.name} : travaille les 7 jours de la semaine, aucun repos hebdomadaire`);
+        }
+      });
+      if(needsQualif && !periodQualified[dateIso+'|'+pKey]){
+        const hadAnyShift = newShifts.some(s=>s.date===dateIso);
+        if(hadAnyShift) warnings.push(`${dateIso} — ${pLabel} : personne avec le poste "Ouverture/Fermeture + Caisse" n'est prévu(e), pense à vérifier qui ouvre/ferme et fait la caisse.`);
+      }
+    });
+  });
+
+  team.forEach(m=>{
+    if(m.weeklyHours){
+      const assignedH = weeklyMin[m.name]/60;
+      if(assignedH > m.weeklyHours*1.1){
+        warnings.push(`${m.name} : ${assignedH.toFixed(1)}h planifiées pour un contrat de ${m.weeklyHours}h — vérifier les heures supplémentaires`);
+      } else if(assignedH < m.weeklyHours*0.7 && assignedH>0){
+        warnings.push(`${m.name} : seulement ${assignedH.toFixed(1)}h planifiées pour un contrat de ${m.weeklyHours}h`);
+      }
+    }
+  });
+
+  return {newShifts, warnings};
+}
+async function saveGeneratedShifts(newShifts){
+  const byMonth = {};
+  newShifts.forEach(s=>{
+    const mk = monthKeyOf(s.date);
+    (byMonth[mk] = byMonth[mk] || []).push(s);
+  });
+  for(const mk of Object.keys(byMonth)){
+    const existing = await getData(`log:${RESTAURANT_ID}:planning:${mk}`, true, []);
+    await setData(`log:${RESTAURANT_ID}:planning:${mk}`, existing.concat(byMonth[mk]), true);
+  }
+}
+
+function showToast(msg){
+  state.toast = msg; render();
+  setTimeout(()=>{ state.toast = null; render(); }, msg.includes('⚠️') ? 6000 : 2200);
+}
+
+// ---------- render ----------
+function render(){
+  try{
+    renderInner();
+  }catch(e){
+    console.error('render error', e);
+    document.getElementById('root').innerHTML = `
+      <div class="card" style="padding:24px;margin-top:20px;">
+        <h2 style="margin-top:0;color:#B23B3B;">Erreur d'affichage</h2>
+        <p style="font-size:13px;">Détail technique (à transmettre si le problème persiste) :</p>
+        <pre style="white-space:pre-wrap;font-size:11px;background:var(--sand);padding:10px;border-radius:8px;">${(e && e.stack || e || '').toString().replace(/</g,'&lt;')}</pre>
+        <button class="primary" onclick="location.reload()" style="margin-top:10px;">Réessayer</button>
+      </div>`;
+  }
+}
+function renderInner(){
+  const root = document.getElementById('root');
+  if(!state.loaded){ root.innerHTML = `<div class="loading">Chargement…</div>`; return; }
+  root.innerHTML = `
+    ${Header()}
+    <main>${MainContent()}</main>
+    ${state.sheet ? Sheet() : ''}
+    ${state.toast ? `<div class="toast">${state.toast}</div>` : ''}
+  `;
+  attachHandlers();
+  syncBodyScrollLock();
+}
+/* ---------- verrouillage du défilement de fond pendant qu'une fenêtre (sheet) est ouverte ----------
+   Sans ça, un glissement du doigt sur la fenêtre peut faire défiler l'écran EN DESSOUS plutôt que
+   la fenêtre elle-même — la technique position:fixed est celle qui fonctionne de façon fiable sur
+   iOS Safari (un simple overflow:hidden sur body ne suffit pas toujours). */
+function syncBodyScrollLock(){
+  if(state.sheet){
+    if(!document.body.dataset.scrollLocked){
+      const y = window.scrollY || window.pageYOffset || 0;
+      document.body.dataset.scrollLocked = String(y);
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${y}px`;
+      document.body.style.width = '100%';
+    }
+  } else if(document.body.dataset.scrollLocked){
+    const y = parseInt(document.body.dataset.scrollLocked, 10) || 0;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    delete document.body.dataset.scrollLocked;
+    window.scrollTo(0, y);
+  }
+}
+
+function Header(){
+  return `
+  <header class="topbar">
+    <div class="topbar-row">
+      <a class="brand" href="index.html">Planning d'équipe<small>${escapeHtml(RESTAURANT_NAME||'')}</small></a>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <a class="staff-chip" href="index.html" style="padding:9px 12px;border:1px solid rgba(255,255,255,.18);gap:6px;text-decoration:none;" title="Retour à l'accueil">${icon('chevronL',15)}<span style="font-size:12.5px;font-weight:700;">Retour</span></a>
+        <button class="staff-chip" data-action="switch-person" title="Changer de personne">${icon('user',15)}</button>
+        <button class="staff-chip" data-action="logout" title="Verrouiller">${icon('lock',15)}</button>
+      </div>
+    </div>
+    <div class="page-nav-wrap">
+      <select class="page-nav" id="page-nav-select">
+        <option value="check-ta-cuisine.html">Check ta cuisine</option>
+        <option value="check-ta-salle.html">Check ta salle</option>
+        <option value="check-ton-bar.html">Check ton bar</option>
+        <option value="planning.html" selected>Planning d'équipe</option>
+        <option value="reservation.html">Réservations</option>
+        <option value="index.html">← Accueil de la suite</option>
+      </select>
+    </div>
+  </header>`;
+}
+
+function weekLabel(){
+  const days = weekDays(state.weekStart);
+  const first = days[0], last = days[6];
+  const fmt = (d)=>d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+  return `${fmt(first)} – ${fmt(last)} ${last.getFullYear()}`;
+}
+
+function MainContent(){
+  const days = weekDays(state.weekStart);
+  const dayIsos = days.map(fmtISODate);
+  const filtered = state.shifts.filter(s => state.staffFilter==='all' || s.staff===state.staffFilter);
+  const weekShiftsForTotals = filtered.filter(s=>dayIsos.includes(s.date));
+  const weekTotals = {};
+  weekShiftsForTotals.forEach(s=>{
+    if(!s.start || !s.end) return;
+    const [sh,sm] = s.start.split(':').map(Number);
+    const [eh,em] = s.end.split(':').map(Number);
+    let mins = (eh*60+em) - (sh*60+sm);
+    if(mins<0) mins += 24*60;
+    weekTotals[s.staff] = (weekTotals[s.staff]||0) + mins;
+  });
+  const weekTotalsSorted = Object.entries(weekTotals).sort((a,b)=>b[1]-a[1]);
+
+  return `
+  <section class="card">
+    <div class="card-head">
+      <h2>Filtrer par personne</h2>
+      <a class="link-btn" href="index.html" style="text-decoration:none;">Gérer l'équipe</a>
+    </div>
+    <select id="staff-filter">
+      <option value="all" ${state.staffFilter==='all'?'selected':''}>Toute l'équipe</option>
+      ${state.staffList.map(n=>`<option value="${escapeHtml(n)}" ${state.staffFilter===n?'selected':''}>${escapeHtml(n)}</option>`).join('')}
+    </select>
+    ${state.staffFilter!=='all' ? `
+    <button class="secondary" data-action="export-ics" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;">
+      ${icon('download',18)} Exporter le planning de ${escapeHtml(state.staffFilter)} (.ics)
+    </button>
+    <p style="font-size:11.5px;color:var(--ink-soft);margin:8px 0 0;">Fichier à importer une fois dans Google Agenda (Paramètres → Importer et exporter).</p>
+    ` : ''}
+  </section>
+
+  <button class="primary" data-action="open-template" style="margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;">
+    🪄 Générer un planning type pour cette semaine
+  </button>
+  <button class="m-btn" data-action="duplicate-week" style="width:100%;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;">
+    ${icon('layers',16)} Dupliquer cette semaine vers la suivante
+  </button>
+
+  <div class="week-nav">
+    <button class="m-btn" data-action="week-prev">${icon('chevronL',15)} Précédente</button>
+    <div class="m-label" id="weekJumpLabel" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-align:center;flex:1;padding:0 6px;font-size:13px;" title="Toucher pour aller à une date précise">${weekLabel()}</div>
+    <button class="m-btn" data-action="week-next">Suivante ${icon('chevronR',15)}</button>
+  </div>
+  <input type="date" id="weekJumpInput" value="${fmtISODate(state.weekStart)}" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;">
+  ${(()=>{
+    const st = weekPublishStatus(fmtISODate(state.weekStart));
+    if(!st.published) return `<div style="background:#FBE7E1;border:1.5px solid #B23B3B;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+      <span style="font-size:13px;font-weight:700;color:#B23B3B;">🔴 Cette semaine n'est pas publiée</span>
+      <button class="primary" data-action="publish-week" style="margin:0;">📤 Publier</button>
+    </div>`;
+    if(!st.upToDate) return `<div style="background:#FBE7E1;border:1.5px solid #B23B3B;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+      <span style="font-size:13px;font-weight:700;color:#B23B3B;">🔴 Modifications non publiées</span>
+      <button class="primary" data-action="publish-week" style="margin:0;">📤 Republier</button>
+    </div>`;
+    return `<div style="background:var(--tint);border:1px solid var(--sea-deep);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:var(--sea-deep);">✅ Publié le ${new Date(st.publishedAt).toLocaleDateString('fr-FR')} par ${escapeHtml(st.publishedBy)} — à jour</div>`;
+  })()}
+  ${state.clipboard ? `<div style="background:#FFF3D6;border:1px solid #C99A2E;border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+    <span>📋 En mémoire : <strong>${escapeHtml(state.clipboard.staff)}</strong> ${state.clipboard.start}–${state.clipboard.end} — touche "Coller" sur n'importe quel jour</span>
+    <button class="m-btn" data-action="clear-clipboard" style="padding:4px 10px;font-size:11px;">Vider</button>
+  </div>` : ''}
+  ${weekTotalsSorted.length ? `
+  <div class="card" style="padding:14px 16px;margin-bottom:14px;">
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:var(--muted,#8a8478);margin-bottom:8px;">Heures prévues cette semaine</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      ${weekTotalsSorted.map(([name,mins])=>`
+        <span style="display:inline-flex;align-items:center;gap:5px;background:var(--sand);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:600;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${staffColor(name)};"></span>
+          ${escapeHtml(name)} · ${Math.floor(mins/60)}h${String(mins%60).padStart(2,'0')}
+        </span>`).join('')}
+    </div>
+  </div>` : ''}
+
+  <section class="card">
+    ${days.map(d=>{
+      const iso = fmtISODate(d);
+      const dayShifts = filtered.filter(s=>s.date===iso).sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+      const groups = {Cuisine:[], Salle:[], Bar:[], Autre:[]};
+      dayShifts.forEach(s=>{ (groups[s.space] || groups.Autre).push(s); });
+      const order = [['Cuisine','sg-cuisine'],['Salle','sg-salle'],['Bar','sg-bar'],['Autre','sg-autre']];
+      return `
+      <div class="day-block">
+        <div class="day-head">
+          <div class="day-title">${d.toLocaleDateString('fr-FR',{weekday:'long', day:'2-digit', month:'2-digit'})}</div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            ${state.clipboard ? `<button class="link-btn" data-action="paste-shift" data-date="${iso}" title="Coller ${escapeHtml(state.clipboard.staff)} ${state.clipboard.start}–${state.clipboard.end}">${icon('paste',14)} Coller</button>` : ''}
+            <button class="link-btn" data-action="add-shift" data-date="${iso}">+ Ajouter</button>
+          </div>
+        </div>
+        ${dayShifts.length ? order.map(([spaceName, cls])=>{
+          const list = groups[spaceName];
+          if(!list.length) return '';
+          const byPerson = [];
+          list.forEach(s=>{
+            let entry = byPerson.find(e=>e.staff===s.staff);
+            if(!entry){ entry = {staff:s.staff, shifts:[]}; byPerson.push(entry); }
+            entry.shifts.push(s);
+          });
+          return `
+          <div class="space-group ${cls}">
+            <div class="space-group-label">${spaceName} · ${list.length}</div>
+            ${byPerson.map(entry=>{
+              const incident = state.incidents.find(inc=> inc.employeeName===entry.staff && inc.date<=iso && (inc.endDate||inc.date)>=iso);
+              const incidentTag = incident ? `<div style="margin-top:4px;font-size:11px;font-weight:800;color:var(--wine-dark,#8B3A3A);" title="${escapeHtml(incident.details||'')}">⚠️ Renvoyé — ${escapeHtml(incident.reasonCategory)} (${incident.date===iso?'depuis '+(incident.time||'--:--'):'mise à pied en cours'} — justifié, signé)</div>` : '';
+              const absence = state.absences.find(a=> a.employeeName===entry.staff && a.startDate<=iso && a.endDate>=iso);
+              const absenceTag = absence ? `<div style="margin-top:4px;font-size:11px;font-weight:800;color:var(--sea-deep);">🤒 ${escapeHtml(absence.category)} (justifiée)</div>` : '';
+              return `
+              <div class="shift-row" style="align-items:flex-start;flex-direction:column;gap:0;">
+                <div class="shift-name" style="margin-bottom:4px;display:flex;align-items:center;gap:6px;">
+                  <span style="width:9px;height:9px;border-radius:50%;background:${staffColor(entry.staff)};flex-shrink:0;"></span>
+                  ${escapeHtml(entry.staff)}
+                </div>
+                ${entry.shifts.map(s=>`
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:4px 0;border-top:1px dashed var(--line);">
+                    <div style="font-size:13px;">${s.start||'--:--'} – ${s.end||'--:--'}${s.note?` · <span class="sub">${escapeHtml(s.note)}</span>`:''}</div>
+                    <div style="display:flex;gap:4px;flex-shrink:0;">
+                      <button class="icon-btn" data-action="copy-shift" data-id="${s.id}" title="Copier ce créneau">${icon('copy',14)}</button>
+                      <button class="icon-btn" data-action="duplicate-shift-days" data-id="${s.id}" title="Dupliquer sur d'autres jours">${icon('layers',14)}</button>
+                      <button class="icon-btn" data-action="gcal-add" data-id="${s.id}" title="Ajouter à Google Agenda">${icon('calendar',14)}</button>
+                      <button class="icon-btn" data-action="edit-shift" data-id="${s.id}" title="Modifier">${icon('plus',14)}</button>
+                      <button class="icon-btn" data-action="delete-shift" data-id="${s.id}" title="Supprimer">${icon('close',14)}</button>
+                    </div>
+                  </div>`).join('')}
+                ${incidentTag}
+                ${absenceTag}
+              </div>`;
+            }).join('')}
+          </div>`;
+        }).join('') : `<div class="empty">Aucun créneau</div>`}
+        ${(()=>{
+          const workingNames = new Set(state.shifts.filter(s=>s.date===iso).map(s=>s.staff));
+          const restCandidates = (state.teamFull||[]).filter(m=> m.postes && m.postes.length && (state.staffFilter==='all' || m.name===state.staffFilter));
+          const restNames = restCandidates.filter(m=>!workingNames.has(m.name)).map(m=>m.name);
+          if(!restNames.length) return '';
+          return `
+          <div class="rest-group">
+            <div class="rest-label">Repos <span style="font-weight:400;font-size:11px;color:var(--muted,#8a8478);">(touche un nom pour lui ajouter un créneau)</span></div>
+            ${restNames.map(n=>`<div class="rest-name-row" data-action="add-shift-for" data-date="${iso}" data-staff="${escapeHtml(n)}" style="cursor:pointer;">${escapeHtml(n)}<span class="rest-tag">Repos</span></div>`).join('')}
+          </div>`;
+        })()}
+      </div>`;
+    }).join('')}
+  </section>
+  `;
+}
+
+function Sheet(){
+  return `<div class="sheet-backdrop" data-action="close-sheet">
+    <div class="sheet" data-stop="1">
+      <div class="sheet-handle" data-action="close-sheet" style="cursor:pointer;"></div>
+      ${SheetContent()}
+    </div>
+  </div>`;
+}
+function SheetContent(){
+  const s = state.sheet;
+  if(s.type==='shift-form') return ShiftForm(s);
+  if(s.type==='template') return TemplateForm();
+  if(s.type==='duplicate-days') return DuplicateDaysForm(s);
+  return '';
+}
+function DuplicateDaysForm(s){
+  const shift = state.shifts.find(x=>x.id===s.shiftId);
+  if(!shift) return '';
+  const days = weekDays(state.weekStart);
+  return `
+  <h3 class="sheet-title">Dupliquer ce créneau</h3>
+  <p class="muted" style="margin-top:-4px;">${escapeHtml(shift.staff)} · ${shift.start}–${shift.end}${shift.space?' · '+escapeHtml(shift.space):''}</p>
+  <p style="font-size:13px;margin-bottom:10px;">Sur quels autres jours de cette semaine appliquer le même créneau ?</p>
+  <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:16px;">
+    ${days.map(d=>{
+      const iso = fmtISODate(d);
+      const isSource = iso===shift.date;
+      return `<label style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px dashed var(--line);${isSource?'opacity:.4;':''}">
+        <input type="checkbox" class="dup-day-check" value="${iso}" style="width:17px;flex-shrink:0;" ${isSource?'disabled':''}>
+        ${d.toLocaleDateString('fr-FR',{weekday:'long', day:'2-digit', month:'2-digit'})}${isSource?' (jour d\'origine)':''}
+      </label>`;
+    }).join('')}
+  </div>
+  <button class="primary" data-action="duplicate-days-confirm">Dupliquer</button>
+  `;
+}
+
+function captureCurrentTemplateDay(){
+  const closedEl = document.getElementById('tpl-closed');
+  if(!closedEl) return;
+  const dayIdx = state.templateDay || 0;
+  const dayTpl = {closed: closedEl.checked};
+  TEMPLATE_SPACES.forEach(([spKey])=>{
+    dayTpl[spKey] = {};
+    TEMPLATE_PERIODS.forEach(([pKey])=>{
+      const startEl = document.querySelector(`.tpl-start[data-space="${spKey}"][data-period="${pKey}"]`);
+      const endEl = document.querySelector(`.tpl-end[data-space="${spKey}"][data-period="${pKey}"]`);
+      const countEl = document.querySelector(`.tpl-count[data-space="${spKey}"][data-period="${pKey}"]`);
+      dayTpl[spKey][pKey] = {
+        start: startEl ? startEl.value : '09:00',
+        end: endEl ? endEl.value : '17:00',
+        count: countEl ? Math.max(0, parseInt(countEl.value||'0',10)) : 0,
+      };
+    });
+  });
+  state.template[dayIdx] = dayTpl;
+}
+
+function TemplateForm(){
+  if(!state.template) state.template = defaultTemplate();
+  const t = state.template;
+  const dayIdx = state.templateDay || 0;
+  const dayTpl = t[dayIdx] || defaultDayTemplate();
+
+  const dayTabs = WEEKDAY_SHORT.map((label,i)=>`
+    <button type="button" class="tpl-day-tab ${i===dayIdx?'active':''} ${t[i] && t[i].closed?'closed':''}" data-action="tpl-day" data-day="${i}">${label}</button>
+  `).join('');
+
+  let rows = '';
+  TEMPLATE_SPACES.forEach(([spKey, spLabel])=>{
+    rows += `<div style="font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--sea);margin:14px 0 6px;">${spLabel}</div>`;
+    TEMPLATE_PERIODS.forEach(([pKey, pLabel])=>{
+      const conf = (dayTpl[spKey] && dayTpl[spKey][pKey]) || {start:'09:00', end:'17:00', count:1};
+      rows += `
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
+        <span style="flex:1;font-size:11.5px;color:var(--ink-soft);">${pLabel}</span>
+        <input type="time" class="tpl-start" data-space="${spKey}" data-period="${pKey}" value="${conf.start}" style="width:92px;padding:8px;">
+        <input type="time" class="tpl-end" data-space="${spKey}" data-period="${pKey}" value="${conf.end}" style="width:92px;padding:8px;">
+        <input type="number" min="0" class="tpl-count" data-space="${spKey}" data-period="${pKey}" value="${conf.count}" style="width:50px;padding:8px;">
+      </div>`;
+    });
+  });
+
+  return `
+  <h3 class="sheet-title">Planning type de la semaine</h3>
+  <p style="font-size:12.5px;color:var(--ink-soft);margin:-8px 0 12px;">Règle chaque jour indépendamment : jours de fermeture et horaires propres à chaque jour. L'équipe disponible (selon son poste de travail) sera répartie en priorisant ceux en dessous de leurs heures de contrat, avec alertes si les limites légales générales (10h/jour, 48h/semaine, 11h de repos, repos hebdomadaire) ne sont pas respectées. L'équipe est aussi répartie en deux groupes qui tournent sur <strong>2 jours de repos consécutifs</strong> : autour du jour de fermeture s'il y en a un, sinon en priorité sur lundi-mardi ou mardi-mercredi (jamais jeudi-dimanche). Le matin et le soir, une personne ayant le poste <strong>"Ouverture/Fermeture + Caisse"</strong> est priorisée ; sinon une alerte te le signale.</p>
+  <p style="font-size:11px;color:var(--alert);margin:0 0 14px;">⚠️ Garde-fous généraux uniquement — ne remplace pas une vérification avec un expert social CHR (coupures, majorations, temps partiel...).</p>
+
+  <div class="tpl-day-tabs">${dayTabs}</div>
+
+  <label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin:14px 0;padding:10px 12px;background:var(--sand-dark);border-radius:10px;">
+    <input type="checkbox" id="tpl-closed" ${dayTpl.closed?'checked':''}> Fermé le ${WEEKDAY_LABELS[dayIdx].toLowerCase()} — aucun créneau ne sera généré ce jour-là
+  </label>
+
+  <div id="tpl-day-grid" style="${dayTpl.closed?'display:none;':''}">
+    <div style="display:flex;gap:6px;font-size:10.5px;font-weight:700;color:var(--ink-soft);margin-bottom:4px;">
+      <span style="flex:1;"></span><span style="width:92px;">Début</span><span style="width:92px;">Fin</span><span style="width:50px;">Nb</span>
+    </div>
+    ${rows}
+  </div>
+
+  <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin:16px 0;">
+    <input type="checkbox" id="tpl-replace"> Remplacer les créneaux déjà existants cette semaine
+  </label>
+  <button class="primary" data-action="generate-template" style="margin-bottom:8px;">🪄 Générer le planning de la semaine</button>
+  <button class="secondary" data-action="close-sheet">Fermer</button>
+  `;
+}
+
+function ShiftForm(s){
+  const editing = !!s.id;
+  const existing = editing ? state.shifts.find(x=>x.id===s.id) : null;
+  const preselectedStaff = existing ? existing.staff : (s.staff || (state.staffList[0]||''));
+  let suggestedSpace = existing ? existing.space : '';
+  if(!existing && preselectedStaff){
+    const member = state.teamFull.find(m=>m.name===preselectedStaff);
+    if(member){
+      const order = [['cuisine','Cuisine'],['salle','Salle'],['bar','Bar']];
+      const match = order.find(([poste])=>member.postes.includes(poste));
+      if(match) suggestedSpace = match[1];
+    }
+  }
+  return `
+  <h3 class="sheet-title">${editing ? 'Modifier le créneau' : 'Ajouter un créneau'}</h3>
+  <div class="field">
+    <label class="field-label">Personne</label>
+    <select id="shift-staff">
+      ${state.staffList.map(n=>`<option value="${escapeHtml(n)}" ${preselectedStaff===n?'selected':''}>${escapeHtml(n)}</option>`).join('')}
+    </select>
+    ${!state.staffList.length ? `<p style="font-size:12px;color:var(--ink-soft);margin-top:6px;">Aucune personne enregistrée — ajoute-la d'abord via "Gérer l'équipe".</p>` : ''}
+  </div>
+  <div class="field"><label class="field-label">Date</label><input id="shift-date" type="date" value="${existing?existing.date:s.date}"></div>
+  <div class="grid2">
+    <div class="field"><label class="field-label">Début</label><input id="shift-start" type="time" value="${existing?existing.start:'09:00'}"></div>
+    <div class="field"><label class="field-label">Fin</label><input id="shift-end" type="time" value="${existing?existing.end:'17:00'}"></div>
+  </div>
+  <div class="field">
+    <label class="field-label">Espace <span style="font-weight:400;text-transform:none;">(suggéré selon les accès de la personne)</span></label>
+    <select id="shift-space">
+      <option value="" ${!suggestedSpace?'selected':''}>—</option>
+      <option value="Cuisine" ${suggestedSpace==='Cuisine'?'selected':''}>Cuisine</option>
+      <option value="Salle" ${suggestedSpace==='Salle'?'selected':''}>Salle</option>
+      <option value="Bar" ${suggestedSpace==='Bar'?'selected':''}>Bar</option>
+    </select>
+  </div>
+  <div class="field"><label class="field-label">Note (optionnel)</label><input id="shift-note" value="${escapeHtml(existing?existing.note||'':'')}" placeholder="ex : formation, remplacement…"></div>
+  <button class="primary" data-action="save-shift" data-id="${editing?s.id:''}">${editing?'Enregistrer':'Ajouter le créneau'}</button>
+  `;
+}
+
+// ---------- events ----------
+function attachHandlers(){
+  document.querySelectorAll('[data-action]').forEach(el=>el.addEventListener('click', onAction));
+  const backdrop = document.querySelector('.sheet-backdrop');
+  if(backdrop){ backdrop.querySelector('[data-stop]').addEventListener('click', e=>e.stopPropagation()); }
+  const filterSel = document.getElementById('staff-filter');
+  if(filterSel){ filterSel.addEventListener('change', ()=>{ state.staffFilter = filterSel.value; render(); }); }
+  const nav = document.getElementById('page-nav-select');
+  if(nav){ nav.addEventListener('change', ()=>{ if(nav.value) window.location.href = nav.value; }); }
+  const weekJumpLabel = document.getElementById('weekJumpLabel');
+  const weekJumpInput = document.getElementById('weekJumpInput');
+  if(weekJumpLabel && weekJumpInput){
+    weekJumpLabel.addEventListener('click', ()=>{
+      if(weekJumpInput.showPicker){ weekJumpInput.showPicker(); } else { weekJumpInput.click(); weekJumpInput.focus(); }
+    });
+    weekJumpInput.addEventListener('change', async ()=>{
+      if(!weekJumpInput.value) return;
+      state.weekStart = startOfWeek(new Date(weekJumpInput.value+'T00:00:00'));
+      await loadShiftsForWeek(); render();
+    });
+  }
+  const staffSel = document.getElementById('shift-staff');
+  const spaceSel = document.getElementById('shift-space');
+  if(staffSel && spaceSel){
+    staffSel.addEventListener('change', ()=>{
+      const member = state.teamFull.find(m=>m.name===staffSel.value);
+      if(!member) return;
+      const order = [['cuisine','Cuisine'],['salle','Salle'],['bar','Bar']];
+      const match = order.find(([poste])=>member.postes.includes(poste));
+      if(match) spaceSel.value = match[1];
+    });
+  }
+  const closedEl = document.getElementById('tpl-closed');
+  const gridEl = document.getElementById('tpl-day-grid');
+  if(closedEl && gridEl){
+    closedEl.addEventListener('change', ()=>{ gridEl.style.display = closedEl.checked ? 'none' : ''; });
+  }
+}
+
+async function onAction(e){
+  const el = e.currentTarget;
+  const action = el.dataset.action;
+
+  if(action==='copy-shift'){
+    const s = state.shifts.find(x=>x.id===el.dataset.id);
+    if(!s) return;
+    state.clipboard = {staff:s.staff, start:s.start, end:s.end, space:s.space, note:s.note||''};
+    try{ localStorage.setItem('ctr_shiftClipboard', JSON.stringify(state.clipboard)); }catch(e){}
+    render();
+    showToast(`Créneau de ${s.staff} copié — touche "Coller" sur un jour ✓`);
+    return;
+  }
+  if(action==='clear-clipboard'){
+    state.clipboard = null;
+    try{ localStorage.removeItem('ctr_shiftClipboard'); }catch(e){}
+    render(); return;
+  }
+  if(action==='paste-shift'){
+    const date = el.dataset.date;
+    if(!state.clipboard) return;
+    const mk = monthKeyOf(date);
+    const monthShifts = await getData(`log:${RESTAURANT_ID}:planning:${mk}`, true, []);
+    monthShifts.push({id:uid(), staff:state.clipboard.staff, date, start:state.clipboard.start, end:state.clipboard.end, space:state.clipboard.space, note:state.clipboard.note});
+    const saved = await setData(`log:${RESTAURANT_ID}:planning:${mk}`, monthShifts, true);
+    if(!saved){ showToast('⚠️ '+(lastStorageError || 'Échec de sauvegarde')); return; }
+    await loadShiftsForWeek(); render();
+    showToast('Créneau collé ✓');
+    return;
+  }
+  if(action==='duplicate-shift-days'){
+    const s = state.shifts.find(x=>x.id===el.dataset.id);
+    if(!s) return;
+    state.sheet = {type:'duplicate-days', shiftId: s.id};
+    render(); return;
+  }
+  if(action==='duplicate-days-confirm'){
+    const s = state.shifts.find(x=>x.id===state.sheet.shiftId);
+    if(!s){ state.sheet=null; render(); return; }
+    const checked = Array.from(document.querySelectorAll('.dup-day-check:checked')).map(c=>c.value);
+    if(!checked.length){ showToast('Choisis au moins un jour.'); return; }
+    const byMonth = {};
+    checked.forEach(date=>{ (byMonth[monthKeyOf(date)] = byMonth[monthKeyOf(date)] || []).push(date); });
+    for(const mk of Object.keys(byMonth)){
+      const monthShifts = await getData(`log:${RESTAURANT_ID}:planning:${mk}`, true, []);
+      byMonth[mk].forEach(date=>{
+        monthShifts.push({id:uid(), staff:s.staff, date, start:s.start, end:s.end, space:s.space, note:s.note||''});
+      });
+      const saved = await setData(`log:${RESTAURANT_ID}:planning:${mk}`, monthShifts, true);
+      if(!saved){ showToast('⚠️ '+(lastStorageError || 'Échec de sauvegarde')); return; }
+    }
+    await loadShiftsForWeek();
+    state.sheet = null; render();
+    showToast(`Créneau dupliqué sur ${checked.length} jour${checked.length>1?'s':''} ✓`);
+    return;
+  }
+  if(action==='duplicate-week'){
+    const days = weekDays(state.weekStart);
+    const nextWeekDays = days.map(d=>{ const nd = new Date(d); nd.setDate(nd.getDate()+7); return nd; });
+    const sourceIsos = days.map(fmtISODate);
+    const targetIsos = nextWeekDays.map(fmtISODate);
+    const shiftsToCopy = state.shifts.filter(s=>sourceIsos.includes(s.date));
+    if(!shiftsToCopy.length){ showToast('Aucun créneau à dupliquer cette semaine.'); return; }
+    if(!confirm(`Dupliquer les ${shiftsToCopy.length} créneau(x) de cette semaine vers la semaine suivante ?`)) return;
+    const byMonth = {};
+    shiftsToCopy.forEach(s=>{
+      const idx = sourceIsos.indexOf(s.date);
+      const targetDate = targetIsos[idx];
+      const mk = monthKeyOf(targetDate);
+      (byMonth[mk] = byMonth[mk] || []).push({id:uid(), staff:s.staff, date:targetDate, start:s.start, end:s.end, space:s.space, note:s.note||''});
+    });
+    for(const mk of Object.keys(byMonth)){
+      const monthShifts = await getData(`log:${RESTAURANT_ID}:planning:${mk}`, true, []);
+      const saved = await setData(`log:${RESTAURANT_ID}:planning:${mk}`, [...monthShifts, ...byMonth[mk]], true);
+      if(!saved){ showToast('⚠️ '+(lastStorageError || 'Échec de sauvegarde')); return; }
+    }
+    showToast(`${shiftsToCopy.length} créneau(x) dupliqué(s) sur la semaine suivante ✓`);
+    return;
+  }
+
+  if(action==='logout'){ logout(); return; }
+  if(action==='switch-person'){ switchPerson(); return; }
+  if(action==='close-sheet'){ state.sheet = null; render(); return; }
+
+  if(action==='week-prev'){
+    const d = new Date(state.weekStart); d.setDate(d.getDate()-7); state.weekStart = d;
+    await loadShiftsForWeek(); render(); return;
+  }
+  if(action==='week-next'){
+    const d = new Date(state.weekStart); d.setDate(d.getDate()+7); state.weekStart = d;
+    await loadShiftsForWeek(); render(); return;
+  }
+  if(action==='publish-week'){
+    const n = await publishCurrentWeek();
+    showToast(n ? `Semaine publiée — ${n} employé${n>1?'s':''} notifié${n>1?'s':''} ✓` : 'Semaine publiée ✓');
+    render(); return;
+  }
+
+  if(action==='open-template'){
+    state.template = (await getData(`config:${RESTAURANT_ID}:planning:template`, true, null)) || defaultTemplate();
+    state.templateDay = 0;
+    state.sheet = {type:'template'};
+    render(); return;
+  }
+  if(action==='tpl-day'){
+    captureCurrentTemplateDay();
+    state.templateDay = parseInt(el.dataset.day, 10);
+    render(); return;
+  }
+  if(action==='generate-template'){
+    captureCurrentTemplateDay();
+    const tpl = state.template;
+    await setData(`config:${RESTAURANT_ID}:planning:template`, tpl, true);
+
+    const days = weekDays(state.weekStart);
+    const replace = document.getElementById('tpl-replace').checked;
+    if(replace){
+      const dayIsos = days.map(d=>fmtISODate(d));
+      const months = [...new Set(dayIsos.map(monthKeyOf))];
+      for(const mk of months){
+        const arr = await getData(`log:${RESTAURANT_ID}:planning:${mk}`, true, []);
+        await setData(`log:${RESTAURANT_ID}:planning:${mk}`, arr.filter(s=>!dayIsos.includes(s.date)), true);
+      }
+    }
+    const {newShifts, warnings} = generateWeekShifts(tpl, days, state.teamFull);
+    await saveGeneratedShifts(newShifts);
+    await loadShiftsForWeek();
+    state.sheet = null; render();
+    showToast(`${newShifts.length} créneau(x) généré(s)${warnings.length ? ' — voir les alertes' : ' ✓'}`);
+    if(warnings.length) setTimeout(()=>alert('⚠️ À vérifier :\n\n'+warnings.join('\n')), 300);
+    return;
+  }
+  if(action==='add-shift'){ state.sheet = {type:'shift-form', date: el.dataset.date}; render(); return; }
+  if(action==='add-shift-for'){ state.sheet = {type:'shift-form', date: el.dataset.date, staff: el.dataset.staff}; render(); return; }
+  if(action==='edit-shift'){ state.sheet = {type:'shift-form', id: el.dataset.id, date: null}; render(); return; }
+  if(action==='save-shift'){
+    const id = el.dataset.id;
+    const staff = document.getElementById('shift-staff').value;
+    const date = document.getElementById('shift-date').value;
+    const start = document.getElementById('shift-start').value;
+    const end = document.getElementById('shift-end').value;
+    const space = document.getElementById('shift-space').value;
+    const note = document.getElementById('shift-note').value.trim();
+    if(!staff){ showToast("Ajoute au moins une personne dans Gérer l'équipe"); return; }
+    if(!date){ showToast('Choisis une date'); return; }
+    const mk = monthKeyOf(date);
+    const monthShifts = await getData(`log:${RESTAURANT_ID}:planning:${mk}`, true, []);
+    let entry;
+    if(id){
+      entry = monthShifts.find(x=>x.id===id) || {id};
+      Object.assign(entry, {staff, date, start, end, space, note});
+      const idx = monthShifts.findIndex(x=>x.id===id);
+      if(idx>=0) monthShifts[idx] = entry; else monthShifts.push(entry);
+    } else {
+      entry = {id:uid(), staff, date, start, end, space, note};
+      monthShifts.push(entry);
+    }
+    const saved = await setData(`log:${RESTAURANT_ID}:planning:${mk}`, monthShifts, true);
+    if(!saved){ showToast('⚠️ '+(lastStorageError || 'Échec de sauvegarde')); return; }
+    await loadShiftsForWeek();
+    state.sheet = null; render(); showToast('Créneau enregistré ✓');
+    return;
+  }
+  if(action==='delete-shift'){
+    const id = el.dataset.id;
+    const s = state.shifts.find(x=>x.id===id);
+    if(!s) return;
+    const mk = monthKeyOf(s.date);
+    const monthShifts = await getData(`log:${RESTAURANT_ID}:planning:${mk}`, true, []);
+    const updated = monthShifts.filter(x=>x.id!==id);
+    const saved = await setData(`log:${RESTAURANT_ID}:planning:${mk}`, updated, true);
+    if(!saved){ showToast('⚠️ '+(lastStorageError || 'Échec de sauvegarde')); return; }
+    await loadShiftsForWeek(); render();
+    return;
+  }
+
+  if(action==='gcal-add'){
+    const s = state.shifts.find(x=>x.id===el.dataset.id);
+    if(!s) return;
+    openGoogleCalendarQuickAdd(s);
+    return;
+  }
+  if(action==='export-ics'){
+    await exportICSForStaff(state.staffFilter);
+    return;
+  }
+}
+
+// ---------- Google Agenda ----------
+function toGCalDateTime(date, time){
+  return date.replace(/-/g,'') + 'T' + (time||'09:00').replace(':','') + '00';
+}
+function openGoogleCalendarQuickAdd(s){
+  const title = encodeURIComponent(`Travail — ${RESTAURANT_NAME||''}${s.space?' ('+s.space+')':''}`);
+  const dates = `${toGCalDateTime(s.date, s.start)}/${toGCalDateTime(s.date, s.end)}`;
+  const details = encodeURIComponent(s.note || '');
+  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}`;
+  window.open(url, '_blank');
+}
+
+function icsEscape(s){ return (s||'').replace(/[\\,;]/g, m=>'\\'+m).replace(/\n/g,'\\n'); }
+function toICSDateTime(date, time){
+  return date.replace(/-/g,'') + 'T' + (time||'09:00').replace(':','') + '00';
+}
+async function exportICSForStaff(staffName){
+  if(staffName==='all'){ showToast('Choisis une personne pour exporter son planning'); return; }
+  const now = new Date();
+  const months = [];
+  for(let i=0;i<4;i++){
+    const d = new Date(now.getFullYear(), now.getMonth()+i, 1);
+    months.push(d.getFullYear()+'-'+pad2(d.getMonth()+1));
+  }
+  const arrays = await Promise.all(months.map(m=>getData(`log:${RESTAURANT_ID}:planning:${m}`, true, [])));
+  const shifts = arrays.flat().filter(s=>s.staff===staffName);
+  if(!shifts.length){ showToast('Aucun créneau à venir pour cette personne'); return; }
+  let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//CheckTaCuisine//Planning//FR\r\nCALSCALE:GREGORIAN\r\n';
+  shifts.forEach(s=>{
+    ics += 'BEGIN:VEVENT\r\n';
+    ics += `UID:${s.id}@checktacuisine\r\n`;
+    ics += `DTSTAMP:${toICSDateTime(todayISO(),'00:00')}\r\n`;
+    ics += `DTSTART:${toICSDateTime(s.date, s.start)}\r\n`;
+    ics += `DTEND:${toICSDateTime(s.date, s.end)}\r\n`;
+    ics += `SUMMARY:${icsEscape('Travail — '+(RESTAURANT_NAME||'')+(s.space?' ('+s.space+')':''))}\r\n`;
+    if(s.note) ics += `DESCRIPTION:${icsEscape(s.note)}\r\n`;
+    ics += 'END:VEVENT\r\n';
+  });
+  ics += 'END:VCALENDAR\r\n';
+  const blob = new Blob([ics], {type:'text/calendar;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `planning-${slugify(staffName)}.ics`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Fichier téléchargé ✓');
+}
+
+// ---------- init ----------
+initAuth();
+</script>
+</body>
+</html>

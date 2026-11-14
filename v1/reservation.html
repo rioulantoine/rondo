@@ -1,0 +1,2097 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Réservation — Plan de salle</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#123B3A">
+<script>try{var c=JSON.parse(localStorage.getItem("ctr_theme_cache")||"null");if(c&&c.vars){var r=document.documentElement.style;for(var k in c.vars)r.setProperty(k,c.vars[k]);var m=document.querySelector('meta[name="theme-color"]');if(m&&c.vars["--sea-deep"])m.setAttribute("content",c.vars["--sea-deep"]);}}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#211D19;
+    --ink-soft:#4A433C;
+    --paper:#FAF7F1;
+    --paper-dim:#F0EAE0;
+    --card:#FFFFFF;
+    --line:#DFD6C6;
+    --wine:#7A2E2E;
+    --wine-dark:#5E2222;
+    --wine-tint:#F4E5E1;
+    --gold:#B08D57;
+    --gold-tint:#F3E9D6;
+    --sage:#5C6E45;
+    --sage-dark:#465335;
+    --sage-tint:#E7ECDD;
+    --danger:#A6392F;
+    --radius:14px;
+    --shadow: 0 1px 2px rgba(33,29,25,.05), 0 8px 24px -12px rgba(33,29,25,.18);
+   --brand:#7A2E2E; --brand-dark:#5E2222; --brand-tint:#F4E5E1;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{font-family:'Fraunces',serif;letter-spacing:-0.01em;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  ::selection{background:var(--gold-tint);}
+
+  /* ---------- topbar ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 22px;border-bottom:1px solid var(--line);
+    background:var(--paper);position:sticky;top:0;z-index:50;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;background:var(--brand);
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    font-family:'Fraunces',serif;font-weight:700;font-size:16px;flex:none;
+  }
+  .brand-name{font-family:'Fraunces',serif;font-weight:600;font-size:17px;line-height:1.1;}
+  .brand-sub{font-size:11px;color:var(--ink-soft);letter-spacing:.04em;text-transform:uppercase;}
+  .topnav{display:flex;gap:8px;align-items:center;}
+  .pill-link{
+    font-size:13px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);
+    background:var(--card);color:var(--ink-soft);text-decoration:none;font-weight:500;
+    transition:.15s;
+  }
+  .pill-link.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .pill-link:hover{border-color:var(--ink-soft);}
+
+  main{max-width:1080px;margin:0 auto;padding:28px 20px 80px;}
+
+  /* ---------- generic ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:11px 20px;border-radius:10px;border:1px solid transparent;
+    font-weight:600;font-size:14px;transition:.15s;
+  }
+  .btn-primary{background:var(--brand);color:#fff;}
+  .btn-primary:hover{background:var(--brand-dark);}
+  .btn-primary:disabled{background:#C9BEB4;cursor:not-allowed;}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--ink-soft);}
+  .btn-sage{background:var(--sage);color:#fff;}
+  .btn-sage:hover{background:var(--sage-dark);}
+  .btn-danger{background:transparent;color:var(--danger);border-color:#E4C9C4;}
+  .btn-danger:hover{background:#FBEFED;}
+  .btn-sm{padding:7px 12px;font-size:12.5px;border-radius:8px;}
+  input,select,textarea{
+    font-family:inherit;font-size:14px;padding:10px 12px;border-radius:9px;
+    border:1px solid var(--line);background:#fff;color:var(--ink);width:100%;
+  }
+  input[type="date"],input[type="time"],input[type="month"]{
+    -webkit-appearance:none;appearance:none;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;}
+  label{font-size:12.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;display:block;}
+  .field{margin-bottom:14px;}
+  .row{display:flex;gap:12px;flex-wrap:wrap;}
+  .row>.field{flex:1;min-width:0;}
+  .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--brand);font-weight:700;margin-bottom:6px;}
+  .muted{color:var(--ink-soft);}
+  .badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:600;}
+  .badge-free{background:var(--sage-tint);color:var(--sage-dark);}
+  .badge-taken{background:var(--wine-tint);color:var(--wine-dark);}
+  .badge-neutral{background:var(--paper-dim);color:var(--ink-soft);}
+  .divider{height:1px;background:var(--line);margin:18px 0;}
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+    background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;
+    font-size:13.5px;box-shadow:var(--shadow);z-index:200;opacity:0;pointer-events:none;transition:.25s;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
+
+  /* ---------- stepper ---------- */
+  .steps{display:flex;gap:6px;margin-bottom:22px;}
+  .step-dot{flex:1;height:4px;border-radius:3px;background:var(--line);}
+  .step-dot.done{background:var(--gold);}
+  .step-dot.current{background:var(--brand);}
+
+  .hero{padding:6px 0 22px;}
+  .hero h1{font-size:30px;margin:0 0 6px;}
+  .hero p{margin:0;color:var(--ink-soft);font-size:14.5px;}
+
+  /* ---------- slots grid ---------- */
+  .slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;}
+  .slot-btn{
+    padding:12px 8px;border-radius:10px;border:1px solid var(--line);background:#fff;
+    font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;text-align:center;
+  }
+  .slot-btn .cnt{display:block;font-family:'Inter',sans-serif;font-weight:500;font-size:11px;color:var(--ink-soft);margin-top:3px;}
+  .slot-btn:hover:not(:disabled){border-color:var(--brand);}
+  .slot-btn.selected{background:var(--brand);color:#fff;border-color:var(--brand);}
+  .slot-btn.selected .cnt{color:#EFD9D9;}
+  .slot-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+  /* ---------- floor plan canvas ---------- */
+  .zone-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .zone-tab{padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:600;}
+  .zone-tab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .canvas-wrap{
+    position:relative;width:100%;height:calc(100vh - 330px);min-height:380px;border-radius:12px;overflow:hidden;
+    border:1px solid var(--line);
+    background-color:var(--paper-dim);
+    background-image:radial-gradient(circle, #D9CEBD 1px, transparent 1px);
+    background-size:22px 22px;
+    touch-action:pan-y;
+  }
+  .table-tile{
+    position:absolute;transform:translate(-50%,-50%);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    background:#fff;border:2px solid var(--sage);color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;font-weight:600;user-select:none;
+    box-shadow:0 2px 5px rgba(33,29,25,.12);
+  }
+  .table-tile .num{font-size:11px;line-height:1;}
+  .table-tile .seats{font-size:7.5px;font-family:'Inter',sans-serif;font-weight:500;color:var(--ink-soft);margin-top:1px;}
+  .table-tile.taken{border-color:var(--wine);background:var(--wine-tint);}
+  .table-tile.taken .seats{color:var(--wine-dark);}
+  .table-tile.selectable{cursor:pointer;}
+  .table-tile.selectable:hover{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-tint);}
+  .table-tile.picked{border-color:var(--gold);background:var(--gold-tint);box-shadow:0 0 0 3px #E8D2A5;}
+  .table-tile.editing{cursor:grab;}
+  .table-tile.editing:active{cursor:grabbing;}
+  .table-tile.dimmed{opacity:.3;}
+  .table-tile.conflict{border-color:var(--wine);background:var(--wine-tint);box-shadow:0 0 0 3px rgba(122,46,46,.18);}
+  .table-tile.conflict .seats{color:var(--wine-dark);}
+  .table-tile.has-resa{border-color:var(--sage);background:var(--sage-tint);}
+  .table-tile.clickable{cursor:pointer;}
+  .legend{display:flex;gap:16px;font-size:12.5px;color:var(--ink-soft);margin-top:10px;flex-wrap:wrap;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend i{width:12px;height:12px;border-radius:3px;display:inline-block;}
+
+  /* ---------- admin ---------- */
+  .admin-tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--line);}
+  .admin-tab{padding:10px 4px;margin-right:18px;font-weight:600;font-size:14px;color:var(--ink-soft);border-bottom:2px solid transparent;background:none;border-radius:0;}
+  .admin-tab.active{color:var(--brand);border-bottom-color:var(--brand);}
+  .table-list{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .table-list th{text-align:left;padding:8px 10px;color:var(--ink-soft);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid var(--line);}
+  .table-list td{padding:9px 10px;border-bottom:1px solid var(--line);}
+  .table-list tr:last-child td{border-bottom:none;}
+  .icon-btn{background:none;border:none;color:var(--ink-soft);padding:4px 6px;border-radius:6px;font-size:13px;}
+  .icon-btn:hover{background:var(--paper-dim);color:var(--ink);}
+
+  .modal-backdrop{position:fixed;inset:0;background:rgba(33,29,25,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
+  .modal{background:#fff;border-radius:var(--radius);padding:24px;width:100%;max-width:420px;box-shadow:var(--shadow);}
+  .modal h3{margin:0 0 16px;font-size:18px;}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
+
+  .login-wrap{max-width:360px;margin:60px auto;text-align:center;}
+  .login-wrap .brand-mark{margin:0 auto 14px;}
+
+  .settings-block{margin-bottom:26px;}
+  .settings-block h3{font-size:15px;margin:0 0 12px;}
+  .chip-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .chip{display:flex;align-items:center;gap:6px;background:var(--paper-dim);border:1px solid var(--line);border-radius:999px;padding:5px 6px 5px 12px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  .chip button{background:none;border:none;color:var(--ink-soft);width:18px;height:18px;border-radius:50%;font-size:12px;line-height:1;}
+  .chip button:hover{background:var(--brand-tint);color:var(--brand-dark);}
+  .add-inline{display:flex;gap:8px;}
+  .add-inline input{flex:1;}
+
+  .resa-day-nav{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .resa-item{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff;}
+  .resa-item .meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--ink-soft);}
+  .empty-state .display{font-size:19px;color:var(--ink);margin-bottom:6px;}
+
+  .confirm-box{text-align:center;padding:36px 20px;}
+  .confirm-box .check{
+    width:56px;height:56px;border-radius:50%;background:var(--sage-tint);color:var(--sage-dark);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px;
+  }
+  .recap{background:var(--paper-dim);border-radius:10px;padding:16px 18px;text-align:left;margin:20px auto;max-width:340px;font-size:14px;}
+  .recap div{display:flex;justify-content:space-between;padding:5px 0;}
+  .recap div span:first-child{color:var(--ink-soft);}
+
+  @media(max-width:640px){
+    .hero h1{font-size:24px;}
+    main{padding:20px 14px 70px;}
+  }
+</style>
+</head>
+<body>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">R</div>
+    <div>
+      <div class="brand-name" id="brandName">Restaurant</div>
+      <div class="brand-sub">Réservation en ligne</div>
+    </div>
+  </div>
+  <div class="topnav">
+    <a href="index.html" class="pill-link" style="font-size:12px;">← Suite</a>
+    <a href="#/client" class="pill-link" id="navClient">Réserver</a>
+    <a href="#/admin" class="pill-link" id="navAdmin">Espace pro</a>
+  </div>
+</div>
+<main id="root"></main>
+<div style="text-align:center;padding:6px 16px 26px;">
+  <button id="privacyLink" style="background:none;border:none;color:var(--muted,#8a8478);font-size:11.5px;text-decoration:underline;cursor:pointer;">Politique de confidentialité</button>
+</div>
+<div id="privacyModalRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===================== identification du restaurant ===================== */
+// Priorité : ?r=code dans l'URL (lien public client) > session déjà connectée à la suite (accès staff interne)
+// firebaseConfig/db/FS_COLLECTION/encodeKey/slugify/logAppError/slugToAuthEmail/waitForAuthReady
+// et les écouteurs d'erreur globaux viennent de shared.js (chargé juste avant ce script)
+RESTAURANT_ID = new URLSearchParams(location.search).get('r');
+if(RESTAURANT_ID) RESTAURANT_ID = slugify(RESTAURANT_ID);
+if(!RESTAURANT_ID) RESTAURANT_ID = sessionStorage.getItem('checkTaCuisine_restaurantId') || localStorage.getItem('checkTaCuisine_restaurantId') || null;
+
+/* ===================== storage helpers (préfixe propre à ce module) ===================== */
+async function sget(key){
+  return getData(`reservation:${RESTAURANT_ID}:${key}`, true, null);
+}
+async function sset(key, value){
+  return setData(`reservation:${RESTAURANT_ID}:${key}`, value, true);
+}
+function uid(prefix){ return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+/* ===================== email de confirmation ===================== */
+function cancelLinkFor(resaId){
+  return `${location.origin}${location.pathname}?r=${encodeURIComponent(RESTAURANT_ID)}&cancel=${encodeURIComponent(resaId)}`;
+}
+async function sendConfirmationEmail(resa){
+  const c = state.config;
+  if(!c.emailjsServiceId || !c.emailjsTemplateId || !c.emailjsPublicKey) return false;
+  try{
+    await emailjs.send(c.emailjsServiceId, c.emailjsTemplateId, {
+      to_email: resa.email,
+      to_name: resa.firstName + ' ' + resa.lastName,
+      restaurant_name: c.name,
+      resa_date: fmtDateHuman(resa.date),
+      resa_time: resa.slot,
+      resa_party: String(resa.party),
+      cancel_link: cancelLinkFor(resa.id)
+    }, {publicKey: c.emailjsPublicKey});
+    return true;
+  }catch(e){ console.error('email send failed', e); return false; }
+}
+async function sendReservationNotification(resa){
+  const c = state.config;
+  if(!c.notifyEmail || !c.emailjsServiceId || !c.emailjsNotifyTemplateId || !c.emailjsPublicKey) return false;
+  try{
+    await emailjs.send(c.emailjsServiceId, c.emailjsNotifyTemplateId, {
+      to_email: c.notifyEmail,
+      resa_name: resa.firstName + ' ' + resa.lastName,
+      resa_date: fmtDateHuman(resa.date),
+      resa_time: resa.slot,
+      resa_party: String(resa.party),
+      resa_phone: resa.phone,
+      resa_email: resa.email
+    }, {publicKey: c.emailjsPublicKey});
+    return true;
+  }catch(e){ console.error('notification email send failed', e); return false; }
+}
+
+/* ===================== écran d'annulation (lien dans l'email) ===================== */
+async function renderCancelScreen(resaId){
+  const root = document.getElementById('root');
+  const fullList = await sget('reservations') || [];
+  const resa = fullList.find(r=>r.id===resaId);
+  if(!resa){
+    root.innerHTML = `<div class="card" style="padding:24px;max-width:420px;margin:40px auto;text-align:center;"><h2>Réservation introuvable</h2><p class="muted">Ce lien n'est plus valide.</p></div>`;
+    return;
+  }
+  if(resa.status==='annulee'){
+    root.innerHTML = `<div class="card" style="padding:24px;max-width:420px;margin:40px auto;text-align:center;"><h2>Déjà annulée</h2><p class="muted">Cette réservation a déjà été annulée.</p></div>`;
+    return;
+  }
+  root.innerHTML = `
+    <div class="card" style="padding:24px;max-width:420px;margin:40px auto;text-align:center;">
+      <h2 style="margin:0 0 10px;">Annuler cette réservation ?</h2>
+      <div class="recap" style="margin:14px 0;">
+        <div><span>Date</span><span>${fmtDateHuman(resa.date)}</span></div>
+        <div><span>Heure</span><span class="mono">${resa.slot}</span></div>
+        <div><span>Convives</span><span>${resa.party}</span></div>
+        <div><span>Nom</span><span>${escapeHtml(resa.name)}</span></div>
+      </div>
+      <button class="btn btn-danger" id="btnDoCancel" style="width:100%;margin-bottom:8px;">Oui, annuler ma réservation</button>
+      <a class="btn btn-ghost" href="${location.pathname}?r=${encodeURIComponent(RESTAURANT_ID)}" style="width:100%;display:block;box-sizing:border-box;">Ne rien faire</a>
+    </div>`;
+  document.getElementById('btnDoCancel').onclick = async ()=>{
+    resa.status = 'annulee';
+    await sset('reservations', fullList);
+    await syncAvailabilityFromFull(fullList);
+    root.innerHTML = `<div class="card" style="padding:24px;max-width:420px;margin:40px auto;text-align:center;"><h2>Réservation annulée</h2><p class="muted">C'est fait, merci de nous avoir prévenus.</p></div>`;
+  };
+}
+
+/* ===================== default data ===================== */
+function defaultConfig(){
+  return {
+    name: 'Le Comptoir',
+    serviceWindows: [
+      {id: uid('sw'), label:'Déjeuner', start:'12:00', end:'14:00'},
+      {id: uid('sw'), label:'Dîner', start:'19:00', end:'22:00'}
+    ],
+    slotMax: {},      // { 'HH:MM': maxReservations }  — 0 = créneau jamais ouvert
+    closedSlots: {},  // { 'YYYY-MM-DD': ['HH:MM', ...] } — fermetures ponctuelles
+    zones: [{id:'salle', name:'Salle'}, {id:'terrasse', name:'Terrasse'}],
+    // (accès pro protégé par le mot de passe de l'établissement — Firebase Auth, plus de passwordHash local)
+    maxPartySize: 12,
+    reservationDurationMin: 90,
+    emailjsServiceId: '', emailjsTemplateId: '', emailjsPublicKey: '', emailjsNotifyTemplateId: '', notifyEmail: ''
+  };
+}
+function allSlots(config){
+  const set = new Set();
+  (config.serviceWindows||[]).forEach(w=>{
+    let [h,m] = w.start.split(':').map(Number);
+    const [eh,em] = w.end.split(':').map(Number);
+    let cur = h*60+m; const end = eh*60+em;
+    while(cur < end){
+      set.add(String(Math.floor(cur/60)).padStart(2,'0')+':'+String(cur%60).padStart(2,'0'));
+      cur += 15;
+    }
+  });
+  return Array.from(set).sort();
+}
+function manualTimeOptions(){
+  const opts = [];
+  for(let mins=10*60; mins<=23*60+30; mins+=15){
+    opts.push(String(Math.floor(mins/60)).padStart(2,'0')+':'+String(mins%60).padStart(2,'0'));
+  }
+  return opts;
+}
+function defaultTables(){
+  const tables = [];
+  // Salle: 6 columns x 5 rows = 30
+  const seatCycle = [2,2,4,4,4,6];
+  let n = 1;
+  for(let row=0; row<5; row++){
+    for(let col=0; col<6; col++){
+      tables.push({
+        id: uid('t'),
+        number: 'S' + n,
+        zone: 'salle',
+        seats: seatCycle[(row+col) % seatCycle.length],
+        shape: (n % 3 === 0) ? 'circle' : 'square',
+        x: 10 + col * 16,
+        y: 14 + row * 20
+      });
+      n++;
+    }
+  }
+  // Terrasse: 5 columns x 3 rows = 15
+  n = 1;
+  const seatCycleT = [2,4,2,4,6];
+  for(let row=0; row<3; row++){
+    for(let col=0; col<5; col++){
+      tables.push({
+        id: uid('t'),
+        number: 'T' + n,
+        zone: 'terrasse',
+        seats: seatCycleT[(row+col) % seatCycleT.length],
+        shape: (n % 2 === 0) ? 'circle' : 'square',
+        x: 10 + col * 19,
+        y: 18 + row * 30
+      });
+      n++;
+    }
+  }
+  return tables;
+}
+
+/* ===================== state ===================== */
+const state = {
+  config: null,
+  tables: null,
+  reservations: null,
+  route: 'client',
+  adminAuthed: false,
+  // client wizard
+  bookStep: 1,
+  bookDate: todayISO(),
+  bookParty: 2,
+  bookZone: 'all',
+  bookSlot: null,
+  bookTableId: null, // null = auto-assign
+  bookForm: {firstName:'', lastName:'', phone:'', email:'', notes:''},
+  lastConfirmed: null,
+  // admin
+  adminTab: 'plan',
+  adminZone: 'salle',
+  planEditMode: false,
+  dragTableId: null,
+  resaDate: todayISO(),
+  loginPwd: '',
+  loginError: '',
+  showTableModal: false,
+  editingTable: null,
+  planDate: null, // défini au chargement (todayISO)
+  showDayModal: false,
+  dayModalTableId: null,
+  quickAddOpen: false,
+  quickForm: {slot:'', party:2, firstName:'', lastName:'', phone:'', email:'', notes:''},
+  newSlotVal: '',
+  newZoneVal: '',
+  customers: null,
+  customerSearch: '',
+  editingCustomerId: null,
+  showAddCustomer: false
+};
+
+function todayISO(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function fmtDateHuman(iso){
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
+}
+
+/* ===================== init ===================== */
+// la bannière hors-ligne est déjà initialisée automatiquement par shared.js
+
+async function init(){
+  try{
+    await initInner();
+  }catch(e){
+    console.error('init() error', e);
+    document.getElementById('root').innerHTML = `
+      <div class="card" style="padding:24px;margin-top:20px;text-align:left;">
+        <h2 style="margin-top:0;color:var(--wine-dark,#8B3A3A);">Erreur de chargement</h2>
+        <p style="font-size:13px;">La page n'a pas pu se charger correctement. Détail technique (à transmettre si le problème persiste) :</p>
+        <pre style="white-space:pre-wrap;font-size:11px;background:var(--paper-dim);padding:10px;border-radius:8px;">${escapeHtml(String(e && e.stack || e))}</pre>
+        <button class="btn btn-primary" onclick="location.reload()" style="margin-top:10px;">Réessayer</button>
+      </div>`;
+  }
+}
+async function initInner(){
+  await Promise.race([loadThemeForCurrentRestaurant(), new Promise(r => setTimeout(r, 1200))]);   // couleurs du restaurant
+  let cfg = await sget('config');
+  if(!cfg){ cfg = defaultConfig(); await sset('config', cfg); }
+  if(!cfg.serviceWindows){ cfg.serviceWindows = defaultConfig().serviceWindows; cfg.slotMax = cfg.slotMax||{}; cfg.closedSlots = cfg.closedSlots||{}; await sset('config', cfg); }
+  if(!cfg.reservationDurationMin){ cfg.reservationDurationMin = 90; await sset('config', cfg); }
+  let tbls = await sget('tables');
+  if(!tbls){ tbls = defaultTables(); await sset('tables', tbls); }
+  let avail = await sget('availability');
+  if(avail === null || avail === undefined) avail = [];
+  state.config = cfg;
+  state.tables = tbls;
+  state.reservations = avail; // vue allégée par défaut (sans coordonnées) : sécurisé pour un client public
+  state.planDate = todayISO();
+
+  const cancelId = new URLSearchParams(location.search).get('cancel');
+  if(cancelId){ await renderCancelScreen(cancelId); return; }
+
+  // accès direct à l'espace pro pour l'équipe (ouverture interne, pas un lien public "?r=")
+  try{
+    const isPublicLink = !!new URLSearchParams(location.search).get('r');
+    if(!isPublicLink && hasStaffReservationAccess()){
+      // on attend que Firebase Auth ait fini de restaurer la session (même correctif que le
+      // reste de la suite) avant de faire confiance au drapeau sessionStorage : sans ça, les
+      // lectures Firestore protégées peuvent échouer juste après un rechargement de page.
+      await waitForAuthReady();
+      if(firebase.auth().currentUser){
+        state.adminAuthed = true;
+        state.reservations = await sget('reservations') || [];
+        state.customers = await sget('customers') || [];
+        await syncCustomersFromReservations();
+        await syncAvailabilityFromFull(state.reservations); // auto-répare/alimente la vue publique allégée
+        if(!location.hash || location.hash === '#/client') history.replaceState(null, '', '#/admin');
+      }
+    }
+  }catch(e){ console.error('staff access detection error', e); }
+
+  window.addEventListener('hashchange', onHashChange);
+  onHashChange();
+
+  const privacyLink = document.getElementById('privacyLink');
+  if(privacyLink) privacyLink.onclick = ()=>{
+    document.getElementById('privacyModalRoot').innerHTML = renderPrivacyModal();
+    document.getElementById('btnClosePrivacy').onclick = ()=>{ document.getElementById('privacyModalRoot').innerHTML = ''; };
+    document.getElementById('privacyBackdrop').onclick = (e)=>{ if(e.target.id==='privacyBackdrop') document.getElementById('privacyModalRoot').innerHTML = ''; };
+  };
+}
+function resaTableIds(r){
+  // rétrocompatible : les anciennes réservations n'ont qu'un tableId, les nouvelles un tableIds (tableau)
+  if(r.tableIds && r.tableIds.length) return r.tableIds;
+  return r.tableId ? [r.tableId] : [];
+}
+function toAvailabilityEntry(r){
+  return { id:r.id, tableIds:resaTableIds(r), date:r.date, slot:r.slot, party:r.party, status:r.status };
+}
+async function syncAvailabilityFromFull(fullList){
+  const avail = fullList.map(toAvailabilityEntry);
+  await sset('availability', avail);
+  return avail;
+}
+
+/* ===================== fichier client ===================== */
+// Alimenté automatiquement par chaque réservation (en ligne ou saisie par l'équipe), et librement
+// modifiable ensuite. Les réservations prises en ligne (public, non authentifié) ne peuvent pas
+// écrire directement le fichier client (règles Firestore : seul le personnel authentifié le peut) —
+// elles sont donc rattachées automatiquement à la prochaine ouverture de l'espace pro par l'équipe
+// (voir syncCustomersFromReservations, appelée juste après la connexion).
+function normalizePhone(p){ return (p||'').replace(/\D/g,''); }
+function loyaltyProgress(cust){
+  const cfg = state.config.loyalty;
+  if(!cfg || !cfg.enabled || !cfg.visitsRequired) return null;
+  const claimed = cust.loyaltyRedeemed || 0;
+  const visits = cust.reservationCount || 0;
+  const progress = visits - claimed*cfg.visitsRequired;
+  return { progress, required: cfg.visitsRequired, eligible: progress >= cfg.visitsRequired, reward: cfg.reward };
+}
+function findOrCreateCustomer(resa, source){
+  const phoneDigits = normalizePhone(resa.phone);
+  const emailLower = (resa.email||'').trim().toLowerCase();
+  let cust = null;
+  if(phoneDigits.length>=6) cust = state.customers.find(c=>normalizePhone(c.phone)===phoneDigits);
+  if(!cust && emailLower) cust = state.customers.find(c=>(c.email||'').trim().toLowerCase()===emailLower);
+  const now = new Date().toISOString();
+  if(cust){
+    if(resa.firstName) cust.firstName = resa.firstName;
+    if(resa.lastName) cust.lastName = resa.lastName;
+    if(resa.firstName || resa.lastName) cust.name = `${cust.firstName||''} ${cust.lastName||''}`.trim();
+    else if(resa.name) cust.name = resa.name;
+    if(resa.phone) cust.phone = resa.phone;
+    if(resa.email) cust.email = resa.email;
+    cust.reservationCount = (cust.reservationCount||0) + 1;
+    cust.lastVisitAt = now;
+    cust.updatedAt = now;
+  }else{
+    cust = {
+      id: uid('c'), firstName: resa.firstName||'', lastName: resa.lastName||'',
+      name: resa.name || `${resa.firstName||''} ${resa.lastName||''}`.trim() || 'Client',
+      phone: resa.phone||'', email: resa.email||'', notes:'',
+      reservationCount: 1, source: source||'online', createdAt: now, updatedAt: now, lastVisitAt: now
+    };
+    state.customers.push(cust);
+  }
+  return cust;
+}
+async function syncCustomersFromReservations(){
+  if(!state.customers) state.customers = await sget('customers') || [];
+  let resaChanged = false, custChanged = false;
+  for(const r of state.reservations){
+    if(r.customerId) continue;
+    const cust = findOrCreateCustomer(r, r.notes==='Ajout manuel' ? 'staff' : 'online');
+    r.customerId = cust.id;
+    resaChanged = true; custChanged = true;
+  }
+  if(custChanged) await sset('customers', state.customers);
+  if(resaChanged) await sset('reservations', state.reservations);
+}
+async function persistReservations(){
+  // à utiliser uniquement quand state.reservations contient les données complètes (contexte staff)
+  await sset('reservations', state.reservations);
+  await syncAvailabilityFromFull(state.reservations);
+}
+function hasStaffReservationAccess(){
+  const isOwner = sessionStorage.getItem('checkTaCuisine_userIsOwner') === 'true';
+  const permsRaw = sessionStorage.getItem('checkTaCuisine_userPerms');
+  let perms = [];
+  try{ perms = permsRaw ? JSON.parse(permsRaw) : []; }catch(e){}
+  return isOwner || perms.includes('reservation');
+}
+function onHashChange(){
+  const h = location.hash.replace('#/', '');
+  state.route = h === 'admin' ? 'admin' : 'client';
+  render();
+}
+
+/* ===================== toast ===================== */
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove('show'), 2400);
+}
+
+/* ===================== availability logic ===================== */
+function tablesInZone(zone){
+  return state.tables.filter(t => zone === 'all' ? true : t.zone === zone);
+}
+function isTableFree(tableId, date, slot, excludeResaId){
+  return !state.reservations.some(r =>
+    resaTableIds(r).includes(tableId) && r.date === date && r.slot === slot &&
+    r.status !== 'annulee' && r.id !== excludeResaId
+  );
+}
+function freeTablesFor(date, slot, zone, party){
+  return tablesInZone(zone)
+    .filter(t => t.seats >= party && isTableFree(t.id, date, slot))
+    .sort((a,b)=> a.seats - b.seats);
+}
+function reservationsCountForSlot(date, slot){
+  return state.reservations.filter(r => r.date===date && r.slot===slot && r.status!=='annulee').length;
+}
+function isSlotOffered(date, slot){
+  const max = state.config.slotMax ? state.config.slotMax[slot] : undefined;
+  if(max === 0) return false; // fermé en permanence
+  const closedToday = (state.config.closedSlots && state.config.closedSlots[date]) || [];
+  if(closedToday.includes(slot)) return false; // fermeture ponctuelle ce jour-là
+  return true;
+}
+
+/* ===================== chevauchements (plan de salle) ===================== */
+function slotToMinutes(slot){ const [h,m]=slot.split(':').map(Number); return h*60+m; }
+function occupyingReservationsFor(tableId, date){
+  return state.reservations.filter(r => resaTableIds(r).includes(tableId) && r.date===date && (r.status==='confirmee' || r.status==='arrivee'));
+}
+function tableHasConflict(tableId, date){
+  const duration = state.config.reservationDurationMin || 90;
+  const list = occupyingReservationsFor(tableId, date).map(r=>slotToMinutes(r.slot)).sort((a,b)=>a-b);
+  for(let i=1;i<list.length;i++){
+    if(list[i] < list[i-1] + duration) return true;
+  }
+  return false;
+}
+function slotAvailability(date, zone, party){
+  // La table n'est plus attribuée automatiquement (attribution manuelle par l'équipe après coup) :
+  // la disponibilité affichée au client se base sur le nombre total de tables de la zone comparé
+  // au nombre de réservations déjà prises sur ce créneau, pas sur une table précise déjà réservée.
+  const totalTables = tablesInZone(zone).length;
+  return allSlots(state.config)
+    .filter(slot => isSlotOffered(date, slot))
+    .map(slot => {
+      const taken = reservationsCountForSlot(date, slot);
+      let count = Math.max(0, totalTables - taken);
+      const max = state.config.slotMax ? state.config.slotMax[slot] : undefined;
+      if(typeof max === 'number' && max > 0){
+        const remaining = Math.max(0, max - taken);
+        count = Math.min(count, remaining);
+      }
+      return {slot, count};
+    });
+}
+
+/* ===================== render dispatcher ===================== */
+function renderPrivacyModal(){
+  const contactEmail = state.config.notifyEmail || '';
+  return `
+  <div class="modal-backdrop" id="privacyBackdrop">
+    <div class="modal" style="max-width:480px;max-height:80vh;overflow-y:auto;text-align:left;">
+      <h3 style="margin-top:0;">Politique de confidentialité</h3>
+      <p class="muted" style="font-size:12px;">${escapeHtml(state.config.name||'Cet établissement')} — réservation en ligne</p>
+      <p style="font-size:13.5px;line-height:1.6;">Lorsque vous effectuez une réservation, nous collectons votre <strong>prénom, nom, téléphone, email</strong> et, si vous les renseignez, des <strong>remarques</strong> (allergies, occasion). Ces informations sont utilisées uniquement pour :</p>
+      <ul style="font-size:13.5px;line-height:1.7;padding-left:20px;">
+        <li>Gérer votre réservation et vous permettre de l'annuler si besoin</li>
+        <li>Vous envoyer un email de confirmation</li>
+        <li>Organiser l'accueil de votre table (allergies, occasion signalées)</li>
+      </ul>
+      <p style="font-size:13.5px;line-height:1.6;">Ces données ne sont ni vendues, ni partagées avec des tiers en dehors des prestataires techniques nécessaires au fonctionnement du site (hébergement). Elles sont conservées le temps utile à la gestion de la relation client, puis supprimées ou archivées de façon limitée.</p>
+      <p style="font-size:13.5px;line-height:1.6;">Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et d'effacement de vos données. Pour l'exercer, contactez l'établissement${contactEmail?` : <a href="mailto:${escapeAttr(contactEmail)}">${escapeHtml(contactEmail)}</a>`:''}.</p>
+      <div class="modal-actions" style="justify-content:flex-end;">
+        <button class="btn btn-primary" id="btnClosePrivacy">Fermer</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function render(){
+  try{
+    renderInner();
+  }catch(e){
+    console.error('render() error', e);
+    document.getElementById('root').innerHTML = `
+      <div class="card" style="padding:24px;margin-top:20px;text-align:left;">
+        <h2 style="margin-top:0;color:var(--wine-dark,#8B3A3A);">Erreur d'affichage</h2>
+        <p style="font-size:13px;">Détail technique (à transmettre si le problème persiste) :</p>
+        <pre style="white-space:pre-wrap;font-size:11px;background:var(--paper-dim);padding:10px;border-radius:8px;">${escapeHtml(String(e && e.stack || e))}</pre>
+        <button class="btn btn-primary" onclick="location.reload()" style="margin-top:10px;">Réessayer</button>
+      </div>`;
+  }
+}
+function renderInner(){
+  document.getElementById('brandName').textContent = state.config.name;
+  document.getElementById('navClient').classList.toggle('active', state.route==='client');
+  document.getElementById('navAdmin').classList.toggle('active', state.route==='admin');
+  const root = document.getElementById('root');
+  root.innerHTML = state.route === 'admin' ? renderAdminRoot() : renderClientRoot();
+  wireEvents();
+  syncBodyScrollLock();
+}
+/* ---------- verrouillage du défilement de fond pendant qu'une fenêtre modale est ouverte ----------
+   Sans ça, un glissement du doigt sur la fenêtre peut faire défiler l'écran EN DESSOUS plutôt que
+   la fenêtre elle-même — la technique position:fixed est celle qui fonctionne de façon fiable sur
+   iOS Safari (un simple overflow:hidden sur body ne suffit pas toujours). Ce fichier a plusieurs
+   fenêtres modales distinctes (pas un seul indicateur d'état) : on détecte donc leur présence
+   directement dans ce qui vient d'être affiché. */
+function syncBodyScrollLock(){
+  const hasModal = !!document.querySelector('.modal-backdrop');
+  if(hasModal){
+    if(!document.body.dataset.scrollLocked){
+      const y = window.scrollY || window.pageYOffset || 0;
+      document.body.dataset.scrollLocked = String(y);
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${y}px`;
+      document.body.style.width = '100%';
+    }
+  } else if(document.body.dataset.scrollLocked){
+    const y = parseInt(document.body.dataset.scrollLocked, 10) || 0;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    delete document.body.dataset.scrollLocked;
+    window.scrollTo(0, y);
+  }
+}
+
+/* ===================== CLIENT VIEW ===================== */
+function renderClientRoot(){
+  if(state.bookStep === 4 && state.lastConfirmed){
+    return renderConfirmation();
+  }
+  const steps = [1,2,3];
+  const dots = steps.map(s => `<div class="step-dot ${state.bookStep>s?'done':(state.bookStep===s?'current':'')}"></div>`).join('');
+  return `
+    <div class="hero">
+      <div class="eyebrow">Réservation</div>
+      <h1>${state.bookStep===1?'Choisissez votre date':state.bookStep===2?'Choisissez un créneau':'Vos coordonnées'}</h1>
+      <p>${state.config.name} · ${fmtDateHuman(state.bookDate)}</p>
+    </div>
+    <div class="steps">${dots}</div>
+    <div class="card" style="padding:22px;">
+      ${state.bookStep===1?renderStep1():state.bookStep===2?renderStep2():renderStep4()}
+    </div>
+  `;
+}
+
+function renderStep1(){
+  return `
+    <div class="row">
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="inpDate" value="${state.bookDate}" min="${todayISO()}">
+      </div>
+      <div class="field">
+        <label>Nombre de convives</label>
+        <select id="inpParty">
+          ${Array.from({length: state.config.maxPartySize}, (_,i)=>i+1).map(n=>`<option value="${n}" ${n===state.bookParty?'selected':''}>${n}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div style="text-align:right;">
+      <button class="btn btn-primary" id="btnStep1Next">Voir les créneaux disponibles →</button>
+    </div>
+  `;
+}
+
+function renderStep2(){
+  const avail = slotAvailability(state.bookDate, state.bookZone, state.bookParty);
+  const anyFree = avail.some(a=>a.count>0);
+  const slotsHtml = avail.map(a => `
+    <button class="slot-btn ${state.bookSlot===a.slot?'selected':''}" data-slot="${a.slot}" ${a.count===0?'disabled':''}>
+      ${a.slot}
+      <span class="cnt">${a.count===0?'complet':a.count+' libre'+(a.count>1?'s':'')}</span>
+    </button>
+  `).join('');
+  return `
+    <button class="btn btn-ghost btn-sm" id="btnBack1" style="margin-bottom:16px;">← Modifier la date</button>
+    <div class="muted" style="font-size:13.5px;margin-bottom:14px;">${state.bookParty} pers. · ${fmtDateHuman(state.bookDate)}</div>
+    ${anyFree ? `<div class="slots-grid">${slotsHtml}</div>` : `<div class="empty-state"><div class="display">Aucune disponibilité ce jour-là</div>Essayez une autre date ou un autre nombre de convives.</div>`}
+    <div class="divider"></div>
+    <div style="text-align:right;">
+      <button class="btn btn-primary" id="btnStep2Next" ${!state.bookSlot?'disabled':''}>Continuer →</button>
+    </div>
+  `;
+}
+function autoPick(){
+  const free = freeTablesFor(state.bookDate, state.bookSlot, state.bookZone, state.bookParty);
+  return free[0] || null;
+}
+function shapeClass(t){ return ''; }
+function tileSize(t){
+  const base = 32 + Math.min(t.seats,10)*2;
+  const radius = t.shape==='circle' ? '50%' : (t.shape==='rect' ? '8px' : '8px');
+  const w = t.shape==='rect' ? base+16 : base;
+  return `width:${w}px;height:${base}px;border-radius:${radius};`;
+}
+
+function renderStep4(){
+  const f = state.bookForm;
+  return `
+    <button class="btn btn-ghost btn-sm" id="btnBack2b" style="margin-bottom:16px;">← Modifier le créneau</button>
+    <div class="row">
+      <div class="field">
+        <label>Prénom</label>
+        <input type="text" id="fFirstName" value="${escapeAttr(f.firstName)}" placeholder="Jean">
+      </div>
+      <div class="field">
+        <label>Nom</label>
+        <input type="text" id="fLastName" value="${escapeAttr(f.lastName)}" placeholder="Dupont">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Téléphone</label>
+        <input type="tel" id="fPhone" value="${escapeAttr(f.phone)}" placeholder="06 12 34 56 78">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="fEmail" value="${escapeAttr(f.email)}" placeholder="jean@email.com">
+      </div>
+    </div>
+    <div class="field">
+      <label>Remarques (allergies, occasion...)</label>
+      <textarea id="fNotes" rows="2" placeholder="Facultatif">${escapeAttr(f.notes)}</textarea>
+    </div>
+    <p class="muted" style="font-size:12px;">Ces informations sont nécessaires pour confirmer votre réservation et vous permettre de l'annuler si besoin.</p>
+    <div class="divider"></div>
+    <div style="text-align:right;">
+      <button class="btn btn-primary" id="btnConfirmBooking">Confirmer la réservation</button>
+    </div>
+  `;
+}
+
+function renderConfirmation(){
+  const r = state.lastConfirmed;
+  const t = state.tables.find(x=>resaTableIds(r).includes(x.id));
+  return `
+    <div class="card confirm-box">
+      <div class="check">✓</div>
+      <h1 style="margin:0 0 6px;font-size:22px;">Réservation confirmée</h1>
+      ${state.emailSent
+        ? `<p class="muted">Un email de confirmation vient de vous être envoyé à ${escapeHtml(r.email)}, avec un lien pour annuler si besoin.</p>`
+        : `<p class="muted">Merci ! Conservez ce lien pour annuler votre réservation si besoin : <a href="${cancelLinkFor(r.id)}">annuler ma réservation</a></p>`}
+      <div class="recap">
+        <div><span>Restaurant</span><span>${escapeHtml(state.config.name)}</span></div>
+        <div><span>Date</span><span>${fmtDateHuman(r.date)}</span></div>
+        <div><span>Heure</span><span class="mono">${r.slot}</span></div>
+        <div><span>Table</span><span class="mono">${t?escapeHtml(t.number):'—'}</span></div>
+        <div><span>Convives</span><span>${r.party}</span></div>
+        <div><span>Nom</span><span>${escapeHtml(r.name)}</span></div>
+        <div><span>N° réservation</span><span class="mono">${r.id.slice(-6).toUpperCase()}</span></div>
+      </div>
+      <button class="btn btn-primary" id="btnNewBooking">Faire une nouvelle réservation</button>
+    </div>
+  `;
+}
+
+/* ===================== ADMIN VIEW ===================== */
+function renderAdminRoot(){
+  if(!state.adminAuthed){
+    return renderLogin();
+  }
+  const tabs = [['plan','Plan de salle'],['reservations','Réservations'],['clients','Clients'],['stats','Stats'],['settings','Réglages']];
+  const unseenCount = (state.reservations||[]).filter(r=>r.staffSeen===false && r.status!=='annulee').length;
+  const tabsHtml = tabs.map(([k,l])=>`<button class="admin-tab ${state.adminTab===k?'active':''}" data-tab="${k}" style="position:relative;">${l}${(k==='reservations' && unseenCount)?`<span style="position:absolute;top:2px;right:2px;background:var(--wine-dark,#8B3A3A);color:#fff;border-radius:999px;min-width:16px;height:16px;font-size:10px;line-height:16px;text-align:center;padding:0 4px;">${unseenCount}</span>`:''}</button>`).join('');
+  let body = '';
+  if(state.adminTab==='plan') body = renderAdminPlan();
+  else if(state.adminTab==='reservations') body = renderAdminReservations();
+  else if(state.adminTab==='clients') body = renderAdminClients();
+  else if(state.adminTab==='stats') body = renderAdminStats();
+  else body = renderAdminSettings();
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <div class="eyebrow">Espace professionnel</div>
+      <button class="btn btn-ghost btn-sm" id="btnLogout">Se déconnecter</button>
+    </div>
+    <h1 style="font-size:24px;margin:0 0 18px;">Gestion du restaurant</h1>
+    <div class="admin-tabs">${tabsHtml}</div>
+    ${body}
+  `;
+}
+
+function renderLogin(){
+  return `
+    <div class="login-wrap">
+      <div class="brand-mark" style="font-size:20px;">R</div>
+      <h2 style="margin:0 0 6px;">Connexion</h2>
+      <p class="muted" style="font-size:13.5px;margin:0 0 20px;">Accès réservé à l'équipe — utilisez le mot de passe de votre établissement (celui de l'application principale).</p>
+      <div class="card" style="padding:24px;text-align:left;">
+        <div class="field">
+          <label>Mot de passe</label>
+          <input type="password" id="inpPwd" placeholder="••••••••" value="${escapeAttr(state.loginPwd)}">
+        </div>
+        ${state.loginError?`<div style="color:var(--danger);font-size:13px;margin-bottom:10px;">${state.loginError}</div>`:''}
+        <button class="btn btn-primary" id="btnLogin" style="width:100%;">Se connecter</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderAdminPlan(){
+  const zonesTabs = state.config.zones.map(z=>`<button class="zone-tab ${state.adminZone===z.id?'active':''}" data-azone="${z.id}">${z.name}</button>`).join('');
+  const date = state.planDate || todayISO();
+  const tiles = tablesInZone(state.adminZone).map(t => {
+    const occ = occupyingReservationsFor(t.id, date);
+    const conflict = tableHasConflict(t.id, date);
+    const cls = ['table-tile',
+      state.planEditMode ? 'editing' : 'clickable',
+      !state.planEditMode && conflict ? 'conflict' : '',
+      !state.planEditMode && !conflict && occ.length ? 'has-resa' : ''
+    ].join(' ');
+    return `<div class="${cls}" data-tid="${t.id}" style="left:${t.x}%;top:${t.y}%;${tileSize(t)}">
+      <span class="num">${escapeHtml(t.number)}</span><span class="seats">${occ.length ? occ.length+' résa'+(occ.length>1?'s':'') : t.seats+' pl.'}</span>
+    </div>`;
+  }).join('');
+  return `
+    <div class="card" style="padding:20px 8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;padding:0 12px;">
+        <div class="zone-tabs" style="margin:0;">${zonesTabs}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-sm ${state.planEditMode?'btn-sage':'btn-ghost'}" id="btnToggleEdit">${state.planEditMode?'✓ Mode édition actif':'Modifier le plan'}</button>
+          <button class="btn btn-ghost btn-sm" id="btnAddTable">+ Ajouter une table</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;padding:0 12px;">
+        <input type="date" id="inpPlanDate" value="${date}" style="max-width:180px;">
+        <button class="btn btn-ghost btn-sm" id="btnPlanToday">Aujourd'hui</button>
+      </div>
+      <div class="canvas-wrap" id="planCanvas" style="${state.planEditMode?'touch-action:none;':''}">${tiles}</div>
+      <div class="legend" style="padding:0 12px;">
+        <span><i style="background:var(--sage-tint);border:1px solid var(--sage);"></i>Libre / réservations sans conflit</span>
+        <span><i style="background:var(--wine-tint);border:1px solid var(--wine);"></i>Chevauchement à vérifier</span>
+      </div>
+      <p class="muted" style="font-size:12.5px;margin:10px 0 0;">${state.planEditMode?"Glissez les tables pour repositionner le plan. Cliquez sur une table pour l'éditer ou la supprimer.":"Tapez sur une table pour voir ses réservations du jour ou en ajouter une."}</p>
+    </div>
+    ${state.showTableModal ? renderTableModal() : ''}
+    ${state.showDayModal ? renderDayModal() : ''}
+  `;
+}
+
+function renderDayModal(){
+  const t = state.tables.find(x=>x.id===state.dayModalTableId);
+  if(!t) return '';
+  const date = state.planDate || todayISO();
+  const list = state.reservations
+    .filter(r=>resaTableIds(r).includes(t.id) && r.date===date && r.status!=='annulee')
+    .sort((a,b)=>a.slot.localeCompare(b.slot));
+  const conflict = tableHasConflict(t.id, date);
+  const rows = list.map(r=>`
+    <div class="row" style="align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line);">
+      <div style="flex:1;">
+        <div><strong class="mono">${r.slot}</strong> — ${escapeHtml(r.name)} · ${r.party} pers.${r.status==='arrivee'?' · <span style="color:var(--sage-dark);">arrivé·e</span>':''}${r.status==='no_show'?' · <span style="color:var(--wine-dark);">no-show</span>':''}</div>
+        ${r.phone?`<div class="muted" style="font-size:12px;">${escapeHtml(r.phone)}</div>`:''}
+      </div>
+      ${r.status==='confirmee'?`<button class="btn btn-ghost btn-sm" data-arrive="${r.id}">Arrivé·e</button>`:''}
+      ${r.status!=='no_show'?`<button class="btn btn-ghost btn-sm" data-noshow="${r.id}">No-show</button>`:''}
+      <button class="btn btn-danger btn-sm" data-cancel="${r.id}">Annuler</button>
+    </div>`).join('');
+  return `
+    <div class="modal-backdrop" id="dayModalBackdrop">
+      <div class="modal">
+        <h3>Table ${escapeHtml(t.number)} — ${fmtDateHuman(date)}</h3>
+        ${conflict?`<div style="background:var(--wine-tint);color:var(--wine-dark);border-radius:8px;padding:8px 10px;font-size:12.5px;margin-bottom:10px;">⚠️ Deux réservations se chevauchent sur cette table ce jour-là.</div>`:''}
+        ${list.length ? rows : `<p class="muted">Aucune réservation ce jour-là pour cette table.</p>`}
+        <div class="divider"></div>
+        ${state.quickAddOpen ? renderQuickAddForm(t) : `<button class="btn btn-primary" id="btnOpenQuickAdd" style="width:100%;">+ Nouvelle réservation à cette table</button>`}
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="btnCloseDayModal">Fermer</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderQuickAddForm(t){
+  const f = state.quickForm;
+  const slotOpts = allSlots(state.config).map(s=>`<option value="${s}" ${f.slot===s?'selected':''}>${s}</option>`).join('');
+  const partyOpts = Array.from({length:21}, (_,i)=>i); // 0 à 20
+  return `
+    <div style="text-align:left;">
+      <div class="field"><label>Heure</label><select id="qSlot">${slotOpts}</select></div>
+      <div class="row">
+        <div class="field"><label>Prénom (optionnel)</label><input type="text" id="qFirstName" value="${escapeAttr(f.firstName)}"></div>
+        <div class="field"><label>Nom (optionnel)</label><input type="text" id="qLastName" value="${escapeAttr(f.lastName)}"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Téléphone (optionnel)</label><input type="tel" id="qPhone" value="${escapeAttr(f.phone)}"></div>
+        <div class="field">
+          <label>Convives</label>
+          <select id="qParty">${partyOpts.map(n=>`<option value="${n}" ${n===f.party?'selected':''}>${n}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="field"><label>Email (optionnel)</label><input type="email" id="qEmail" value="${escapeAttr(f.email)}"></div>
+      <div class="field"><label>Note (optionnel)</label><input type="text" id="qNotes" value="${escapeAttr(f.notes)}"></div>
+      <div class="modal-actions" style="justify-content:flex-end;">
+        <button class="btn btn-ghost" id="btnCancelQuickAdd">Annuler</button>
+        <button class="btn btn-primary" id="btnSaveQuickAdd">Ajouter la réservation</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderTableModal(){
+  const t = state.editingTable || {number:'', seats:2, shape:'square', zone:state.adminZone};
+  const isNew = !state.editingTable || !state.editingTable.id;
+  const zoneOpts = state.config.zones.map(z=>`<option value="${z.id}" ${t.zone===z.id?'selected':''}>${z.name}</option>`).join('');
+  return `
+    <div class="modal-backdrop" id="modalBackdrop">
+      <div class="modal">
+        <h3>${isNew?'Nouvelle table':'Modifier la table'}</h3>
+        <div class="field"><label>Numéro / nom</label><input type="text" id="mNumber" value="${escapeAttr(t.number)}" placeholder="ex: 12 ou T5"></div>
+        <div class="row">
+          <div class="field"><label>Places</label><input type="number" id="mSeats" min="1" max="20" value="${t.seats}"></div>
+          <div class="field"><label>Forme</label>
+            <select id="mShape">
+              <option value="square" ${t.shape==='square'?'selected':''}>Carrée</option>
+              <option value="circle" ${t.shape==='circle'?'selected':''}>Ronde</option>
+              <option value="rect" ${t.shape==='rect'?'selected':''}>Rectangulaire</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Zone</label><select id="mZone">${zoneOpts}</select></div>
+        <div class="modal-actions">
+          ${!isNew?`<button class="btn btn-danger btn-sm" id="btnDeleteTable" style="margin-right:auto;">Supprimer</button>`:''}
+          <button class="btn btn-ghost" id="btnCancelModal">Annuler</button>
+          <button class="btn btn-primary" id="btnSaveTable">${isNew?'Ajouter':'Enregistrer'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAdminReservations(){
+  const list = state.reservations
+    .filter(r => r.date === state.resaDate && r.status !== 'annulee')
+    .sort((a,b)=> a.slot.localeCompare(b.slot));
+  const items = list.map(r=>{
+    const tblIds = resaTableIds(r);
+    const tbls = tblIds.map(id=>state.tables.find(x=>x.id===id)).filter(Boolean);
+    const tblLabel = tbls.length ? tbls.map(t=>escapeHtml(t.number)).join(' + ') : '—';
+    const statusTag = r.status==='arrivee' ? ' · <span style="color:var(--sage-dark);">arrivé·e</span>'
+      : r.status==='no_show' ? ' · <span style="color:var(--wine-dark);">no-show</span>' : '';
+    const isNew = r.staffSeen===false;
+    return `
+      <div class="resa-item" style="${isNew?'border-left:3px solid var(--wine-dark,#8B3A3A);':''}">
+        <div>
+          <div>${isNew?'<span style="color:var(--wine-dark,#8B3A3A);font-weight:800;">● Nouvelle · </span>':''}<strong class="mono">${r.slot}</strong> — ${escapeHtml(r.name)} · ${r.party} pers.${statusTag}</div>
+          <div class="meta">Table ${tblLabel} ${r.phone?'· '+escapeHtml(r.phone):''} ${r.notes?'· '+escapeHtml(r.notes):''}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          ${isNew?`<button class="btn btn-sage btn-sm" data-treat-resa="${r.id}">✓ Traiter</button>`:''}
+          <button class="btn btn-ghost btn-sm" data-edit-resa="${r.id}">Modifier</button>
+          <button class="btn btn-danger btn-sm" data-cancel="${r.id}">Annuler</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+  const searchDigits = (state.clientSearch||'').replace(/\D/g,'');
+  const searchResults = searchDigits.length>=3 ? state.reservations
+    .filter(r => (r.phone||'').replace(/\D/g,'').includes(searchDigits))
+    .sort((a,b)=> (b.date+b.slot).localeCompare(a.date+a.slot)) : [];
+  const unseenAll = state.reservations
+    .filter(r=>r.staffSeen===false && r.status!=='annulee')
+    .sort((a,b)=> (a.date+a.slot).localeCompare(b.date+b.slot));
+  const unseenBanner = unseenAll.length ? `
+    <div class="card" style="padding:16px 20px;margin-bottom:14px;border:1.5px solid var(--wine-dark,#8B3A3A);">
+      <div style="font-weight:800;color:var(--wine-dark,#8B3A3A);margin-bottom:8px;">🔴 ${unseenAll.length} réservation${unseenAll.length>1?'s':''} non traitée${unseenAll.length>1?'s':''} (toutes dates)</div>
+      ${unseenAll.map(r=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line);">
+          <span style="font-size:13.5px;">${fmtDateHuman(r.date)} · <strong class="mono">${r.slot}</strong> — ${escapeHtml(r.name)} · ${r.party} pers.</span>
+          <button class="btn btn-ghost btn-sm" data-goto-resa-date="${r.date}">Voir</button>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+  return `
+    ${unseenBanner}
+    <div class="card" style="padding:20px;margin-bottom:14px;">
+      <div class="field" style="margin-bottom:0;">
+        <label>🔍 Rechercher un client par téléphone (quand il appelle)</label>
+        <input type="tel" id="inpClientSearch" placeholder="06 12 34 56 78" value="${escapeAttr(state.clientSearch||'')}">
+      </div>
+      ${searchDigits.length>=3 ? `
+        <div style="margin-top:12px;">
+          ${searchResults.length ? searchResults.map(r=>{
+            const tbls = resaTableIds(r).map(id=>state.tables.find(x=>x.id===id)).filter(Boolean);
+            const tblLabel = tbls.length ? tbls.map(t=>escapeHtml(t.number)).join(' + ') : '—';
+            const cancelled = r.status==='annulee';
+            return `
+            <div class="resa-item" style="${cancelled?'opacity:.55;':''}">
+              <div>
+                <div><strong class="mono">${fmtDateHuman(r.date)}</strong> · ${r.slot} — ${escapeHtml(r.name)} · ${r.party} pers.${cancelled?' · <span style="color:var(--wine-dark);">annulée</span>':''}</div>
+                <div class="meta">Table ${tblLabel} ${r.notes?'· '+escapeHtml(r.notes):''}</div>
+              </div>
+            </div>`;
+          }).join('') : `<p class="muted" style="font-size:13px;">Aucune réservation trouvée pour ce numéro — nouveau client.</p>`}
+        </div>
+      ` : ''}
+    </div>
+    <div class="card" style="padding:20px;">
+      <div class="resa-day-nav">
+        <button class="btn btn-ghost btn-sm" id="btnPrevDay">←</button>
+        <input type="date" id="inpResaDate" value="${state.resaDate}" style="max-width:190px;">
+        <button class="btn btn-ghost btn-sm" id="btnNextDay">→</button>
+        <span class="muted" style="font-size:13.5px;margin-left:4px;">${fmtDateHuman(state.resaDate)}</span>
+        <button class="btn btn-sage btn-sm" id="btnAddManual" style="margin-left:auto;">+ Réservation manuelle</button>
+      </div>
+      ${items || `<div class="empty-state"><div class="display">Aucune réservation</div>Ce jour est encore libre.</div>`}
+    </div>
+    ${state.showManualAdd ? renderManualAddModal() : ''}
+    ${state.editingResaId ? renderEditResaModal() : ''}
+  `;
+}
+
+function renderAdminClients(){
+  const q = (state.customerSearch||'').trim().toLowerCase();
+  const qDigits = normalizePhone(q);
+  const list = (state.customers||[]).filter(c=>{
+    if(!q) return true;
+    const nameMatch = (c.name||'').toLowerCase().includes(q);
+    const phoneMatch = qDigits.length>=2 && normalizePhone(c.phone).includes(qDigits);
+    const emailMatch = (c.email||'').toLowerCase().includes(q);
+    return nameMatch || phoneMatch || emailMatch;
+  }).sort((a,b)=> (b.lastVisitAt||b.createdAt||'').localeCompare(a.lastVisitAt||a.createdAt||''));
+  const items = list.map(c=>{
+    const lp = loyaltyProgress(c);
+    const loyaltyLine = lp ? (lp.eligible
+      ? `<div style="margin-top:4px;"><span style="background:#FFC857;color:#3A2A00;font-weight:800;font-size:11.5px;padding:2px 9px;border-radius:20px;">🎁 Récompense débloquée${lp.reward?' — '+escapeHtml(lp.reward):''}</span> <button class="btn btn-ghost btn-sm" data-claim-loyalty="${c.id}" style="padding:2px 9px;font-size:11px;">Marquer comme utilisée</button></div>`
+      : `<div class="meta" style="margin-top:2px;">🎁 Fidélité : ${lp.progress}/${lp.required} réservations</div>`
+    ) : '';
+    return `
+    <div class="resa-item">
+      <div>
+        <div><strong>${escapeHtml(c.name||'Client')}</strong>${c.reservationCount?` · ${c.reservationCount} réservation${c.reservationCount>1?'s':''}`:''}${c.source==='online'?' · <span class="muted">en ligne</span>':''}</div>
+        <div class="meta">${c.phone?escapeHtml(c.phone):''} ${c.email?'· '+escapeHtml(c.email):''} ${c.notes?'· '+escapeHtml(c.notes):''}</div>
+        ${loyaltyLine}
+      </div>
+      <button class="btn btn-ghost btn-sm" data-edit-customer="${c.id}">Modifier</button>
+    </div>
+  `;}).join('');
+  return `
+    <div class="card" style="padding:20px;margin-bottom:14px;">
+      <div class="field" style="margin-bottom:0;">
+        <label>🔍 Rechercher un client (nom, téléphone, email)</label>
+        <input type="text" id="inpCustomerSearch" placeholder="Nom, numéro ou email" value="${escapeAttr(state.customerSearch||'')}">
+      </div>
+    </div>
+    <div class="card" style="padding:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span class="muted" style="font-size:13.5px;">${list.length} client${list.length>1?'s':''}</span>
+        <button class="btn btn-sage btn-sm" id="btnAddCustomer">+ Ajouter un client</button>
+      </div>
+      ${items || `<div class="empty-state"><div class="display">Aucun client</div>${q?'Aucun résultat pour cette recherche.':"Le fichier se remplit automatiquement à chaque réservation."}</div>`}
+    </div>
+    ${(state.showAddCustomer || state.editingCustomerId) ? renderCustomerModal(state.editingCustomerId ? state.customers.find(c=>c.id===state.editingCustomerId) : null) : ''}
+  `;
+}
+function renderCustomerModal(cust){
+  const isEdit = !!cust;
+  const c = cust || {firstName:'', lastName:'', phone:'', email:'', notes:''};
+  return `
+    <div class="modal-backdrop" id="customerBackdrop">
+      <div class="modal">
+        <h3>${isEdit ? 'Modifier le client' : 'Ajouter un client'}</h3>
+        <div class="row">
+          <div class="field"><label>Prénom</label><input type="text" id="cuFirstName" value="${escapeAttr(c.firstName)}"></div>
+          <div class="field"><label>Nom</label><input type="text" id="cuLastName" value="${escapeAttr(c.lastName)}"></div>
+        </div>
+        <div class="field"><label>Téléphone</label><input type="tel" id="cuPhone" value="${escapeAttr(c.phone)}"></div>
+        <div class="field"><label>Email</label><input type="email" id="cuEmail" value="${escapeAttr(c.email)}"></div>
+        <div class="field"><label>Notes (allergies, préférences, habitué·e...)</label><textarea id="cuNotes" rows="3">${escapeHtml(c.notes||'')}</textarea></div>
+        ${isEdit ? `<p class="muted" style="font-size:12px;">${c.reservationCount||0} réservation${(c.reservationCount||0)>1?'s':''}${c.lastVisitAt?' · dernière le '+fmtDateHuman(c.lastVisitAt.slice(0,10)):''}</p>` : ''}
+        <div class="modal-actions" style="justify-content:space-between;">
+          ${isEdit ? `<button class="btn btn-danger" id="btnDeleteCustomer">Supprimer</button>` : `<span></span>`}
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-ghost" id="btnCancelCustomer">Annuler</button>
+            <button class="btn btn-primary" id="btnSaveCustomer">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function tableCheckboxesHtml(date, slot, selectedIds, excludeResaId){
+  selectedIds = selectedIds || [];
+  let html = '';
+  (state.config.zones||[]).forEach(z=>{
+    const tbls = state.tables.filter(t=>t.zone===z.id).sort((a,b)=>a.number.localeCompare(b.number, undefined, {numeric:true}));
+    if(!tbls.length) return;
+    html += `<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:var(--muted,#8a8478);margin:10px 0 4px;">${escapeHtml(z.name)}</div>`;
+    tbls.forEach(t=>{
+      const free = isTableFree(t.id, date, slot, excludeResaId);
+      const occupant = !free ? state.reservations.find(r=>resaTableIds(r).includes(t.id) && r.date===date && r.slot===slot && r.status!=='annulee' && r.id!==excludeResaId) : null;
+      const checked = selectedIds.includes(t.id);
+      const label = `${t.number} (${t.seats} pl.)${(!free && !checked) ? ' — occupée'+(occupant?' par '+occupant.name:'') : ''}`;
+      html += `<label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:4px 0;">
+        <input type="checkbox" class="table-check" value="${t.id}" style="width:17px;flex-shrink:0;" ${checked?'checked':''}> ${escapeHtml(label)}
+      </label>`;
+    });
+  });
+  return html;
+}
+
+function renderManualAddModal(){
+  const timeOpts = manualTimeOptions();
+  const partyOpts = Array.from({length:21}, (_,i)=>i); // 0 à 20
+  const defaultSlot = timeOpts[0];
+  return `
+    <div class="modal-backdrop" id="manualAddBackdrop">
+      <div class="modal">
+        <h3>Réservation manuelle</h3>
+        <p class="muted" style="font-size:12.5px;margin-top:-6px;">${fmtDateHuman(state.resaDate)}</p>
+        <div class="row">
+          <div class="field">
+            <label>Heure</label>
+            <select id="maSlot">${timeOpts.map(t=>`<option value="${t}">${t}</option>`).join('')}</select>
+          </div>
+          <div class="field">
+            <label>Convives</label>
+            <select id="maParty">${partyOpts.map(n=>`<option value="${n}" ${n===2?'selected':''}>${n}</option>`).join('')}</select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Table(s)</label>
+          <div id="maTableWrap" style="border:1px solid var(--line);border-radius:10px;padding:8px 10px;max-height:180px;overflow-y:auto;">${tableCheckboxesHtml(state.resaDate, defaultSlot, [], null)}</div>
+        </div>
+        <div class="field"><label>Nom du client</label><input type="text" id="maName" value="Client sur place"></div>
+        <div class="field"><label>Téléphone (optionnel)</label><input type="tel" id="maPhone"></div>
+        <div class="modal-actions" style="justify-content:flex-end;">
+          <button class="btn btn-ghost" id="btnCancelManualAdd">Annuler</button>
+          <button class="btn btn-primary" id="btnSaveManualAdd">Ajouter</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderEditResaModal(){
+  const r = state.reservations.find(x=>x.id===state.editingResaId);
+  if(!r) return '';
+  const timeOpts = manualTimeOptions();
+  const partyOpts = Array.from({length:21}, (_,i)=>i);
+  return `
+    <div class="modal-backdrop" id="editResaBackdrop">
+      <div class="modal">
+        <h3>Modifier la réservation</h3>
+        <p class="muted" style="font-size:12.5px;margin-top:-6px;">${fmtDateHuman(r.date)}</p>
+        <div class="row">
+          <div class="field">
+            <label>Heure</label>
+            <select id="erSlot">${timeOpts.map(t=>`<option value="${t}" ${t===r.slot?'selected':''}>${t}</option>`).join('')}</select>
+          </div>
+          <div class="field">
+            <label>Convives</label>
+            <select id="erParty">${partyOpts.map(n=>`<option value="${n}" ${n===r.party?'selected':''}>${n}</option>`).join('')}</select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Table(s)</label>
+          <div id="erTableWrap" style="border:1px solid var(--line);border-radius:10px;padding:8px 10px;max-height:180px;overflow-y:auto;">${tableCheckboxesHtml(r.date, r.slot, resaTableIds(r), r.id)}</div>
+          <p class="muted" style="font-size:11.5px;margin-top:4px;">Coche une ou plusieurs tables (ex : une en salle, une en terrasse si le temps est incertain). Une table déjà occupée reste sélectionnable, mais vérifie qu'il n'y a pas de vrai conflit avant d'enregistrer.</p>
+        </div>
+        <div class="field"><label>Nom du client</label><input type="text" id="erName" value="${escapeAttr(r.name)}"></div>
+        <div class="field"><label>Téléphone</label><input type="tel" id="erPhone" value="${escapeAttr(r.phone||'')}"></div>
+        <div class="field"><label>Email</label><input type="email" id="erEmail" value="${escapeAttr(r.email||'')}"></div>
+        <div class="field"><label>Notes</label><input type="text" id="erNotes" value="${escapeAttr(r.notes||'')}"></div>
+        <div class="modal-actions" style="justify-content:flex-end;">
+          <button class="btn btn-ghost" id="btnCancelEditResa">Annuler</button>
+          <button class="btn btn-primary" id="btnSaveEditResa">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAdminStats(){
+  const period = state.statsPeriod || 'month';
+  const today = todayISO();
+  let fromDate, toDate;
+  if(period==='month'){
+    const base = state.statsMonth || today.slice(0,7);
+    fromDate = base+'-01';
+    const d = new Date(base+'-01T00:00:00'); d.setMonth(d.getMonth()+1); d.setDate(0);
+    toDate = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  } else {
+    fromDate = state.statsFrom || today;
+    toDate = state.statsTo || today;
+  }
+  const inRange = (state.reservations||[]).filter(r => r.date >= fromDate && r.date <= toDate);
+  const total = inRange.length;
+  const cancelled = inRange.filter(r=>r.status==='annulee').length;
+  const noShow = inRange.filter(r=>r.status==='no_show').length;
+  const arrived = inRange.filter(r=>r.status==='arrivee').length;
+  const undetermined = inRange.filter(r=>r.status==='confirmee').length;
+  const attendanceBase = arrived + noShow; // dénominateur du taux de no-show : hors annulations, hors non-traité
+  const noShowRate = attendanceBase>0 ? Math.round((noShow/attendanceBase)*1000)/10 : null;
+
+  const bySlot = {};
+  const byWeekday = {};
+  const weekdayLabels = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  inRange.forEach(r=>{
+    if(r.status==='annulee') return;
+    bySlot[r.slot] = (bySlot[r.slot]||0) + 1;
+    const wd = new Date(r.date+'T00:00:00').getDay();
+    byWeekday[wd] = (byWeekday[wd]||0) + 1;
+  });
+  const topSlots = Object.entries(bySlot).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxSlotCount = topSlots.length ? topSlots[0][1] : 1;
+  const weekdayRows = [1,2,3,4,5,6,0].map(wd => [weekdayLabels[wd], byWeekday[wd]||0]);
+  const maxWeekdayCount = Math.max(1, ...weekdayRows.map(r=>r[1]));
+
+  return `
+    <div class="card" style="padding:20px;margin-bottom:14px;">
+      <div class="field" style="margin-bottom:10px;">
+        <label>Période</label>
+        <select id="statsPeriodSelect">
+          <option value="month" ${period==='month'?'selected':''}>Un mois</option>
+          <option value="range" ${period==='range'?'selected':''}>Plage personnalisée</option>
+        </select>
+      </div>
+      ${period==='month' ? `
+        <div class="field" style="margin-bottom:0;"><input type="month" id="statsMonthInput" value="${state.statsMonth||today.slice(0,7)}"></div>
+      ` : `
+        <div class="row" style="display:flex;gap:8px;">
+          <div class="field" style="flex:1;"><label>Du</label><input type="date" id="statsFromInput" value="${state.statsFrom||today}"></div>
+          <div class="field" style="flex:1;"><label>Au</label><input type="date" id="statsToInput" value="${state.statsTo||today}"></div>
+        </div>
+      `}
+    </div>
+
+    <div class="card" style="padding:20px;margin-bottom:14px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:center;">
+        <div><div style="font-size:26px;font-weight:800;">${total}</div><div class="muted" style="font-size:12px;">Réservations</div></div>
+        <div><div style="font-size:26px;font-weight:800;color:${noShowRate!==null && noShowRate>15?'var(--wine-dark,#8B3A3A)':'inherit'};">${noShowRate!==null?noShowRate+'%':'—'}</div><div class="muted" style="font-size:12px;">Taux de no-show</div></div>
+        <div><div style="font-size:20px;font-weight:700;">${arrived}</div><div class="muted" style="font-size:12px;">Venues confirmées</div></div>
+        <div><div style="font-size:20px;font-weight:700;">${noShow}</div><div class="muted" style="font-size:12px;">No-show</div></div>
+        <div><div style="font-size:20px;font-weight:700;">${cancelled}</div><div class="muted" style="font-size:12px;">Annulées</div></div>
+        <div><div style="font-size:20px;font-weight:700;">${undetermined}</div><div class="muted" style="font-size:12px;">Non traitées</div></div>
+      </div>
+      ${undetermined>0 ? `<p class="muted" style="font-size:11px;margin-top:10px;">"Non traitées" = réservations passées jamais marquées "Arrivé·e" ni "No-show" — pense à les mettre à jour pour un taux plus précis.</p>` : ''}
+    </div>
+
+    <div class="card" style="padding:20px;margin-bottom:14px;">
+      <h3 style="margin-top:0;">Créneaux les plus demandés</h3>
+      ${topSlots.length ? topSlots.map(([slot,count])=>`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <span class="mono" style="width:48px;font-size:13px;">${slot}</span>
+          <div style="flex:1;background:var(--line);border-radius:6px;height:10px;overflow:hidden;"><div style="width:${Math.round(count/maxSlotCount*100)}%;height:100%;background:var(--sea-deep,#123B3A);"></div></div>
+          <span style="font-size:12.5px;font-weight:700;width:26px;text-align:right;">${count}</span>
+        </div>
+      `).join('') : `<p class="muted">Aucune donnée sur cette période.</p>`}
+    </div>
+
+    <div class="card" style="padding:20px;">
+      <h3 style="margin-top:0;">Jours les plus demandés</h3>
+      ${weekdayRows.map(([label,count])=>`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <span style="width:36px;font-size:13px;">${label}</span>
+          <div style="flex:1;background:var(--line);border-radius:6px;height:10px;overflow:hidden;"><div style="width:${Math.round(count/maxWeekdayCount*100)}%;height:100%;background:var(--sage-dark,#5C7A5C);"></div></div>
+          <span style="font-size:12.5px;font-weight:700;width:26px;text-align:right;">${count}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderAdminSettings(){
+  const c = state.config;
+  const zoneChips = c.zones.map(z=>`<div class="chip">${escapeHtml(z.name)}<button data-rmzone="${z.id}">×</button></div>`).join('');
+  const windowsRows = (c.serviceWindows||[]).map(w=>`
+    <div class="row" style="align-items:flex-end;">
+      <div class="field"><label>Label</label><input type="text" class="sw-label" data-id="${w.id}" value="${escapeAttr(w.label)}" placeholder="ex: Déjeuner"></div>
+      <div class="field"><label>Début</label><input type="time" class="sw-start" data-id="${w.id}" value="${w.start}"></div>
+      <div class="field"><label>Fin</label><input type="time" class="sw-end" data-id="${w.id}" value="${w.end}"></div>
+      <button class="btn btn-ghost btn-sm" data-rmwindow="${w.id}">Supprimer</button>
+    </div>`).join('');
+  const slots = allSlots(c);
+  const maxRows = slots.map(s=>{
+    const v = (c.slotMax && c.slotMax[s]!==undefined) ? c.slotMax[s] : '';
+    return `<div class="row" style="align-items:center;gap:8px;">
+      <span class="mono" style="width:56px;">${s}</span>
+      <input type="number" min="0" class="slot-max-input" data-slot="${s}" value="${v}" placeholder="illimité" style="max-width:130px;">
+    </div>`;
+  }).join('');
+  const closDate = state.closureDate || todayISO();
+  const closedForDate = (c.closedSlots && c.closedSlots[closDate]) || [];
+  const closureChecks = slots.map(s=>`
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;">
+      <input type="checkbox" class="closure-check" data-slot="${s}" style="width:18px;flex-shrink:0;" ${closedForDate.includes(s)?'checked':''}> ${s}
+    </label>`).join('');
+  return `
+    <div class="card" style="padding:20px;">
+      <div class="settings-block">
+        <h3>Identité</h3>
+        <div class="field"><label>Nom du restaurant</label><input type="text" id="sName" value="${escapeAttr(c.name)}"></div>
+        <div class="field" style="max-width:220px;"><label>Taille max. de groupe</label><input type="number" id="sMaxParty" min="1" value="${c.maxPartySize}"></div>
+        <div class="field" style="max-width:220px;"><label>Durée moyenne d'un repas (minutes)</label><input type="number" id="sDuration" min="15" step="15" value="${c.reservationDurationMin||90}"></div>
+        <p class="muted" style="font-size:12px;margin-top:-8px;">Sert à détecter les tables réservées deux fois sur une plage qui se chevauche (affichées en rouge sur le plan).</p>
+        <button class="btn btn-ghost btn-sm" id="btnSaveIdentity">Enregistrer</button>
+      </div>
+      <div class="divider"></div>
+      <div class="settings-block">
+        <h3>Programme de fidélité</h3>
+        <p class="muted" style="font-size:12.5px;">Repère automatiquement les clients ayant atteint un certain nombre de réservations, pour leur offrir un avantage. Basé sur le fichier client (onglet Clients).</p>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;margin-bottom:10px;">
+          <input type="checkbox" id="sLoyaltyEnabled" style="width:18px;flex-shrink:0;" ${c.loyalty&&c.loyalty.enabled?'checked':''}> Activer le programme de fidélité
+        </label>
+        <div class="field" style="max-width:220px;"><label>Nombre de réservations requises</label><input type="number" id="sLoyaltyVisits" min="1" value="${c.loyalty&&c.loyalty.visitsRequired?c.loyalty.visitsRequired:5}"></div>
+        <div class="field"><label>Récompense</label><input type="text" id="sLoyaltyReward" value="${escapeAttr(c.loyalty&&c.loyalty.reward?c.loyalty.reward:'')}" placeholder="ex : un dessert offert"></div>
+        <button class="btn btn-ghost btn-sm" id="btnSaveLoyalty">Enregistrer</button>
+      </div>
+      <div class="divider"></div>
+      <div class="settings-block">
+        <h3>Plages de service</h3>
+        <p class="muted" style="font-size:12.5px;">Les créneaux sont générés automatiquement toutes les 15 minutes dans ces plages.</p>
+        ${windowsRows}
+        <div class="row" style="align-items:flex-end;">
+          <div class="field"><label>Label</label><input type="text" id="inpNewSwLabel" placeholder="ex: Brunch"></div>
+          <div class="field"><label>Début</label><input type="time" id="inpNewSwStart" value="12:00"></div>
+          <div class="field"><label>Fin</label><input type="time" id="inpNewSwEnd" value="14:00"></div>
+          <button class="btn btn-ghost btn-sm" id="btnAddWindow">Ajouter</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="settings-block">
+        <h3>Nombre max. de réservations par créneau</h3>
+        <p class="muted" style="font-size:12.5px;">Laissez vide pour ne limiter que par le nombre de tables disponibles. Mettez 0 pour fermer ce créneau en permanence.</p>
+        <div style="max-height:260px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:10px;">${maxRows || "<span class='muted'>Ajoutez d'abord une plage de service.</span>"}</div>
+        <button class="btn btn-ghost btn-sm" id="btnSaveSlotMax" style="margin-top:10px;">Enregistrer les plafonds</button>
+      </div>
+      <div class="divider"></div>
+      <div class="settings-block">
+        <h3>Fermer des créneaux pour une date précise</h3>
+        <p class="muted" style="font-size:12.5px;">Utile pour un événement privé ou une fermeture exceptionnelle, sans toucher aux réglages généraux.</p>
+        <div class="field" style="max-width:220px;"><label>Date</label><input type="date" id="inpClosureDate" value="${closDate}"></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:10px;">${closureChecks || '<span class="muted">Aucun créneau généré.</span>'}</div>
+        <button class="btn btn-ghost btn-sm" id="btnSaveClosures" style="margin-top:10px;">Enregistrer les fermetures de cette date</button>
+      </div>
+      <div class="divider"></div>
+      <div class="settings-block">
+        <h3>Zones</h3>
+        <div class="chip-list">${zoneChips}</div>
+        <div class="add-inline">
+          <input type="text" id="inpNewZone" placeholder="ex: Véranda">
+          <button class="btn btn-ghost btn-sm" id="btnAddZone">Ajouter</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="settings-block">
+        <h3>Email de confirmation (EmailJS)</h3>
+        <p class="muted" style="font-size:12.5px;">Envoie automatiquement un email au client avec un lien d'annulation. Nécessite un compte gratuit sur emailjs.com — demandez à Claude de vous guider si besoin.</p>
+        <div class="field"><label>Service ID</label><input type="text" id="sEjsService" value="${escapeAttr(c.emailjsServiceId||'')}"></div>
+        <div class="field"><label>Template ID (confirmation client)</label><input type="text" id="sEjsTemplate" value="${escapeAttr(c.emailjsTemplateId||'')}"></div>
+        <div class="field"><label>Public key</label><input type="text" id="sEjsKey" value="${escapeAttr(c.emailjsPublicKey||'')}"></div>
+        <button class="btn btn-ghost btn-sm" id="btnSaveEmailjs">Enregistrer</button>
+      </div>
+      <div class="divider"></div>
+      <div class="settings-block">
+        <h3>Être notifié des nouvelles réservations</h3>
+        <p class="muted" style="font-size:12.5px;">Reçois un email à chaque nouvelle réservation en ligne. Utilise le même compte EmailJS que ci-dessus (Service ID + Public key), avec un second template dédié à la notification.</p>
+        <div class="field"><label>Ton email</label><input type="email" id="sNotifyEmail" value="${escapeAttr(c.notifyEmail||'')}" placeholder="toi@exemple.com"></div>
+        <div class="field"><label>Template ID (notification restaurant)</label><input type="text" id="sEjsNotifyTemplate" value="${escapeAttr(c.emailjsNotifyTemplateId||'')}"></div>
+        <button class="btn btn-ghost btn-sm" id="btnSaveNotify">Enregistrer</button>
+      </div>
+      <div class="divider"></div>
+      <div class="settings-block">
+        <h3>Mot de passe</h3>
+        <p class="muted" style="font-size:12.5px;">L'accès à cet espace pro utilise le mot de passe de votre établissement — le même que pour l'application principale (Check ton bar/cuisine/salle). Pour le changer, faites-le depuis l'application principale.</p>
+      </div>
+      <div class="divider"></div>
+      <div class="settings-block">
+        <h3>Lien de réservation client</h3>
+        <p class="muted" style="font-size:13px;">Partagez ce lien sur votre site ou vos réseaux (aucun mot de passe requis pour vos clients).</p>
+        <div class="add-inline">
+          <input type="text" readonly id="clientLinkBox" value="${location.origin+location.pathname+'?r='+encodeURIComponent(RESTAURANT_ID)+'#/client'}">
+          <button class="btn btn-ghost btn-sm" id="btnCopyLink">Copier</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ===================== helpers escape ===================== */
+function escapeAttr(s){ return escapeHtml(s); }
+
+/* ===================== events ===================== */
+function wireEvents(){
+  const root = document.getElementById('root');
+
+  // --- CLIENT step 1
+  const s1 = document.getElementById('btnStep1Next');
+  if(s1) s1.onclick = ()=>{
+    state.bookDate = document.getElementById('inpDate').value || state.bookDate;
+    state.bookParty = Math.max(1, parseInt(document.getElementById('inpParty').value||'2',10));
+    state.bookZone = 'all'; // le client ne choisit plus la zone : c'est le restaurant qui gère le placement
+    state.bookSlot = null; state.bookTableId = null;
+    state.bookStep = 2; render();
+  };
+
+  // --- CLIENT step 2
+  root.querySelectorAll('.slot-btn').forEach(b=>{
+    b.onclick = ()=>{ state.bookSlot = b.dataset.slot; state.bookTableId = null; render(); };
+  });
+  const b1 = document.getElementById('btnBack1'); if(b1) b1.onclick = ()=>{ state.bookStep=1; render(); };
+  const s2 = document.getElementById('btnStep2Next'); if(s2) s2.onclick = ()=>{
+    // plus d'attribution automatique de table : ce sera fait manuellement par l'équipe (voir onglet Réservations)
+    state.bookTableId = null;
+    state.bookStep = 3; render();
+  };
+
+  // --- CLIENT step 3 (coordonnées)
+  const b2b = document.getElementById('btnBack2b'); if(b2b) b2b.onclick = ()=>{ state.bookStep=2; render(); };
+  const bConfirm = document.getElementById('btnConfirmBooking');
+  if(bConfirm) bConfirm.onclick = async ()=>{
+    const firstName = document.getElementById('fFirstName').value.trim();
+    const lastName = document.getElementById('fLastName').value.trim();
+    const phone = document.getElementById('fPhone').value.trim();
+    const email = document.getElementById('fEmail').value.trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if(!firstName || !lastName){ toast('Merci de renseigner votre prénom et votre nom.'); return; }
+    if(!phone){ toast('Merci de renseigner votre numéro de téléphone.'); return; }
+    if(!email || !emailOk){ toast('Merci de renseigner une adresse email valide.'); return; }
+    state.bookForm = { firstName, lastName, phone, email, notes: document.getElementById('fNotes').value.trim() };
+    const resa = {
+      id: uid('r'), tableIds: [], date: state.bookDate, slot: state.bookSlot,
+      party: state.bookParty, firstName, lastName, name: firstName+' '+lastName,
+      phone, email, notes: state.bookForm.notes,
+      status: 'confirmee', createdAt: Date.now(), staffSeen: false
+    };
+    // écrit uniquement dans le document complet (réservé au personnel), sans jamais charger
+    // les coordonnées des autres clients dans ce navigateur — seule la vue allégée locale est mise à jour
+    const fullList = await sget('reservations') || [];
+    fullList.push(resa);
+    await sset('reservations', fullList);
+    await syncAvailabilityFromFull(fullList);
+    state.reservations.push(toAvailabilityEntry(resa));
+    state.lastConfirmed = resa;
+    state.emailSent = await sendConfirmationEmail(resa);
+    sendReservationNotification(resa); // ne bloque jamais la confirmation du client si ça échoue
+    state.bookStep = 4;
+    render();
+  };
+
+  const bNew = document.getElementById('btnNewBooking');
+  if(bNew) bNew.onclick = ()=>{
+    state.bookStep = 1; state.bookSlot=null; state.bookTableId=null;
+    state.bookForm = {firstName:'',lastName:'',phone:'',email:'',notes:''};
+    state.lastConfirmed = null; render();
+  };
+
+  // --- ADMIN login
+  const bLogin = document.getElementById('btnLogin');
+  if(bLogin) bLogin.onclick = async ()=>{
+    const pwd = document.getElementById('inpPwd').value;
+    if(!pwd){ state.loginError = 'Renseigne le mot de passe.'; render(); return; }
+    try{
+      const rec = await getData(`restaurant:${RESTAURANT_ID}`, true, null);
+      const authEmail = (rec && rec.recoveryEmail) || slugToAuthEmail(RESTAURANT_ID);
+      await firebase.auth().signInWithEmailAndPassword(authEmail, pwd);
+      state.adminAuthed = true; state.loginError = ''; state.loginPwd = '';
+      state.reservations = await sget('reservations') || [];
+      state.customers = await sget('customers') || [];
+      await syncCustomersFromReservations();
+      await syncAvailabilityFromFull(state.reservations);
+      render();
+    }catch(err){
+      state.loginError = 'Mot de passe incorrect.';
+      if(typeof logAppError==='function') logAppError({message:'Échec connexion espace pro réservation : '+err.message, stack: err.stack});
+      render();
+    }
+  };
+  const bLogout = document.getElementById('btnLogout');
+  if(bLogout) bLogout.onclick = ()=>{ state.adminAuthed=false; state.loginPwd=''; render(); };
+
+  // --- ADMIN tabs
+  root.querySelectorAll('.admin-tab').forEach(b=>{
+    b.onclick = ()=>{ state.adminTab = b.dataset.tab; state.adminZone='salle'; render(); };
+  });
+
+  // --- ADMIN stats
+  const statsPeriodSelect = document.getElementById('statsPeriodSelect');
+  if(statsPeriodSelect) statsPeriodSelect.onchange = ()=>{ state.statsPeriod = statsPeriodSelect.value; render(); };
+  const statsMonthInput = document.getElementById('statsMonthInput');
+  if(statsMonthInput) statsMonthInput.onchange = ()=>{ state.statsMonth = statsMonthInput.value; render(); };
+  const statsFromInput = document.getElementById('statsFromInput');
+  if(statsFromInput) statsFromInput.onchange = ()=>{ state.statsFrom = statsFromInput.value; render(); };
+  const statsToInput = document.getElementById('statsToInput');
+  if(statsToInput) statsToInput.onchange = ()=>{ state.statsTo = statsToInput.value; render(); };
+
+  // --- ADMIN plan
+  root.querySelectorAll('.zone-tab[data-azone]').forEach(b=>{
+    b.onclick = ()=>{ state.adminZone = b.dataset.azone; render(); };
+  });
+  const bToggle = document.getElementById('btnToggleEdit');
+  if(bToggle) bToggle.onclick = ()=>{ state.planEditMode = !state.planEditMode; render(); };
+  const bAddTable = document.getElementById('btnAddTable');
+  if(bAddTable) bAddTable.onclick = ()=>{ state.editingTable=null; state.showTableModal=true; render(); };
+  const inpPlanDate = document.getElementById('inpPlanDate');
+  if(inpPlanDate) inpPlanDate.onchange = ()=>{ state.planDate = inpPlanDate.value; render(); };
+  const bPlanToday = document.getElementById('btnPlanToday');
+  if(bPlanToday) bPlanToday.onclick = ()=>{ state.planDate = todayISO(); render(); };
+
+  if(state.planEditMode){
+    root.querySelectorAll('.table-tile[data-tid]').forEach(el=>{
+      wireDrag(el);
+      el.addEventListener('click', (ev)=>{
+        if(el.dataset.dragged==='1'){ el.dataset.dragged='0'; return; }
+        const t = state.tables.find(x=>x.id===el.dataset.tid);
+        state.editingTable = t; state.showTableModal = true; render();
+      });
+    });
+  } else {
+    root.querySelectorAll('.table-tile[data-tid]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        state.dayModalTableId = el.dataset.tid;
+        state.showDayModal = true;
+        state.quickAddOpen = false;
+        state.quickForm = {slot: allSlots(state.config)[0]||'', party:2, firstName:'', lastName:'', phone:'', email:'', notes:''};
+        render();
+      });
+    });
+  }
+
+  // day modal (fenêtre "table + jour")
+  const dayBackdrop = document.getElementById('dayModalBackdrop');
+  if(dayBackdrop) dayBackdrop.onclick = (e)=>{ if(e.target===dayBackdrop){ state.showDayModal=false; render(); } };
+  const bCloseDayModal = document.getElementById('btnCloseDayModal');
+  if(bCloseDayModal) bCloseDayModal.onclick = ()=>{ state.showDayModal=false; render(); };
+  const bOpenQuickAdd = document.getElementById('btnOpenQuickAdd');
+  if(bOpenQuickAdd) bOpenQuickAdd.onclick = ()=>{ state.quickAddOpen = true; render(); };
+  const bCancelQuickAdd = document.getElementById('btnCancelQuickAdd');
+  if(bCancelQuickAdd) bCancelQuickAdd.onclick = ()=>{ state.quickAddOpen = false; render(); };
+  const bSaveQuickAdd = document.getElementById('btnSaveQuickAdd');
+  if(bSaveQuickAdd) bSaveQuickAdd.onclick = async ()=>{
+    const t = state.tables.find(x=>x.id===state.dayModalTableId);
+    const slot = document.getElementById('qSlot').value;
+    const firstName = document.getElementById('qFirstName').value.trim();
+    const lastName = document.getElementById('qLastName').value.trim();
+    const phone = document.getElementById('qPhone').value.trim();
+    const email = document.getElementById('qEmail').value.trim();
+    const party = parseInt(document.getElementById('qParty').value||'2',10);
+    const notes = document.getElementById('qNotes').value.trim();
+    const name = (firstName || lastName) ? (firstName+' '+lastName).trim() : 'Client sur place';
+    const resa = {
+      id: uid('r'), tableIds: [t.id], date: state.planDate, slot, party,
+      firstName, lastName, name, phone, email, notes,
+      status: 'confirmee', createdAt: Date.now()
+    };
+    state.reservations.push(resa);
+    await persistReservations();
+    if(email) sendConfirmationEmail(resa);
+    state.quickAddOpen = false;
+    toast('Réservation ajoutée.');
+    render();
+  };
+  root.querySelectorAll('[data-arrive]').forEach(b=>{
+    b.onclick = async ()=>{
+      const r = state.reservations.find(x=>x.id===b.dataset.arrive);
+      if(r){ r.status='arrivee'; await persistReservations(); render(); }
+    };
+  });
+  root.querySelectorAll('[data-noshow]').forEach(b=>{
+    b.onclick = async ()=>{
+      const r = state.reservations.find(x=>x.id===b.dataset.noshow);
+      if(r){ r.status='no_show'; await persistReservations(); render(); }
+    };
+  });
+  root.querySelectorAll('.modal [data-cancel]').forEach(b=>{
+    b.onclick = async ()=>{
+      const r = state.reservations.find(x=>x.id===b.dataset.cancel);
+      if(r){ r.status='annulee'; await persistReservations(); render(); toast('Réservation annulée.'); }
+    };
+  });
+
+  // table modal
+  const backdrop = document.getElementById('modalBackdrop');
+  if(backdrop) backdrop.onclick = (e)=>{ if(e.target===backdrop){ state.showTableModal=false; render(); } };
+  const bCancelModal = document.getElementById('btnCancelModal');
+  if(bCancelModal) bCancelModal.onclick = ()=>{ state.showTableModal=false; render(); };
+  const bSaveTable = document.getElementById('btnSaveTable');
+  if(bSaveTable) bSaveTable.onclick = async ()=>{
+    const number = document.getElementById('mNumber').value.trim();
+    const seats = Math.max(1, parseInt(document.getElementById('mSeats').value||'2',10));
+    const shape = document.getElementById('mShape').value;
+    const zone = document.getElementById('mZone').value;
+    if(!number){ toast('Merci de donner un numéro à la table.'); return; }
+    if(state.editingTable && state.editingTable.id){
+      const t = state.tables.find(x=>x.id===state.editingTable.id);
+      Object.assign(t, {number, seats, shape, zone});
+    } else {
+      state.tables.push({id:uid('t'), number, seats, shape, zone, x:50, y:50});
+    }
+    await sset('tables', state.tables);
+    state.showTableModal=false; state.adminZone = zone; render();
+  };
+  const bDeleteTable = document.getElementById('btnDeleteTable');
+  if(bDeleteTable) bDeleteTable.onclick = async ()=>{
+    if(!confirm('Supprimer cette table ? Les réservations existantes liées à cette table resteront en historique.')) return;
+    state.tables = state.tables.filter(x=>x.id!==state.editingTable.id);
+    await sset('tables', state.tables);
+    state.showTableModal=false; render();
+  };
+
+  // --- ADMIN reservations
+  const inpResaDate = document.getElementById('inpResaDate');
+  if(inpResaDate) inpResaDate.onchange = ()=>{ state.resaDate = inpResaDate.value; render(); };
+  const bPrev = document.getElementById('btnPrevDay');
+  if(bPrev) bPrev.onclick = ()=>{ state.resaDate = shiftDate(state.resaDate,-1); render(); };
+  const bNext = document.getElementById('btnNextDay');
+  if(bNext) bNext.onclick = ()=>{ state.resaDate = shiftDate(state.resaDate,1); render(); };
+  root.querySelectorAll('[data-goto-resa-date]').forEach(b=>{
+    b.onclick = ()=>{ state.resaDate = b.dataset.gotoResaDate; render(); };
+  });
+  root.querySelectorAll('[data-cancel]').forEach(b=>{
+    b.onclick = async ()=>{
+      const r = state.reservations.find(x=>x.id===b.dataset.cancel);
+      if(r){ r.status='annulee'; await persistReservations(); render(); toast('Réservation annulée.'); }
+    };
+  });
+  root.querySelectorAll('[data-treat-resa]').forEach(b=>{
+    b.onclick = async ()=>{
+      const r = state.reservations.find(x=>x.id===b.dataset.treatResa);
+      if(r){ r.staffSeen = true; await persistReservations(); render(); toast('Réservation marquée comme traitée ✓'); }
+    };
+  });
+  const inpClientSearch = document.getElementById('inpClientSearch');
+  if(inpClientSearch){
+    inpClientSearch.addEventListener('input', ()=>{
+      state.clientSearch = inpClientSearch.value;
+      render();
+      const el = document.getElementById('inpClientSearch');
+      if(el){ el.focus(); const v = el.value; el.setSelectionRange(v.length, v.length); }
+    });
+  }
+  const bAddManual = document.getElementById('btnAddManual');
+  if(bAddManual) bAddManual.onclick = ()=>{ state.showManualAdd = true; render(); };
+  const manualBackdrop = document.getElementById('manualAddBackdrop');
+  if(manualBackdrop) manualBackdrop.onclick = (e)=>{ if(e.target===manualBackdrop){ state.showManualAdd=false; render(); } };
+  const bCancelManualAdd = document.getElementById('btnCancelManualAdd');
+  if(bCancelManualAdd) bCancelManualAdd.onclick = ()=>{ state.showManualAdd=false; render(); };
+
+  // --- fichier client
+  const inpCustomerSearch = document.getElementById('inpCustomerSearch');
+  if(inpCustomerSearch){
+    inpCustomerSearch.addEventListener('input', ()=>{
+      state.customerSearch = inpCustomerSearch.value;
+      render();
+      const el = document.getElementById('inpCustomerSearch');
+      if(el){ el.focus(); const v = el.value; el.setSelectionRange(v.length, v.length); }
+    });
+  }
+  const bAddCustomer = document.getElementById('btnAddCustomer');
+  if(bAddCustomer) bAddCustomer.onclick = ()=>{ state.showAddCustomer = true; state.editingCustomerId = null; render(); };
+  root.querySelectorAll('[data-edit-customer]').forEach(b=>{
+    b.onclick = ()=>{ state.editingCustomerId = b.dataset.editCustomer; state.showAddCustomer = false; render(); };
+  });
+  root.querySelectorAll('[data-claim-loyalty]').forEach(b=>{
+    b.onclick = async ()=>{
+      const cust = state.customers.find(c=>c.id===b.dataset.claimLoyalty);
+      if(!cust) return;
+      if(!confirm('Confirmer que la récompense a bien été donnée à ce client ?')) return;
+      cust.loyaltyRedeemed = (cust.loyaltyRedeemed||0) + 1;
+      await sset('customers', state.customers);
+      toast('Récompense marquée comme utilisée.');
+      render();
+    };
+  });
+  const customerBackdrop = document.getElementById('customerBackdrop');
+  if(customerBackdrop) customerBackdrop.onclick = (e)=>{ if(e.target===customerBackdrop){ state.showAddCustomer=false; state.editingCustomerId=null; render(); } };
+  const bCancelCustomer = document.getElementById('btnCancelCustomer');
+  if(bCancelCustomer) bCancelCustomer.onclick = ()=>{ state.showAddCustomer=false; state.editingCustomerId=null; render(); };
+  const bSaveCustomer = document.getElementById('btnSaveCustomer');
+  if(bSaveCustomer) bSaveCustomer.onclick = async ()=>{
+    const firstName = document.getElementById('cuFirstName').value.trim();
+    const lastName = document.getElementById('cuLastName').value.trim();
+    const phone = document.getElementById('cuPhone').value.trim();
+    const email = document.getElementById('cuEmail').value.trim();
+    const notes = document.getElementById('cuNotes').value.trim();
+    const name = `${firstName} ${lastName}`.trim();
+    if(!name && !phone){ toast('Renseigne au moins un nom ou un téléphone.'); return; }
+    if(state.editingCustomerId){
+      const c = state.customers.find(x=>x.id===state.editingCustomerId);
+      c.firstName=firstName; c.lastName=lastName; c.name=name||c.name; c.phone=phone; c.email=email; c.notes=notes;
+      c.updatedAt = new Date().toISOString();
+    }else{
+      state.customers.push({
+        id: uid('c'), firstName, lastName, name: name||'Client', phone, email, notes,
+        reservationCount: 0, source:'staff', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), lastVisitAt: null
+      });
+    }
+    await sset('customers', state.customers);
+    state.showAddCustomer=false; state.editingCustomerId=null;
+    render();
+    toast('Client enregistré ✓');
+  };
+  const bDeleteCustomer = document.getElementById('btnDeleteCustomer');
+  if(bDeleteCustomer) bDeleteCustomer.onclick = async ()=>{
+    if(!confirm('Supprimer définitivement ce client du fichier ?')) return;
+    state.customers = state.customers.filter(c=>c.id!==state.editingCustomerId);
+    await sset('customers', state.customers);
+    state.editingCustomerId=null;
+    render();
+    toast('Client supprimé.');
+  };
+  const maSlot = document.getElementById('maSlot');
+  const maTableWrap = document.getElementById('maTableWrap');
+  if(maSlot && maTableWrap){
+    maSlot.addEventListener('change', ()=>{
+      const keep = Array.from(maTableWrap.querySelectorAll('.table-check:checked')).map(c=>c.value);
+      maTableWrap.innerHTML = tableCheckboxesHtml(state.resaDate, maSlot.value, keep, null);
+    });
+  }
+  const bSaveManualAdd = document.getElementById('btnSaveManualAdd');
+  if(bSaveManualAdd) bSaveManualAdd.onclick = async ()=>{
+    const slot = document.getElementById('maSlot').value;
+    const party = parseInt(document.getElementById('maParty').value,10);
+    const name = document.getElementById('maName').value.trim() || 'Client sur place';
+    const phone = document.getElementById('maPhone').value.trim();
+    const tableIds = Array.from(document.querySelectorAll('#maTableWrap .table-check:checked')).map(c=>c.value);
+    if(!tableIds.length){ toast('Choisis au moins une table.'); return; }
+    const taken = tableIds.filter(id=>!isTableFree(id, state.resaDate, slot));
+    if(taken.length){
+      toast('Une des tables choisies est déjà prise sur ce créneau — vérifie ta sélection.');
+      return;
+    }
+    const resa = {id:uid('r'), tableIds, date:state.resaDate, slot, party, name, phone, email:'', notes:'Ajout manuel', status:'confirmee', createdAt:Date.now(), staffSeen:true};
+    if(!state.customers) state.customers = await sget('customers') || [];
+    const cust = findOrCreateCustomer(resa, 'staff');
+    resa.customerId = cust.id;
+    state.reservations.push(resa);
+    await persistReservations();
+    await sset('customers', state.customers);
+    state.showManualAdd = false;
+    render();
+    toast('Réservation ajoutée.');
+  };
+
+  // --- édition d'une réservation existante (table, horaire, convives, coordonnées)
+  root.querySelectorAll('[data-edit-resa]').forEach(b=>{
+    b.onclick = ()=>{ state.editingResaId = b.dataset.editResa; render(); };
+  });
+  const editBackdrop = document.getElementById('editResaBackdrop');
+  if(editBackdrop) editBackdrop.onclick = (e)=>{ if(e.target===editBackdrop){ state.editingResaId=null; render(); } };
+  const bCancelEditResa = document.getElementById('btnCancelEditResa');
+  if(bCancelEditResa) bCancelEditResa.onclick = ()=>{ state.editingResaId=null; render(); };
+  const erSlot = document.getElementById('erSlot');
+  const erTableWrap = document.getElementById('erTableWrap');
+  if(erSlot && erTableWrap){
+    erSlot.addEventListener('change', ()=>{
+      const keep = Array.from(erTableWrap.querySelectorAll('.table-check:checked')).map(c=>c.value);
+      erTableWrap.innerHTML = tableCheckboxesHtml(state.reservations.find(x=>x.id===state.editingResaId).date, erSlot.value, keep, state.editingResaId);
+    });
+  }
+  const bSaveEditResa = document.getElementById('btnSaveEditResa');
+  if(bSaveEditResa) bSaveEditResa.onclick = async ()=>{
+    const resa = state.reservations.find(x=>x.id===state.editingResaId);
+    if(!resa) return;
+    const newSlot = document.getElementById('erSlot').value;
+    const newParty = parseInt(document.getElementById('erParty').value,10);
+    const newTableIds = Array.from(document.querySelectorAll('#erTableWrap .table-check:checked')).map(c=>c.value);
+    const newName = document.getElementById('erName').value.trim() || resa.name;
+    const newPhone = document.getElementById('erPhone').value.trim();
+    const newEmail = document.getElementById('erEmail').value.trim();
+    const newNotes = document.getElementById('erNotes').value.trim();
+
+    const oldTableIds = resaTableIds(resa);
+    const changedTables = JSON.stringify([...oldTableIds].sort()) !== JSON.stringify([...newTableIds].sort());
+    if(changedTables){
+      const conflicts = newTableIds
+        .map(id=> state.reservations.find(x=> x.id!==resa.id && resaTableIds(x).includes(id) && x.date===resa.date && x.slot===newSlot && x.status!=='annulee'))
+        .filter(Boolean);
+      if(conflicts.length){
+        const names = [...new Set(conflicts.map(c=>c.name))].join(', ');
+        if(!confirm(`Au moins une table choisie est déjà utilisée par ${names} sur ce créneau. Continuer quand même ?`)) return;
+      }
+    }
+    resa.tableIds = newTableIds;
+    delete resa.tableId; // on ne garde plus que le champ tableIds désormais
+    resa.slot = newSlot;
+    resa.party = newParty;
+    resa.name = newName;
+    resa.phone = newPhone;
+    resa.email = newEmail;
+    resa.notes = newNotes;
+    resa.staffSeen = true; // la table a été confirmée/attribuée par l'équipe : la réservation est traitée
+
+    await persistReservations();
+    state.editingResaId = null;
+    render();
+    toast('Réservation mise à jour.');
+  };
+
+  // --- ADMIN settings
+  const bSaveId = document.getElementById('btnSaveIdentity');
+  if(bSaveId) bSaveId.onclick = async ()=>{
+    state.config.name = document.getElementById('sName').value.trim() || state.config.name;
+    state.config.maxPartySize = Math.max(1, parseInt(document.getElementById('sMaxParty').value||'12',10));
+    state.config.reservationDurationMin = Math.max(15, parseInt(document.getElementById('sDuration').value||'90',10));
+    await sset('config', state.config); toast('Enregistré.'); render();
+  };
+  const bSaveLoyalty = document.getElementById('btnSaveLoyalty');
+  if(bSaveLoyalty) bSaveLoyalty.onclick = async ()=>{
+    state.config.loyalty = {
+      enabled: document.getElementById('sLoyaltyEnabled').checked,
+      visitsRequired: Math.max(1, parseInt(document.getElementById('sLoyaltyVisits').value||'5',10)),
+      reward: document.getElementById('sLoyaltyReward').value.trim(),
+    };
+    await sset('config', state.config); toast('Programme de fidélité enregistré.'); render();
+  };
+  // plages de service
+  root.querySelectorAll('.sw-label, .sw-start, .sw-end').forEach(inp=>{
+    inp.onchange = ()=>{
+      const w = state.config.serviceWindows.find(x=>x.id===inp.dataset.id);
+      if(!w) return;
+      if(inp.classList.contains('sw-label')) w.label = inp.value;
+      if(inp.classList.contains('sw-start')) w.start = inp.value;
+      if(inp.classList.contains('sw-end')) w.end = inp.value;
+    };
+  });
+  root.querySelectorAll('[data-rmwindow]').forEach(b=>{
+    b.onclick = async ()=>{
+      state.config.serviceWindows = state.config.serviceWindows.filter(w=>w.id!==b.dataset.rmwindow);
+      await sset('config', state.config); render();
+    };
+  });
+  const bAddWindow = document.getElementById('btnAddWindow');
+  if(bAddWindow) bAddWindow.onclick = async ()=>{
+    const label = document.getElementById('inpNewSwLabel').value.trim() || 'Service';
+    const start = document.getElementById('inpNewSwStart').value;
+    const end = document.getElementById('inpNewSwEnd').value;
+    if(!start || !end || start>=end){ toast('Vérifie les horaires de la plage.'); return; }
+    state.config.serviceWindows.push({id: uid('sw'), label, start, end});
+    await sset('config', state.config); render();
+  };
+  const bSaveSlotMax = document.getElementById('btnSaveSlotMax');
+  if(bSaveSlotMax) bSaveSlotMax.onclick = async ()=>{
+    // sauvegarde d'abord les plages (au cas où modifiées juste avant sans changer de champ)
+    await sset('config', state.config);
+    const newMax = {};
+    root.querySelectorAll('.slot-max-input').forEach(inp=>{
+      const v = inp.value.trim();
+      if(v !== '') newMax[inp.dataset.slot] = Math.max(0, parseInt(v,10));
+    });
+    state.config.slotMax = newMax;
+    await sset('config', state.config);
+    toast('Plafonds enregistrés.'); render();
+  };
+  const inpClosureDate = document.getElementById('inpClosureDate');
+  if(inpClosureDate) inpClosureDate.onchange = ()=>{ state.closureDate = inpClosureDate.value; render(); };
+  const bSaveClosures = document.getElementById('btnSaveClosures');
+  if(bSaveClosures) bSaveClosures.onclick = async ()=>{
+    const date = document.getElementById('inpClosureDate').value;
+    const closed = Array.from(root.querySelectorAll('.closure-check:checked')).map(c=>c.dataset.slot);
+    if(!state.config.closedSlots) state.config.closedSlots = {};
+    if(closed.length) state.config.closedSlots[date] = closed;
+    else delete state.config.closedSlots[date];
+    await sset('config', state.config);
+    toast('Fermetures enregistrées pour cette date.'); render();
+  };
+  const bAddZone = document.getElementById('btnAddZone');
+  if(bAddZone) bAddZone.onclick = async ()=>{
+    const v = document.getElementById('inpNewZone').value.trim();
+    if(!v) return;
+    state.config.zones.push({id: uid('z'), name: v});
+    await sset('config', state.config); render();
+  };
+  root.querySelectorAll('[data-rmzone]').forEach(b=>{
+    b.onclick = async ()=>{
+      if(state.tables.some(t=>t.zone===b.dataset.rmzone)){ toast('Impossible : des tables existent encore dans cette zone.'); return; }
+      state.config.zones = state.config.zones.filter(z=>z.id!==b.dataset.rmzone);
+      await sset('config', state.config); render();
+    };
+  });
+  const bSaveEjs = document.getElementById('btnSaveEmailjs');
+  if(bSaveEjs) bSaveEjs.onclick = async ()=>{
+    state.config.emailjsServiceId = document.getElementById('sEjsService').value.trim();
+    state.config.emailjsTemplateId = document.getElementById('sEjsTemplate').value.trim();
+    state.config.emailjsPublicKey = document.getElementById('sEjsKey').value.trim();
+    await sset('config', state.config); toast('Réglages email enregistrés.'); render();
+  };
+  const bSaveNotify = document.getElementById('btnSaveNotify');
+  if(bSaveNotify) bSaveNotify.onclick = async ()=>{
+    state.config.notifyEmail = document.getElementById('sNotifyEmail').value.trim();
+    state.config.emailjsNotifyTemplateId = document.getElementById('sEjsNotifyTemplate').value.trim();
+    await sset('config', state.config); toast('Réglages de notification enregistrés.'); render();
+  };
+  const bCopyLink = document.getElementById('btnCopyLink');
+  if(bCopyLink) bCopyLink.onclick = ()=>{
+    const box = document.getElementById('clientLinkBox');
+    box.select(); document.execCommand && document.execCommand('copy');
+    navigator.clipboard && navigator.clipboard.writeText(box.value).catch(()=>{});
+    toast('Lien copié.');
+  };
+}
+
+function shiftDate(iso, delta){
+  const d = new Date(iso+'T00:00:00');
+  d.setDate(d.getDate()+delta);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+/* ===================== drag & drop (pointer events) ===================== */
+function wireDrag(el){
+  el.addEventListener('pointerdown', (ev)=>{
+    ev.preventDefault();
+    const canvas = document.getElementById('planCanvas');
+    const rect = canvas.getBoundingClientRect();
+    el.setPointerCapture(ev.pointerId);
+    el.dataset.dragged = '0';
+    const move = (mv)=>{
+      const x = Math.min(97, Math.max(3, ((mv.clientX-rect.left)/rect.width)*100));
+      const y = Math.min(95, Math.max(5, ((mv.clientY-rect.top)/rect.height)*100));
+      el.style.left = x+'%'; el.style.top = y+'%';
+      el.dataset.dragged = '1';
+      el.dataset.x = x; el.dataset.y = y;
+    };
+    const up = async (upEv)=>{
+      el.removeEventListener('pointermove', move);
+      el.removeEventListener('pointerup', up);
+      if(el.dataset.dragged==='1'){
+        const t = state.tables.find(x=>x.id===el.dataset.tid);
+        t.x = parseFloat(el.dataset.x); t.y = parseFloat(el.dataset.y);
+        await sset('tables', state.tables);
+      }
+    };
+    el.addEventListener('pointermove', move);
+    el.addEventListener('pointerup', up);
+  });
+}
+
+async function resolveRestaurantAndStart(){
+  if(RESTAURANT_ID){
+    try{
+      const doc = await db.collection(FS_COLLECTION).doc(encodeKey(`restaurant:${RESTAURANT_ID}`)).get();
+      if(doc.exists){ init(); return; }
+    }catch(e){}
+    RESTAURANT_ID = null;
+  }
+  renderRestaurantPicker();
+}
+function renderRestaurantPicker(msg){
+  document.getElementById('root').innerHTML = `
+    <div style="max-width:360px;margin:60px auto;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 22px;text-align:center;">
+      <div class="eyebrow">Réservation en ligne</div>
+      <h2 style="margin:0 0 14px;">Quel restaurant ?</h2>
+      <div class="field" style="text-align:left;">
+        <label>Code établissement</label>
+        <input id="rp-code" placeholder="ex : cannes">
+      </div>
+      ${msg?`<div style="color:var(--danger);font-size:13px;margin-bottom:10px;">${msg}</div>`:''}
+      <button class="btn btn-primary" style="width:100%;" id="rp-go">Continuer</button>
+    </div>`;
+  document.getElementById('rp-go').onclick = async ()=>{
+    const code = slugify(document.getElementById('rp-code').value.trim());
+    if(!code) return;
+    const doc = await db.collection(FS_COLLECTION).doc(encodeKey(`restaurant:${code}`)).get();
+    if(!doc.exists){ renderRestaurantPicker('Code établissement introuvable.'); return; }
+    RESTAURANT_ID = code;
+    init();
+  };
+}
+resolveRestaurantAndStart();
+})();
+</script>
+</body>
+</html>

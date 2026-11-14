@@ -1,5 +1,8 @@
 {
     "require": {
         "flightphp/core": "^3.19"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11"
     }
 }
