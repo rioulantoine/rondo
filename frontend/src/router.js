@@ -7,6 +7,7 @@ const routes = [
   { path: '/', component: () => import('./views/HomeView.vue'), meta: { shell: true } },
   { path: '/registres', component: () => import('./views/RegistresView.vue'), meta: { shell: true } },
   { path: '/registres/:sp(cuisine|salle|bar)', component: () => import('./views/EspaceView.vue'), meta: { shell: true, permFromParam: 'sp' } },
+  { path: '/pointer', component: () => import('./views/PointerView.vue'), meta: { shell: true } },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
