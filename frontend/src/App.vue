@@ -45,6 +45,7 @@ async function logout() {
         </button>
         <div v-if="menuOpen" class="menu panel" role="menu" @keydown.esc="menuOpen = false">
           <p class="menu-name">{{ session.person.name }}</p>
+          <RouterLink v-if="session.person.owner" role="menuitem" class="btn btn-ghost" to="/equipe" @click="menuOpen = false">Équipe et accès</RouterLink>
           <button role="menuitem" class="btn btn-ghost" @click="switchPerson">Changer de personne</button>
           <button role="menuitem" class="btn btn-ghost" @click="logout">Changer d'établissement</button>
         </div>
