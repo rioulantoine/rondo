@@ -131,7 +131,7 @@ async function removeTrace(e) {
     </div>
 
     <p v-if="error" class="error-text" role="alert">{{ error }}</p>
-    <div v-if="!d && !error" class="sk panel" aria-busy="true" />
+    <div v-if="!d && !error" class="skeleton sk" aria-busy="true" />
 
     <template v-if="d">
       <!-- ================= Aujourd'hui ================= -->
@@ -169,7 +169,7 @@ async function removeTrace(e) {
 
       <!-- ================= Températures ================= -->
       <section v-if="tab === 'temp'" class="stack">
-        <ul v-if="isCurrentMonth" class="register panel eqs">
+        <ul v-if="isCurrentMonth" class="register panel eqs rise-list">
           <li v-for="eq in d.equipments" :key="eq.id">
             <button class="eq-row" :aria-expanded="openEq === eq.id" @click="openTemp(eq)">
               <span class="txt">
@@ -179,6 +179,7 @@ async function removeTrace(e) {
               <span v-if="lastToday(eq.id)" class="data last" :class="{ out: !lastToday(eq.id).ok }">{{ num(lastToday(eq.id).value) }}°</span>
               <span v-else class="caption">À relever</span>
             </button>
+            <Transition name="open">
             <form v-if="openEq === eq.id" class="temp-form" @submit.prevent="saveTemp(eq)">
               <div class="value-line">
                 <button v-if="eq.min < 0" type="button" class="btn btn-secondary sign data" :aria-pressed="tf.negative" @click="tf.negative = !tf.negative">{{ tf.negative ? '−' : '+' }}</button>
@@ -199,6 +200,7 @@ async function removeTrace(e) {
               </label>
               <button class="btn btn-primary btn-block" :disabled="busy || tfValue === null || (tfOut(eq) && !tf.comment.trim())">Enregistrer le relevé</button>
             </form>
+            </Transition>
           </li>
         </ul>
 
@@ -237,6 +239,7 @@ async function removeTrace(e) {
       <!-- ================= Traçabilité ================= -->
       <section v-if="tab === 'trace'" class="stack">
         <button v-if="!showTraceForm && isCurrentMonth" class="btn btn-primary" @click="showTraceForm = true"><Plus :size="20" :stroke-width="1.7" /> Nouvelle entrée</button>
+        <Transition name="open">
         <form v-if="showTraceForm" class="panel pad stack" @submit.prevent="saveTrace">
           <div class="seg" role="radiogroup" aria-label="Type d'entrée">
             <button v-for="(label, id) in d.traceTypes" :key="id" type="button" role="radio" :aria-checked="trf.type === id" class="seg-btn" :class="{ on: trf.type === id }" @click="trf.type = id">{{ label }}</button>
@@ -253,6 +256,7 @@ async function removeTrace(e) {
             <button class="btn btn-primary grow" :disabled="busy || !trf.product.trim()">Enregistrer</button>
           </div>
         </form>
+        </Transition>
 
         <div class="panel pad">
           <div class="month-nav">
@@ -280,7 +284,7 @@ async function removeTrace(e) {
 .pad > h2 { padding-top: 14px; }
 .h-ico { display: flex; align-items: center; gap: 8px; color: var(--alert); }
 .all-ok { justify-self: start; }
-.sk { height: 240px; background: var(--sand-dark); }
+.sk { height: 240px; }
 
 .tabs { display: flex; gap: 4px; padding: 4px; background: var(--sand-dark); border-radius: var(--r-m); overflow-x: auto; scrollbar-width: none; }
 .tab { flex: 1 0 auto; min-height: 44px; padding: 0 10px; border: none; border-radius: var(--r-s); background: transparent; color: var(--ink-soft); font-weight: 500; font-size: 15px; }
