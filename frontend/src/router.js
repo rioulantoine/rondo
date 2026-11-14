@@ -10,6 +10,8 @@ const routes = [
   { path: '/pointer', component: () => import('./views/PointerView.vue'), meta: { shell: true } },
   { path: '/planning', component: () => import('./views/PlanningView.vue'), meta: { shell: true, wide: true } },
   { path: '/equipe', component: () => import('./views/EquipeView.vue'), meta: { shell: true, owner: true } },
+  { path: '/reservations', component: () => import('./views/ReservationsView.vue'), meta: { shell: true, perm: 'reservation' } },
+  { path: '/r/:code', component: () => import('./views/PublicReservationView.vue'), meta: { public: true } },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
@@ -22,6 +24,7 @@ router.beforeEach(async (to) => {
   if (to.meta.needsRestaurant) return true
   if (!session.person) return '/qui'
   if (to.meta.owner && !session.person.owner) return '/'
+  if (to.meta.perm && !can(to.meta.perm)) return '/'
   if (to.meta.permFromParam && !can(to.params[to.meta.permFromParam])) return '/registres'
   return true
 })

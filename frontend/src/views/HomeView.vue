@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { ChevronRight, TriangleAlert, Megaphone, CookingPot, UtensilsCrossed, Wine, CalendarDays, Check } from 'lucide-vue-next'
-import { api, session } from '../api'
+import { ChevronRight, TriangleAlert, Megaphone, CookingPot, UtensilsCrossed, Wine, CalendarDays, Check, BookMarked } from 'lucide-vue-next'
+import { api, session, can } from '../api'
 import { num, time, day, dayLong, dlcState } from '../format'
 import { toast } from '../toast'
 
@@ -107,6 +107,13 @@ async function validate(e) {
             <span class="ico"><component :is="ICONS[s.space]" :size="22" :stroke-width="1.7" /></span>
             <span class="grow"><span class="title">{{ s.label }}</span><span class="caption">{{ BLURB[s.space] }}</span></span>
             <span class="data count" :class="{ done: s.tasksDone === s.tasksTotal }">{{ s.tasksDone }} / {{ s.tasksTotal }}</span>
+          </RouterLink>
+        </li>
+        <li v-if="can('reservation')">
+          <RouterLink to="/reservations" class="row link space">
+            <span class="ico"><BookMarked :size="22" :stroke-width="1.7" /></span>
+            <span class="grow"><span class="title">Réservations</span><span class="caption">Service du jour, ajout au téléphone</span></span>
+            <ChevronRight :size="18" :stroke-width="1.7" class="chev" />
           </RouterLink>
         </li>
       </ul>
