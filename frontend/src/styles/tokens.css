@@ -14,6 +14,7 @@
   --sand: #FFFFFF;
   --sand-dark: #F7F8FA;
   --mist: #EDEFF3;
+  --bg: #F1F3F7;          /* fond groupé (façon réglages iOS) : les panneaux blancs s'y détachent sans bordure */
   --line: #DCDFE5;
   --ink: #23272F;
   --ink-soft: #5A606B;
@@ -25,11 +26,17 @@
   --font-ui: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
   --font-data: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   /* formes et mouvement */
-  --r-s: 6px; --r-m: 10px; --r-l: 14px;
+  /* coins plus généreux, à la manière d'iOS (demande d'évolution de la charte) */
+  --r-s: 8px; --r-m: 12px; --r-l: 18px; --r-xl: 26px;
   --ease-out: cubic-bezier(.23, 1, .32, 1);       /* entrées, retours tactiles (charte) */
   --ease-in-out: cubic-bezier(.77, 0, .175, 1);   /* déplacement à l'écran */
   --ease-drawer: cubic-bezier(.32, .72, 0, 1);    /* panneaux qui s'ouvrent */
+  --ease-back: cubic-bezier(.34, 1.56, .64, 1);   /* easeOutBack : rebond réservé aux moments rares */
   --dur-press: 160ms; --dur-ui: 220ms; --dur-enter: 320ms;
+  /* matériau translucide des barres */
+  --material: color-mix(in srgb, var(--sand) 72%, transparent);
+  --material-filter: saturate(180%) blur(20px);
+  --hairline: color-mix(in srgb, var(--ink) 10%, transparent);
   --shadow: 0 1px 2px rgb(28 42 74 / .06), 0 8px 24px -12px rgb(28 42 74 / .18);
   --shadow-lg: 0 2px 4px rgb(28 42 74 / .05), 0 24px 48px -20px rgb(28 42 74 / .28);
   color-scheme: light;
@@ -44,7 +51,7 @@
     --on-dark-soft: #9AA3B5;
     --tint: #1F3A3B; --tint-strong: #2C5452;
     --accent-deep: #BFE3DC;
-    --sand: #0E1422; --sand-dark: #161D2E; --mist: #1C2438;
+    --sand: #121A2B; --sand-dark: #1A2337; --mist: #222C43; --bg: #0A0F1C;
     --line: #27314A; --ink: #E8EAEF; --ink-soft: #9AA3B5;
     --ok: #7FD1A3; --ok-bg: #15301F; --warn: #F2B45A; --warn-bg: #33260F; --alert: #FF9B8E; --alert-bg: #3A1A1A;
     --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px -12px rgb(0 0 0 / .5);

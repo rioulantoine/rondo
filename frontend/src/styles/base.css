@@ -9,7 +9,7 @@ html {
 }
 body {
   margin: 0;
-  background: var(--sand);
+  background: var(--bg);
   color: var(--ink);
   font: 400 16px/24px var(--font-ui);
   -webkit-font-smoothing: antialiased;
@@ -18,8 +18,9 @@ body {
 :focus-visible { outline: 2px solid var(--sea-deep); outline-offset: 2px; border-radius: var(--r-s); }
 
 h1, h2, h3 { margin: 0; color: var(--sea-deep); text-wrap: balance; }
-h1 { font: 600 28px/32px var(--font-ui); letter-spacing: -0.02em; }
-h2 { font: 600 20px/26px var(--font-ui); letter-spacing: -0.01em; }
+/* grand titre façon iOS */
+h1 { font: 700 34px/40px var(--font-ui); letter-spacing: -0.03em; }
+h2 { font: 650 20px/26px var(--font-ui); letter-spacing: -0.015em; }
 h3 { font: 600 16px/24px var(--font-ui); }
 p { margin: 0; }
 a { color: var(--sea-deep); text-underline-offset: 3px; }
@@ -45,7 +46,8 @@ button, [role="button"], .btn {
 .btn:active:not(:disabled) { transform: scale(.97); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn-primary { background: var(--sea-deep); color: var(--on-sea); }
-.btn-secondary { background: var(--sand); color: var(--sea-deep); border-color: var(--line); }
+/* bouton « teinté » : fond léger de la couleur d'action, sans bordure */
+.btn-secondary { background: color-mix(in srgb, var(--sea-deep) 9%, var(--sand)); color: var(--sea-deep); }
 .btn-ghost { background: transparent; color: var(--sea-deep); }
 .btn-danger { background: var(--alert-bg); color: var(--alert); }
 .btn-block { width: 100%; }
@@ -60,11 +62,12 @@ button, [role="button"], .btn {
 .input, select.input, textarea.input {
   width: 100%; min-height: 48px; padding: 12px 14px;
   font: 400 16px/22px var(--font-ui); color: var(--ink);
-  background: var(--sand); border: 1.5px solid var(--line); border-radius: var(--r-m);
+  background: var(--mist); border: 1.5px solid transparent; border-radius: var(--r-m);
   caret-color: var(--sea-deep);
-  transition: border-color 160ms var(--ease-out);
+  transition: border-color var(--dur-press) var(--ease-out), background-color var(--dur-press) ease, box-shadow var(--dur-press) ease;
 }
-.input:focus { outline: none; border-color: var(--sea-deep); box-shadow: 0 0 0 3px var(--tint); }
+.input:focus { outline: none; background: var(--sand); border-color: var(--sea-deep); box-shadow: 0 0 0 4px var(--tint); }
+.input::placeholder { color: color-mix(in srgb, var(--ink-soft) 80%, transparent); }
 .input[aria-invalid="true"] { border-color: var(--alert); }
 .check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 20px; color: var(--ink-soft); }
 .check input { width: 20px; height: 20px; accent-color: var(--sea-deep); margin: 0; flex: none; }
@@ -79,7 +82,8 @@ button, [role="button"], .btn {
 .error-text { color: var(--alert); font-size: 14px; line-height: 20px; }
 
 /* ---------- surfaces ---------- */
-.panel { background: var(--sand); border: 1px solid var(--line); border-radius: var(--r-l); }
+/* panneau groupé : blanc sur fond gris, détaché par un filet quasi invisible plutôt qu'une bordure */
+.panel { background: var(--sand); border: none; border-radius: var(--r-l); box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .04); }
 .stack { display: grid; gap: 16px; }
 
 /* ---------- registre : la signature Rondo ---------- */
