@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { num, entryNo, shiftMonth, dlcState, daysUntil } from '../format'
+import { num, entryNo, shiftMonth, dlcState, daysUntil, slugify } from '../format'
 
 describe('format', () => {
   it('écrit les chiffres comme la charte', () => {
@@ -20,5 +20,10 @@ describe('format', () => {
     expect(dlcState(0).label).toBe('À jeter aujourd’hui')
     expect(dlcState(-1).cls).toBe('alert')
     expect(dlcState(4).cls).toBe('ok')
+  })
+
+  it('déduit le code comme le serveur', () => {
+    expect(slugify('  Sumo Beach! ')).toBe('sumo-beach')
+    expect(slugify('Chez Lulu — Crêperie')).toBe('chez-lulu-creperie')
   })
 })

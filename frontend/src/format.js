@@ -41,3 +41,7 @@ export function dlcState(daysLeft) {
 export function daysUntil(date, today = todayParis()) {
   return Math.round((new Date(date + 'T12:00:00Z') - new Date(today + 'T12:00:00Z')) / 86400000)
 }
+
+/** Code d'établissement, même règle que la v1 et que le serveur (Team::slugify). */
+export const slugify = (s = '') =>
+  s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
