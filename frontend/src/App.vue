@@ -58,7 +58,7 @@ async function logout() {
       </RouterLink>
     </nav>
 
-    <main class="content" @click="menuOpen = false">
+    <main class="content" :class="{ wide: route.meta.wide }" @click="menuOpen = false">
       <RouterView />
     </main>
   </div>
@@ -83,6 +83,7 @@ async function logout() {
 .menu .btn { justify-content: flex-start; font-weight: 500; }
 .menu-name { padding: 8px 20px; font-weight: 600; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
 .content { grid-area: content; width: 100%; max-width: 960px; margin: 0 auto; padding: 24px 16px 32px; }
+.content.wide { max-width: 1440px; }
 .nav {
   grid-area: nav; position: sticky; bottom: 0; z-index: 10;
   display: flex; justify-content: space-around;
