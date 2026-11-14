@@ -26,8 +26,12 @@
   --font-data: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   /* formes et mouvement */
   --r-s: 6px; --r-m: 10px; --r-l: 14px;
-  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --ease-out: cubic-bezier(.23, 1, .32, 1);       /* entrées, retours tactiles (charte) */
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);   /* déplacement à l'écran */
+  --ease-drawer: cubic-bezier(.32, .72, 0, 1);    /* panneaux qui s'ouvrent */
+  --dur-press: 160ms; --dur-ui: 220ms; --dur-enter: 320ms;
   --shadow: 0 1px 2px rgb(28 42 74 / .06), 0 8px 24px -12px rgb(28 42 74 / .18);
+  --shadow-lg: 0 2px 4px rgb(28 42 74 / .05), 0 24px 48px -20px rgb(28 42 74 / .28);
   color-scheme: light;
 }
 
@@ -44,6 +48,7 @@
     --line: #27314A; --ink: #E8EAEF; --ink-soft: #9AA3B5;
     --ok: #7FD1A3; --ok-bg: #15301F; --warn: #F2B45A; --warn-bg: #33260F; --alert: #FF9B8E; --alert-bg: #3A1A1A;
     --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px -12px rgb(0 0 0 / .5);
+    --shadow-lg: 0 2px 4px rgb(0 0 0 / .3), 0 24px 48px -20px rgb(0 0 0 / .6);
     color-scheme: dark;
   }
 }
