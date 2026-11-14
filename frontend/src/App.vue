@@ -97,15 +97,15 @@ async function logout() {
   grid-area: bar; position: sticky; top: 0; z-index: 10;
   display: flex; align-items: center; gap: 12px;
   padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
-  background: color-mix(in srgb, var(--sand) 92%, transparent); backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line);
+  background: var(--material); -webkit-backdrop-filter: var(--material-filter); backdrop-filter: var(--material-filter);
+  box-shadow: 0 .5px 0 var(--hairline);
 }
 .home-link { display: flex; text-decoration: none; }
 .resto { flex: 1; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .me { position: relative; }
 .me-btn { width: 44px; height: 44px; border: none; transition: box-shadow var(--dur-press) var(--ease-out); }
 .me-btn[aria-expanded='true'] { box-shadow: 0 0 0 3px var(--tint-strong); }
-.menu { position: absolute; right: 0; top: 52px; min-width: 260px; padding: 8px; display: grid; box-shadow: var(--shadow-lg); transform-origin: top right; z-index: 20; }
+.menu { position: absolute; right: 0; top: 52px; min-width: 260px; padding: 8px; display: grid; box-shadow: var(--shadow-lg); transform-origin: top right; z-index: 20; border-radius: var(--r-l); background: color-mix(in srgb, var(--sand) 86%, transparent); -webkit-backdrop-filter: var(--material-filter); backdrop-filter: var(--material-filter); }
 /* menu ancré au bouton : il s'ouvre depuis son coin */
 .pop-enter-active { transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out); }
 .pop-leave-active { transition: opacity 120ms ease, transform 120ms ease; }
@@ -118,16 +118,18 @@ async function logout() {
   grid-area: nav; position: sticky; bottom: 0; z-index: 10;
   display: flex; justify-content: space-around;
   padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
-  background: color-mix(in srgb, var(--sand) 88%, transparent); backdrop-filter: saturate(1.4) blur(16px);
-  border-top: 1px solid var(--line);
+  background: var(--material); -webkit-backdrop-filter: var(--material-filter); backdrop-filter: var(--material-filter);
+  box-shadow: 0 -.5px 0 var(--hairline);
 }
 .nav-item {
   flex: 1; max-width: 120px; display: grid; justify-items: center; gap: 2px; padding: 6px 4px;
-  border-radius: var(--r-m); color: var(--ink-soft); text-decoration: none; font-size: 12px; font-weight: 500;
+  border-radius: var(--r-m); color: var(--ink-soft); text-decoration: none; font-size: 11px; font-weight: 500; letter-spacing: .01em;
   -webkit-touch-callout: none; transition: background-color var(--dur-press) ease, color var(--dur-press) ease;
 }
-.nav-item.on { color: var(--accent-deep); background: var(--tint); }
-.nav-item.on span { font-weight: 600; }
+/* onglet actif : teinté, sans pastille (barre d'onglets iOS) ; pastille seulement sur le rail */
+.nav-item.on { color: var(--accent-deep); }
+.nav-item.on span { font-weight: 650; }
+.nav-item:active { transform: scale(.94); transition: transform 100ms ease-out; }
 @media (hover: hover) and (pointer: fine) { .nav-item:not(.on):hover { background: var(--sand-dark); color: var(--ink); } }
 .skip { position: fixed; left: 12px; top: -60px; z-index: 100; padding: 10px 16px; border-radius: var(--r-m); background: var(--sea-deep); color: var(--on-sea); font-weight: 600; text-decoration: none; }
 .skip:focus { top: calc(12px + env(safe-area-inset-top)); }
@@ -135,8 +137,10 @@ async function logout() {
 /* tablette et ordinateur : la navigation devient un rail */
 @media (min-width: 900px) {
   .shell { grid-template-columns: 96px 1fr; grid-template-rows: auto 1fr; grid-template-areas: 'bar bar' 'nav content'; }
-  .nav { position: sticky; top: 61px; align-self: start; height: calc(100dvh - 61px); flex-direction: column; justify-content: flex-start; gap: 8px; padding: 16px 8px; border-top: none; border-right: 1px solid var(--line); }
+  .nav { position: sticky; top: 61px; align-self: start; height: calc(100dvh - 61px); flex-direction: column; justify-content: flex-start; gap: 8px; padding: 16px 8px; }
   .nav-item { flex: none; padding: 10px 4px; }
+  .nav-item.on { background: var(--tint); }
+  .nav { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: .5px 0 0 var(--hairline); }
   .content { padding: 32px 32px 48px; }
 }
 </style>
