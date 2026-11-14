@@ -97,7 +97,8 @@ class Firestore implements Store
      */
     private function commit(string $key, array $fields, ?array $precondition): array
     {
-        $write = ['update' => ['name' => $this->docName($key), 'fields' => $fields]];
+        // masque = seuls nos champs sont écrits : ownerUid (lu par les règles Firestore v1) est préservé
+        $write = ['update' => ['name' => $this->docName($key), 'fields' => $fields], 'updateMask' => ['fieldPaths' => array_keys($fields)]];
         if ($precondition) $write['currentDocument'] = $precondition;
         $writes = [$write];
         if (preg_match('/^(config|log|reservation):([^:]+):/', $key, $m)) {

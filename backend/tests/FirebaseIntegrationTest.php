@@ -40,6 +40,16 @@ class FirebaseIntegrationTest extends TestCase
         $this->assertNull($auth->signIn($email, 'mauvais'));
     }
 
+    public function testLesChampsHorsValeurSontPreserves(): void
+    {
+        $key = 'restaurant:it' . uniqid();
+        $this->fs->set($key, ['name' => 'Test'], ['ownerUid' => 'uid-1']);
+        $this->fs->mutate($key, fn($r) => $r + ['location' => ['lat' => 1, 'lng' => 2]]);
+        [, $d] = \Rondo\Http::send('GET', 'http://' . getenv('FIRESTORE_EMULATOR_HOST') . '/v1/projects/demo-rondo/databases/(default)/documents/checkTaCuisineData/' . rawurlencode($key), ['Authorization: Bearer owner']);
+        $this->assertSame('uid-1', $d['fields']['ownerUid']['stringValue']);
+        $this->assertSame(['lat' => 1, 'lng' => 2], json_decode($d['fields']['value']['stringValue'], true)['location']);
+    }
+
     private function rawKeyIndex(string $code): array
     {
         [, $d] = \Rondo\Http::send('GET', 'http://' . getenv('FIRESTORE_EMULATOR_HOST') . "/v1/projects/demo-rondo/databases/(default)/documents/checkTaCuisineData/keyIndex:$code", ['Authorization: Bearer owner']);
