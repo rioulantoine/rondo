@@ -1,8 +1,21 @@
 {
     "require": {
+        "php": ">=8.3",
         "flightphp/core": "^3.19"
     },
     "require-dev": {
         "phpunit/phpunit": "^11"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "scripts": {
+        "test": "phpunit",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "php -S localhost:8000 -t public"
+        ]
     }
 }
