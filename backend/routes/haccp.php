@@ -125,3 +125,36 @@ Flight::route('PUT /api/registres/@sp/taches', function (string $sp) {
     App::store()->set("log:$code:$sp:taskdefs:" . Clock::today(), $list);
     Flight::json(['tasks' => $list]);
 });
+
+/** Données du rapport de contrôle sanitaire (cuisine, salle, bar réunis) sur une période. */
+Flight::route('GET /api/rapport-haccp', function () {
+    $code = App::code();
+    App::owner();
+    $q = Flight::request()->query;
+    $from = (string) ($q['du'] ?? '');
+    $to = (string) ($q['au'] ?? '');
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $from) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $to) || $from > $to) App::fail(422, 'Période invalide.');
+    $days = (new DateTimeImmutable($from))->diff(new DateTimeImmutable($to))->days + 1;
+    if ($days > 93) App::fail(422, 'Trois mois au plus par rapport.');
+    $s = App::store();
+    $months = [];
+    for ($d = new DateTimeImmutable(substr($from, 0, 7) . '-01'); $d->format('Y-m') <= substr($to, 0, 7); $d = $d->modify('+1 month')) $months[] = $d->format('Y-m');
+    $inRange = fn($e) => ($day = Clock::paris($e['ts'])->format('Y-m-d')) >= $from && $day <= $to;
+    $spaces = [];
+    foreach (Haccp::SPACES as $sp => $def) {
+        $temps = $traces = [];
+        foreach ($months as $m) {
+            foreach ($s->get("log:$code:$sp:temp:$m") ?: [] as $i => $e) if ($inRange($e)) $temps[] = ['n' => $i + 1] + $e;
+            foreach ($s->get("log:$code:$sp:trace:$m") ?: [] as $i => $e) if ($inRange($e)) $traces[] = ['n' => $i + 1] + $e;
+        }
+        $tasks = [];
+        $total = count(Haccp::tasks($s, $code, $sp));
+        for ($d = new DateTimeImmutable($from); $d->format('Y-m-d') <= $to; $d = $d->modify('+1 day')) {
+            $log = $s->get("log:$code:$sp:tasks:" . $d->format('Y-m-d')) ?: [];
+            $tasks[] = ['date' => $d->format('Y-m-d'), 'done' => count(array_filter((array) $log, fn($t) => !empty($t['done']))), 'total' => $total];
+        }
+        $spaces[] = ['space' => $sp, 'label' => $def['label'], 'temps' => $temps, 'traces' => $traces, 'tasks' => $tasks];
+    }
+    $rec = $s->get("restaurant:$code") ?: [];
+    Flight::json(['restaurant' => $rec['name'] ?? $code, 'from' => $from, 'to' => $to, 'exportedAt' => Clock::iso(), 'spaces' => $spaces]);
+});
