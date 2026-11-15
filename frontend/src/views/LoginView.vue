@@ -1,12 +1,12 @@
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { Eye, EyeOff, ArrowLeft, CircleCheck, TriangleAlert, LoaderCircle, Check } from 'lucide-vue-next'
+import { Eye, EyeOff } from 'lucide-vue-next'
 import { api, setSession } from '../api'
 import { slugify } from '../format'
 import { OFFRES, TRIAL_DAYS } from '../offres'
+import { LIENS } from '../legal'
 import RondoLogo from '../components/RondoLogo.vue'
-import KitchenScene from '../components/KitchenScene.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -22,7 +22,7 @@ const f = reactive({
   offre: OFFRES.some((o) => o.id === route.query.offre) ? route.query.offre : 'equipe',
 })
 
-// garde l'URL en phase avec l'onglet (retour arrière, lien partagé)
+// garde l'URL en phase avec l'écran (retour arrière, lien partagé)
 watch(mode, (m) => {
   error.value = ''
   info.value = ''
@@ -30,28 +30,24 @@ watch(mode, (m) => {
 })
 
 const derivedCode = computed(() => slugify(f.code || f.name))
-const offre = computed(() => OFFRES.find((o) => o.id === f.offre))
+const TITLE = { login: 'Connexion', create: 'Créer un établissement', reset: 'Mot de passe oublié' }
 
-/** Erreurs de saisie affichées sous chaque champ, une fois le champ quitté. */
+/** Erreurs de saisie, affichées sous le groupe de champs une fois le champ quitté. */
 const errs = computed(() => {
   const e = {}
-  if (mode.value !== 'reset' && mode.value !== 'create' && !f.code.trim()) e.code = 'Indique le code de ton établissement.'
-  if (mode.value === 'reset' && !f.code.trim()) e.code = 'Indique le code de ton établissement.'
   if (mode.value === 'create') {
     if (!f.name.trim()) e.name = 'Indique le nom du restaurant.'
-    if (!derivedCode.value) e.code = 'Ce code ne contient ni lettre ni chiffre.'
+    else if (!derivedCode.value) e.code = 'Le code doit contenir des lettres ou des chiffres.'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) e.email = 'Adresse e-mail invalide.'
-    if (f.password.length < 6) e.password = 'Au moins 6 caractères.'
-    if (f.password2 !== f.password) e.password2 = 'Les deux mots de passe sont différents.'
-  } else if (mode.value === 'login' && !f.password) e.password = 'Indique le mot de passe.'
+    if (f.password.length < 6) e.password = 'Le mot de passe fait au moins 6 caractères.'
+    else if (f.password2 !== f.password) e.password2 = 'Les deux mots de passe sont différents.'
+  } else {
+    if (!f.code.trim()) e.code = 'Indique le code de ton établissement.'
+    if (mode.value === 'login' && !f.password) e.password = 'Indique le mot de passe.'
+  }
   return e
 })
-const show = (k) => touched[k] && errs.value[k]
-const strength = computed(() => {
-  const p = f.password
-  if (!p) return 0
-  return Math.min(3, (p.length >= 6) + (p.length >= 10) + (/[^a-zA-Z]/.test(p) && /[a-zA-Z]/.test(p)))
-})
+const shown = computed(() => Object.entries(errs.value).filter(([k]) => touched[k]).map(([, v]) => v))
 
 function onKey(e) {
   if (e.getModifierState) capsLock.value = e.getModifierState('CapsLock')
@@ -87,190 +83,117 @@ async function submit() {
 
 <template>
   <div class="auth">
-    <!-- côté marque (grand écran) : l'appli telle qu'elle sera au service -->
-    <aside class="brand" aria-hidden="true">
-      <RondoLogo :size="28" class="b-logo" />
-      <div class="b-body">
-        <KitchenScene on-dark class="b-scene" />
-        <p class="b-quote">Moins de papier.<br />Plus de service.</p>
-        <ul class="b-points">
-          <li><Check :size="18" :stroke-width="2.2" /> {{ TRIAL_DAYS }} jours gratuits, sans carte bancaire</li>
-          <li><Check :size="18" :stroke-width="2.2" /> Registres prêts pour le contrôle sanitaire</li>
-          <li><Check :size="18" :stroke-width="2.2" /> Sur iPhone, iPad et ordinateur, sans installation</li>
-        </ul>
-      </div>
-      <p class="b-foot">Hygiène · Équipe · Planning · Réservations</p>
-    </aside>
+    <main class="col">
+      <RouterLink to="/bienvenue" class="mark" aria-label="Accueil de Rondo"><RondoLogo :size="40" :wordmark="false" /></RouterLink>
+      <h1>{{ TITLE[mode] }}</h1>
+      <p v-if="mode === 'login'" class="lead">Entre le code et le mot de passe de ton établissement.</p>
+      <p v-else-if="mode === 'create'" class="lead">{{ TRIAL_DAYS }} jours d’essai, sans carte bancaire.</p>
+      <p v-else class="lead">Un lien est envoyé à l’adresse e-mail de récupération.</p>
 
-    <main class="side">
-      <div class="side-top">
-        <RouterLink to="/bienvenue" class="back"><ArrowLeft :size="18" :stroke-width="1.7" /> Découvrir Rondo</RouterLink>
-        <RondoLogo :size="24" class="m-logo" />
-      </div>
-
-      <KitchenScene class="m-scene" />
-
-      <form class="form" novalidate @submit.prevent="submit" @keydown="onKey" @keyup="onKey">
-        <div v-if="mode !== 'reset'" class="seg" role="tablist" aria-label="Connexion ou création">
-          <span class="seg-ind" :class="mode" aria-hidden="true" />
-          <button type="button" role="tab" :aria-selected="mode === 'login'" class="seg-btn" @click="mode = 'login'">Se connecter</button>
-          <button type="button" role="tab" :aria-selected="mode === 'create'" class="seg-btn" @click="mode = 'create'">Créer un compte</button>
+      <form novalidate @submit.prevent="submit" @keydown="onKey" @keyup="onKey">
+        <!-- champs groupés dans un seul bloc, chacun avec son libellé -->
+        <div class="group">
+          <label v-if="mode === 'create'" class="row">
+            <span class="row-l">Nom du restaurant</span>
+            <input v-model="f.name" class="row-i" autocomplete="organization" :aria-invalid="touched.name && !!errs.name" @blur="touched.name = true" />
+          </label>
+          <label class="row">
+            <span class="row-l">{{ mode === 'create' ? 'Code de connexion' : 'Code de l’établissement' }}</span>
+            <input v-model="f.code" class="row-i" autocapitalize="none" autocomplete="username" spellcheck="false"
+              :placeholder="mode === 'create' ? derivedCode : ''" :aria-invalid="touched.code && !!errs.code" @blur="touched.code = true" />
+          </label>
+          <label v-if="mode === 'create'" class="row">
+            <span class="row-l">E-mail de récupération</span>
+            <input v-model="f.email" class="row-i" type="email" inputmode="email" autocomplete="email" :aria-invalid="touched.email && !!errs.email" @blur="touched.email = true" />
+          </label>
+          <label v-if="mode !== 'reset'" class="row">
+            <span class="row-l">Mot de passe</span>
+            <span class="pwd">
+              <input v-model="f.password" class="row-i" :type="showPwd ? 'text' : 'password'" :autocomplete="mode === 'create' ? 'new-password' : 'current-password'"
+                :aria-invalid="touched.password && !!errs.password" @blur="touched.password = true" />
+              <button type="button" class="eye" :aria-label="showPwd ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" :aria-pressed="showPwd" @click="showPwd = !showPwd">
+                <component :is="showPwd ? EyeOff : Eye" :size="20" :stroke-width="1.6" />
+              </button>
+            </span>
+          </label>
+          <label v-if="mode === 'create'" class="row">
+            <span class="row-l">Confirmer le mot de passe</span>
+            <input v-model="f.password2" class="row-i" :type="showPwd ? 'text' : 'password'" autocomplete="new-password" :aria-invalid="touched.password2 && !!errs.password2" @blur="touched.password2 = true" />
+          </label>
+          <label v-if="mode === 'create'" class="row">
+            <span class="row-l">Offre après l’essai</span>
+            <select v-model="f.offre" class="row-i">
+              <option v-for="o in OFFRES" :key="o.id" :value="o.id">{{ o.name }}</option>
+            </select>
+          </label>
         </div>
 
-        <Transition name="swap" mode="out-in">
-          <div :key="mode" class="fields">
-            <div class="intro">
-              <h1 v-if="mode === 'login'">Ouvre le registre</h1>
-              <h1 v-else-if="mode === 'create'">Crée ton établissement</h1>
-              <h1 v-else>Mot de passe oublié</h1>
-              <p class="muted" v-if="mode === 'login'">Code et mot de passe de l’établissement. Chacun choisit ensuite son nom et son code PIN.</p>
-              <p class="muted" v-else-if="mode === 'create'">{{ TRIAL_DAYS }} jours d’essai, tout inclus, sans carte bancaire.</p>
-              <p class="muted" v-else>Indique le code de l’établissement : on envoie un lien à l’e-mail de récupération.</p>
-            </div>
+        <p v-if="mode === 'create' && derivedCode && !shown.length" class="note">Ton équipe se connectera avec le code <span class="data">{{ derivedCode }}</span>.</p>
+        <p v-if="capsLock" class="note warn">La touche de verrouillage des majuscules est activée.</p>
+        <ul v-if="shown.length || error" class="errors" role="alert">
+          <li v-for="m in shown" :key="m">{{ m }}</li>
+          <li v-if="error">{{ error }}</li>
+        </ul>
+        <p v-if="info" class="note ok" role="status">{{ info }}</p>
 
-            <!-- offre choisie -->
-            <fieldset v-if="mode === 'create'" class="offres">
-              <legend class="label">Offre visée après l’essai</legend>
-              <label v-for="o in OFFRES" :key="o.id" class="offre" :class="{ on: f.offre === o.id }">
-                <input v-model="f.offre" type="radio" name="offre" :value="o.id" class="visually-hidden" />
-                <span class="o-name">{{ o.name }}</span>
-                <span class="caption">{{ o.pitch }}</span>
-              </label>
-            </fieldset>
+        <label v-if="mode === 'login'" class="check"><input v-model="f.remember" type="checkbox" /> Rester connecté sur cet appareil</label>
+        <label v-if="mode === 'create'" class="check">
+          <input v-model="f.cgu" type="checkbox" />
+          <span>J’accepte les <RouterLink to="/conditions" target="_blank">conditions générales</RouterLink> et la <RouterLink to="/confidentialite" target="_blank">politique de confidentialité</RouterLink>.</span>
+        </label>
 
-            <label v-if="mode === 'create'" class="field">
-              <span class="label">Nom du restaurant</span>
-              <input v-model="f.name" class="input" autocomplete="organization" placeholder="Sumo Beach" :aria-invalid="!!show('name')" @blur="touched.name = true" />
-              <span v-if="show('name')" class="err">{{ errs.name }}</span>
-            </label>
-
-            <label class="field">
-              <span class="label">{{ mode === 'create' ? 'Code de connexion' : 'Code de l’établissement' }}</span>
-              <input v-model="f.code" class="input" autocapitalize="none" autocomplete="username" spellcheck="false"
-                :placeholder="mode === 'create' ? derivedCode || 'déduit du nom' : 'sumo-beach'" :aria-invalid="!!show('code')" @blur="touched.code = true" />
-              <span v-if="mode === 'create' && derivedCode" class="hint">L’équipe se connectera avec <strong class="data">{{ derivedCode }}</strong></span>
-              <span v-if="show('code')" class="err">{{ errs.code }}</span>
-            </label>
-
-            <label v-if="mode === 'create'" class="field">
-              <span class="label">E-mail de récupération</span>
-              <input v-model="f.email" class="input" type="email" inputmode="email" autocomplete="email" :aria-invalid="!!show('email')" @blur="touched.email = true" />
-              <span v-if="show('email')" class="err">{{ errs.email }}</span>
-            </label>
-
-            <label v-if="mode !== 'reset'" class="field">
-              <span class="label">Mot de passe</span>
-              <span class="pwd">
-                <input v-model="f.password" class="input" :type="showPwd ? 'text' : 'password'" :autocomplete="mode === 'create' ? 'new-password' : 'current-password'"
-                  :aria-invalid="!!show('password')" @blur="touched.password = true" />
-                <button type="button" class="eye" :aria-label="showPwd ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" :aria-pressed="showPwd" @click="showPwd = !showPwd">
-                  <component :is="showPwd ? EyeOff : Eye" :size="20" :stroke-width="1.7" />
-                </button>
-              </span>
-              <span v-if="mode === 'create' && f.password" class="meter" :data-level="strength" aria-hidden="true"><i /><i /><i /></span>
-              <span v-if="capsLock" class="warn-line"><TriangleAlert :size="16" :stroke-width="1.7" /> Majuscules verrouillées</span>
-              <span v-if="show('password')" class="err">{{ errs.password }}</span>
-            </label>
-
-            <label v-if="mode === 'create'" class="field">
-              <span class="label">Confirme le mot de passe</span>
-              <input v-model="f.password2" class="input" :type="showPwd ? 'text' : 'password'" autocomplete="new-password" :aria-invalid="!!show('password2')" @blur="touched.password2 = true" />
-              <span v-if="show('password2')" class="err">{{ errs.password2 }}</span>
-            </label>
-
-            <label v-if="mode === 'login'" class="check"><input v-model="f.remember" type="checkbox" /> Rester connecté sur cet appareil</label>
-            <label v-if="mode === 'create'" class="check"><input v-model="f.cgu" type="checkbox" /> J’accepte les conditions générales d’utilisation et de vente</label>
-
-            <p v-if="error" class="error-box" role="alert"><TriangleAlert :size="18" :stroke-width="1.7" /> {{ error }}</p>
-            <p v-if="info" class="info-box" role="status"><CircleCheck :size="18" :stroke-width="1.7" /> {{ info }}</p>
-
-            <button class="btn btn-primary btn-block go" :disabled="busy">
-              <LoaderCircle v-if="busy" :size="20" :stroke-width="2" class="spin" />
-              {{ busy ? 'Un instant…' : mode === 'login' ? 'Entrer' : mode === 'create' ? `Démarrer l’essai ${offre?.name}` : 'Envoyer le lien' }}
-            </button>
-
-            <button v-if="mode === 'login'" type="button" class="btn btn-ghost link" @click="mode = 'reset'">Mot de passe oublié ?</button>
-            <button v-if="mode === 'reset'" type="button" class="btn btn-ghost link" @click="mode = 'login'"><ArrowLeft :size="18" :stroke-width="1.7" /> Retour à la connexion</button>
-          </div>
-        </Transition>
+        <button class="btn btn-primary btn-block" :disabled="busy">
+          {{ busy ? 'Un instant…' : mode === 'login' ? 'Continuer' : mode === 'create' ? 'Créer l’établissement' : 'Envoyer le lien' }}
+        </button>
       </form>
+
+      <div class="links">
+        <template v-if="mode === 'login'">
+          <button type="button" class="link" @click="mode = 'reset'">Mot de passe oublié ?</button>
+          <p>Pas encore de compte ? <button type="button" class="link" @click="mode = 'create'">Créer un établissement</button></p>
+        </template>
+        <p v-else>Déjà un compte ? <button type="button" class="link" @click="mode = 'login'">Se connecter</button></p>
+      </div>
     </main>
+
+    <footer class="foot">
+      <RouterLink v-for="l in LIENS" :key="l.to" :to="l.to">{{ l.label }}</RouterLink>
+    </footer>
   </div>
 </template>
 
 <style scoped>
-.auth { min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr); background: var(--sand); }
-@media (min-width: 1000px) { .auth { grid-template-columns: minmax(420px, 1fr) minmax(480px, 560px); } }
+.auth { min-height: 100svh; display: grid; grid-template-rows: 1fr auto; background: var(--sand); }
+.col { width: 100%; max-width: 400px; margin: 0 auto; padding: calc(56px + env(safe-area-inset-top)) 20px 32px; display: grid; align-content: center; justify-items: center; text-align: center; }
+.mark { display: flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; margin-bottom: 20px; text-decoration: none; }
+.col h1 { font-size: 28px; line-height: 34px; }
+.lead { margin-top: 8px; color: var(--ink-soft); max-width: 32ch; }
+form { width: 100%; margin-top: 28px; display: grid; gap: 14px; text-align: left; }
 
-/* ---------- côté marque ---------- */
-.brand { display: none; }
-@media (min-width: 1000px) {
-  .brand {
-    display: grid; grid-template-rows: auto 1fr auto; gap: 32px; padding: 40px 48px;
-    background: #1C2A4A; color: #FFFFFF;
-    background-image: radial-gradient(90% 60% at 50% 30%, rgb(191 227 220 / .14), transparent 70%), linear-gradient(180deg, #1C2A4A, #141F38);
-  }
-  .b-logo { color: #BFE3DC; }
-  .b-body { display: grid; gap: 28px; align-content: center; max-width: 480px; width: 100%; justify-self: center; }
-  .b-scene { margin-bottom: 12px; }
-  .b-quote { font-size: 44px; line-height: 1.05; font-weight: 700; letter-spacing: -0.035em; color: #FFFFFF; }
-  .b-points { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; color: #DCE3F2; font-size: 17px; }
-  .b-points li { display: flex; gap: 10px; align-items: center; }
-  .b-points svg { color: #BFE3DC; flex: none; }
-  .b-foot { color: #AFC0EA; font-size: 14px; }
-}
+/* un seul bloc bordé, les champs séparés par un filet (formulaires Apple) */
+.group { border: 1px solid var(--line); border-radius: var(--r-l); background: var(--sand); overflow: hidden; transition: border-color 160ms ease; }
+.group:focus-within { border-color: var(--sea-deep); box-shadow: 0 0 0 3px var(--tint); }
+.row { display: grid; gap: 2px; padding: 10px 14px 8px; cursor: text; }
+.row + .row { border-top: 1px solid var(--line); }
+.row-l { font-size: 12px; line-height: 16px; color: var(--ink-soft); }
+.row-i { width: 100%; min-height: 28px; padding: 0; border: none; outline: none; background: transparent; color: var(--ink); font: 400 17px/26px var(--font-ui); caret-color: var(--sea-deep); }
+.row:has(.row-i[aria-invalid='true']) .row-l { color: var(--alert); }
+select.row-i { cursor: pointer; }
+.pwd { display: flex; align-items: center; gap: 4px; }
+.eye { flex: none; width: 44px; height: 44px; margin: -12px -10px -10px 0; display: grid; place-items: center; border: none; background: none; color: var(--ink-soft); border-radius: var(--r-s); }
 
-/* ---------- formulaire ---------- */
-.m-scene { max-width: 220px; margin: 0 auto 20px; }
-@media (min-width: 1000px) { .m-scene { display: none; } }
-.side { display: grid; grid-template-rows: auto auto 1fr; padding: calc(16px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom)); }
-.side-top { display: flex; justify-content: space-between; align-items: center; min-height: 48px; }
-.back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--ink-soft); text-decoration: none; font-size: 15px; font-weight: 500; }
-@media (hover: hover) and (pointer: fine) { .back:hover { color: var(--sea-deep); } }
-@media (min-width: 1000px) { .m-logo { display: none; } .side { padding: 32px 56px; } }
-.form { width: 100%; max-width: 420px; margin: 0 auto; align-self: center; display: grid; gap: 24px; padding: 24px 0; }
-.fields { display: grid; gap: 18px; }
-.intro { display: grid; gap: 8px; }
-.intro h1 { font-size: 34px; line-height: 40px; letter-spacing: -0.03em; }
+.note { font-size: 14px; line-height: 20px; color: var(--ink-soft); }
+.note.warn { color: var(--warn); }
+.note.ok { color: var(--ok); }
+.errors { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 14px; line-height: 20px; color: var(--alert); }
+.check a { color: var(--sea-deep); }
+form .btn { margin-top: 6px; }
 
-.seg { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; background: var(--sand-dark); border: 1px solid var(--line); border-radius: 12px; }
-.seg-ind { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 9px; background: var(--sand); box-shadow: 0 1px 3px rgb(28 42 74 / .12); transition: transform var(--dur-ui) var(--ease-in-out); }
-.seg-ind.create { transform: translateX(100%); }
-.seg-btn { position: relative; min-height: 44px; border: none; background: none; color: var(--ink-soft); font-weight: 500; font-size: 15px; transition: color var(--dur-ui) ease; }
-.seg-btn[aria-selected='true'] { color: var(--sea-deep); font-weight: 600; }
+.links { margin-top: 24px; display: grid; gap: 10px; justify-items: center; font-size: 15px; color: var(--ink-soft); }
+.link { min-height: 44px; padding: 0 2px; border: none; background: none; color: var(--sea-deep); font-weight: 500; font-size: 15px; }
+.links p .link { min-height: 0; }
+@media (hover: hover) and (pointer: fine) { .link:hover, .foot a:hover { text-decoration: underline; text-underline-offset: 3px; } }
 
-.swap-enter-active { transition: opacity var(--dur-ui) var(--ease-out), transform var(--dur-ui) var(--ease-out); }
-.swap-leave-active { transition: opacity 100ms ease; }
-.swap-enter-from { opacity: 0; transform: translateY(8px); }
-.swap-leave-to { opacity: 0; }
-
-.offres { border: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.offres legend { margin-bottom: 8px; }
-.offre { display: grid; gap: 2px; align-content: start; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: var(--r-m); cursor: pointer; min-height: 72px; transition: border-color var(--dur-press) ease, background-color var(--dur-press) ease; }
-.offre.on { border-color: var(--sea-deep); background: var(--tint); }
-.offre:focus-within { outline: 2px solid var(--sea-deep); outline-offset: 2px; }
-.o-name { font-weight: 600; color: var(--sea-deep); }
-.offre .caption { font-size: 12px; line-height: 16px; }
-@media (max-width: 420px) { .offres { grid-template-columns: 1fr; } .offre { min-height: 0; } }
-
-.hint { font-size: 13px; color: var(--ink-soft); }
-.hint strong { color: var(--accent-deep); font-weight: 500; }
-.err { font-size: 13px; line-height: 18px; color: var(--alert); }
-.pwd { position: relative; display: block; }
-.pwd .input { padding-right: 52px; }
-.eye { position: absolute; right: 2px; top: 2px; width: 44px; height: 44px; display: grid; place-items: center; border: none; background: none; color: var(--ink-soft); border-radius: var(--r-s); }
-.meter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-.meter i { height: 4px; border-radius: 2px; background: var(--line); transition: background-color var(--dur-ui) ease; }
-.meter[data-level='1'] i:nth-child(-n+1) { background: var(--warn); }
-.meter[data-level='2'] i:nth-child(-n+2) { background: var(--ok); }
-.meter[data-level='3'] i { background: var(--ok); }
-.warn-line { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--warn); }
-.error-box, .info-box { display: flex; gap: 8px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-m); font-size: 14px; line-height: 20px; }
-.error-box { background: var(--alert-bg); color: var(--alert); animation: rise 220ms var(--ease-out); }
-.info-box { background: var(--ok-bg); color: var(--ok); }
-.error-box svg, .info-box svg { flex: none; margin-top: 1px; }
-.go { min-height: 52px; font-size: 17px; }
-.spin { animation: spin 800ms linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.link { justify-self: center; font-weight: 500; font-size: 15px; }
+.foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 24px; padding: 16px 20px calc(20px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
+.foot a { min-height: 44px; display: inline-flex; align-items: center; color: var(--ink-soft); text-decoration: none; font-size: 13px; }
 </style>
