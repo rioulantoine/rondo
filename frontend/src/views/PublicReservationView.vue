@@ -28,7 +28,7 @@ const cancelUrl = computed(() => done.value && `${location.origin}/r/${code}?ann
 onMounted(async () => {
   try {
     resto.value = await api(`/public/${code}`)
-    document.title = `Réserver · ${resto.value.name}`
+    document.title = `Réserver chez ${resto.value.name}`
     const t = route.query.annuler
     if (t) {
       try {
@@ -107,7 +107,7 @@ async function book() {
         <template v-else>
           <div v-for="[label, list] in groups" :key="label" class="slot-group">
             <h2 class="g">{{ label }}</h2>
-            <div class="slots rise-list">
+            <div class="slots">
               <button v-for="s in list" :key="s.slot" type="button" class="slot data" :class="{ on: f.slot === s.slot }" :disabled="s.count < 1" :aria-pressed="f.slot === s.slot" @click="f.slot = s.slot">{{ s.slot }}</button>
             </div>
           </div>
@@ -119,7 +119,7 @@ async function book() {
 
       <!-- étape 2 : coordonnées -->
       <form v-if="step === 2" class="card stack" @submit.prevent="book">
-        <p class="recap">{{ longDate(f.date) }} · <span class="data">{{ f.slot }}</span> · {{ f.party }} pers.</p>
+        <p class="recap">{{ longDate(f.date) }} à <span class="data">{{ f.slot }}</span>, {{ f.party }} pers.</p>
         <div class="row2">
           <label class="field"><span class="label">Prénom</span><input v-model="f.firstName" class="input" autocomplete="given-name" required /></label>
           <label class="field"><span class="label">Nom</span><input v-model="f.lastName" class="input" autocomplete="family-name" required /></label>
@@ -128,7 +128,7 @@ async function book() {
         <label class="field"><span class="label">E-mail</span><input v-model="f.email" class="input" type="email" autocomplete="email" required /></label>
         <label class="field"><span class="label">Remarque (allergie, occasion…)</span><textarea v-model="f.notes" class="input" rows="2" maxlength="500" /></label>
         <label class="trap" aria-hidden="true">Site web <input v-model="f.website" tabindex="-1" autocomplete="off" /></label>
-        <p class="caption">Tes coordonnées servent uniquement à gérer cette réservation. Tu peux demander leur suppression au restaurant.</p>
+        <p class="caption">Tes coordonnées servent uniquement à gérer cette réservation. <RouterLink to="/confidentialite" target="_blank">Politique de confidentialité</RouterLink></p>
         <p v-if="error" class="error-text" role="alert">{{ error }}</p>
         <div class="row-btns">
           <button type="button" class="btn btn-secondary" @click="step = 1">Retour</button>
@@ -153,7 +153,7 @@ async function book() {
 <style scoped>
 .pub { min-height: 100svh; display: grid; align-content: start; justify-items: center; gap: 20px; padding: calc(32px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom)); background: var(--sand-dark); }
 .top { text-align: center; display: grid; gap: 4px; }
-.card { width: 100%; max-width: 520px; background: var(--sand); border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); border-radius: var(--r-l); padding: 24px 20px; box-shadow: var(--shadow); }
+.card { width: 100%; max-width: 520px; background: var(--sand); border: 1px solid var(--line); border-radius: var(--r-l); padding: 24px 20px; box-shadow: var(--shadow); }
 .center { justify-items: center; text-align: center; }
 .ok { color: var(--ok); }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -163,7 +163,7 @@ async function book() {
 .sk { height: 120px; }
 .g { font-size: 15px; margin-bottom: 8px; }
 .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
-.slot { min-height: 44px; border-radius: var(--r-m); border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); background: var(--sand); color: var(--ink); font-size: 15px; }
+.slot { min-height: 44px; border-radius: var(--r-m); border: 1px solid var(--line); background: var(--sand); color: var(--ink); font-size: 15px; }
 .slot.on { background: var(--sea-deep); border-color: var(--sea-deep); color: var(--on-sea); }
 .slot:disabled { color: var(--ink-soft); text-decoration: line-through; opacity: .5; }
 .recap { font-weight: 600; color: var(--sea-deep); }
