@@ -2,7 +2,6 @@
 import { Check, Minus, Sunrise, UtensilsCrossed, Moon, Thermometer, Clock4, CalendarDays, BookMarked, FileText, Users } from 'lucide-vue-next'
 import RondoLogo from '../components/RondoLogo.vue'
 import LiveRegister from '../components/LiveRegister.vue'
-import KitchenScene from '../components/KitchenScene.vue'
 import { OFFRES, FEATURES, TRIAL_DAYS } from '../offres'
 
 const CYCLE = [
@@ -150,7 +149,6 @@ const has = (offre, id) => offre.features.includes(id)
       </section>
 
       <section class="final wrap" v-reveal>
-        <KitchenScene class="final-scene" />
         <h2>Ton prochain relevé, dans Rondo.</h2>
         <RouterLink to="/connexion?mode=create" class="btn btn-primary cta">Créer mon établissement</RouterLink>
       </section>
@@ -245,7 +243,6 @@ section { padding-top: 88px; }
 
 .final { display: grid; justify-items: center; text-align: center; gap: 8px; padding-bottom: 96px; }
 .final h2 { margin-left: auto; margin-right: auto; }
-.final-scene { max-width: 300px; margin-bottom: 36px; }
 .final h2 { margin-bottom: 16px; }
 .foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding-top: 28px; padding-bottom: calc(28px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
 
