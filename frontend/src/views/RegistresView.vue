@@ -74,7 +74,7 @@ function alertLine(s) {
 <style scoped>
 .spaces > li { padding: 0 16px; }
 .row { display: flex; align-items: center; gap: 14px; min-height: 76px; color: var(--ink); text-decoration: none; }
-.ico { width: 44px; height: 44px; border-radius: var(--r-m); background: var(--mist); color: var(--sea-deep); display: grid; place-items: center; flex: none; }
+.ico { width: 44px; height: 44px; border-radius: var(--r-m); background: var(--tint); color: var(--accent-deep); display: grid; place-items: center; flex: none; }
 .txt { flex: 1; display: grid; min-width: 0; }
 .name { font-weight: 600; }
 .txt .state { justify-self: start; margin-top: 4px; }
