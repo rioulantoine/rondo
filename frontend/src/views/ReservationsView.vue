@@ -106,7 +106,7 @@ async function copyLink() {
       </Transition>
 
       <ul class="register panel list">
-        <li v-for="r in d.reservations" :key="r.id" class="resa" :class="{ off: r.status === 'annulee' }">
+        <li v-for="r in d.reservations" :key="r.id" class="resa" :class="{ off: r.status === 'annulee', 'tone-ok': r.status === 'arrivee', 'tone-alert': r.status === 'noshow' }">
           <span class="data t">{{ r.slot }}</span>
           <span class="grow txt">
             <span class="name">{{ r.name }} <span class="data caption">{{ r.party }} pers.</span></span>
@@ -138,8 +138,9 @@ async function copyLink() {
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .row-btns { display: flex; gap: 10px; }
 .grow { flex: 1; min-width: 0; }
+.list { overflow: hidden; }
 .list > li { padding: 0 16px; }
-.resa { display: flex; align-items: center; gap: 14px; padding: 12px 0 !important; flex-wrap: wrap; }
+.resa { display: flex; align-items: center; gap: 14px; padding: 12px 16px !important; flex-wrap: wrap; }
 .resa.off .name { text-decoration: line-through; color: var(--ink-soft); }
 .t { font-size: 18px; font-weight: 500; width: 3.2em; }
 .txt { display: grid; gap: 2px; }
