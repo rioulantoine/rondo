@@ -52,4 +52,8 @@ $fs->set("log:$code:pointage:$m", [
     ['id' => 'pt-1', 'memberId' => 'm-lea', 'name' => 'Léa Martin', 'type' => 'arrivee', 'ts' => $at('08:58'), 'plannedStart' => '09:00', 'diffMin' => -2],
     ['id' => 'pt-2', 'memberId' => 'm-hugo', 'name' => 'Hugo Lambert', 'type' => 'arrivee', 'ts' => $at('08:05'), 'offSchedule' => true, 'justification' => 'Livraison à réceptionner', 'validated' => false],
 ]);
+$resa = fn($id, $slot, $party, $first, $last, $status, $notes = '') => ['id' => "r-$id", 'tableIds' => [], 'date' => $today, 'slot' => $slot, 'party' => $party, 'firstName' => $first, 'lastName' => $last, 'name' => "$first $last", 'phone' => '06 12 34 56 78', 'email' => 'client@example.com', 'notes' => $notes, 'status' => $status, 'createdAt' => 0, 'staffSeen' => true];
+$resas = [$resa(1, '12:15', 2, 'Claire', 'Morel', 'arrivee'), $resa(2, '12:30', 4, 'Paul', 'Guérin', 'confirmee', 'Anniversaire'), $resa(3, '13:00', 3, 'Nina', 'Faure', 'noshow'), $resa(4, '19:30', 6, 'Marc', 'Durand', 'confirmee', 'Allergie aux fruits à coque')];
+$fs->set("reservation:$code:reservations", $resas);
+$fs->set("reservation:$code:availability", array_map(fn($r) => ['id' => $r['id'], 'tableIds' => [], 'date' => $r['date'], 'slot' => $r['slot'], 'party' => $r['party'], 'status' => $r['status']], $resas));
 echo "Établissement « sumo-beach » / mot de passe « rondo123 » — PIN Léa 1234, Tom 2345, Hugo 3456\n";
