@@ -191,7 +191,7 @@ async function publish() {
 .grow { flex: 1; }
 
 .days { display: grid; gap: 12px; }
-.day { border: 1px solid var(--line); border-radius: var(--r-l); padding: 12px; background: var(--sand); }
+.day { border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); border-radius: var(--r-l); padding: 12px; background: var(--sand); }
 .day.today { border-color: var(--sea-deep); }
 .day-h { font-size: 15px; line-height: 20px; margin-bottom: 8px; }
 .day-h::first-letter { text-transform: uppercase; }

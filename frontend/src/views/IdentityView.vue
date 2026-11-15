@@ -119,7 +119,7 @@ async function logout() {
 .person {
   width: 100%; transition: transform var(--dur-press) var(--ease-out), border-color var(--dur-press) ease, box-shadow var(--dur-press) ease; min-height: 128px; display: grid; justify-items: start; align-content: start; gap: 4px;
   padding: 16px; text-align: left; background: var(--sand); color: var(--ink);
-  border: 1px solid var(--line); border-radius: var(--r-l);
+  border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); border-radius: var(--r-l);
   transition: transform 160ms var(--ease-out), border-color 160ms var(--ease-out);
 }
 .person:active { transform: scale(.97); }

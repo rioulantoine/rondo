@@ -153,7 +153,7 @@ async function book() {
 <style scoped>
 .pub { min-height: 100svh; display: grid; align-content: start; justify-items: center; gap: 20px; padding: calc(32px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom)); background: var(--sand-dark); }
 .top { text-align: center; display: grid; gap: 4px; }
-.card { width: 100%; max-width: 520px; background: var(--sand); border: 1px solid var(--line); border-radius: var(--r-l); padding: 24px 20px; box-shadow: var(--shadow); }
+.card { width: 100%; max-width: 520px; background: var(--sand); border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); border-radius: var(--r-l); padding: 24px 20px; box-shadow: var(--shadow); }
 .center { justify-items: center; text-align: center; }
 .ok { color: var(--ok); }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -163,7 +163,7 @@ async function book() {
 .sk { height: 120px; }
 .g { font-size: 15px; margin-bottom: 8px; }
 .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
-.slot { min-height: 44px; border-radius: var(--r-m); border: 1px solid var(--line); background: var(--sand); color: var(--ink); font-size: 15px; }
+.slot { min-height: 44px; border-radius: var(--r-m); border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); background: var(--sand); color: var(--ink); font-size: 15px; }
 .slot.on { background: var(--sea-deep); border-color: var(--sea-deep); color: var(--on-sea); }
 .slot:disabled { color: var(--ink-soft); text-decoration: line-through; opacity: .5; }
 .recap { font-weight: 600; color: var(--sea-deep); }

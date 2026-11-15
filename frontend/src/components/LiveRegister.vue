@@ -57,7 +57,7 @@ onBeforeUnmount(() => clearTimeout(timer))
 </template>
 
 <style scoped>
-.live { margin: 0; color: var(--ink); text-align: left; background: var(--sand); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-lg); overflow: hidden; }
+.live { margin: 0; color: var(--ink); text-align: left; background: var(--sand); border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); border-radius: 18px; box-shadow: var(--shadow-lg); overflow: hidden; }
 .head { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 18px 12px; border-bottom: 1px solid var(--line); }
 .t { font-weight: 600; color: var(--sea-deep); }
 .rows { list-style: none; margin: 0; padding: 0 18px; min-height: calc(5 * 61px); }

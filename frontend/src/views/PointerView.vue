@@ -212,7 +212,7 @@ async function declareTablet() {
 /* geste répété cent fois par jour : pas d'animation, juste l'état pressé */
 .action {
   min-height: 120px; display: grid; place-items: center; align-content: center; gap: 8px; padding: 16px;
-  border-radius: var(--r-l); border: 1px solid var(--line); background: var(--sand); color: var(--sea-deep);
+  border-radius: var(--r-l); border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); background: var(--sand); color: var(--sea-deep);
   font-size: 18px; font-weight: 600;
 }
 .action.primary { background: var(--sea-deep); color: var(--on-sea); border-color: var(--sea-deep); }
@@ -227,7 +227,7 @@ async function declareTablet() {
 .center { justify-items: center; text-align: center; }
 .center .back { justify-self: start; }
 .people { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-.person { width: 100%; min-height: 112px; display: grid; justify-items: start; align-content: start; gap: 4px; padding: 14px; text-align: left; background: var(--sand); color: var(--ink); border: 1px solid var(--line); border-radius: var(--r-l); }
+.person { width: 100%; min-height: 112px; display: grid; justify-items: start; align-content: start; gap: 4px; padding: 14px; text-align: left; background: var(--sand); color: var(--ink); border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); border-radius: var(--r-l); }
 .person:active { background: var(--tint); }
 .person .visa { width: 40px; height: 40px; font-size: 14px; margin-bottom: 6px; }
 .p-name { font-weight: 600; }

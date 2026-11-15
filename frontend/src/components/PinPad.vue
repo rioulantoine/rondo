@@ -51,7 +51,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .keys { display: grid; grid-template-columns: repeat(3, 76px); gap: 12px; }
 /* gestes répétés : pas d'animation, juste un changement de fond immédiat */
 .key {
-  height: 64px; border-radius: var(--r-l); border: 1px solid var(--line); background: var(--sand);
+  height: 64px; border-radius: var(--r-l); border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); background: var(--sand);
   color: var(--ink); font-size: 24px; font-weight: 500; display: grid; place-items: center;
 }
 .key:active { background: var(--tint); }
