@@ -15,13 +15,13 @@ defineProps({
 
 <template>
   <li class="entry">
-    <span v-if="number !== null" class="no data" :aria-label="`Entrée numéro ${number}`">{{ entryNo(number) }}</span>
+    <span v-if="number !== null" class="no mono" :aria-label="`Entrée numéro ${number}`">{{ entryNo(number) }}</span>
     <span class="text">
       <span class="title">{{ title }}</span>
       <span v-if="sub" class="caption">{{ sub }}</span>
       <slot />
     </span>
-    <span v-if="value" class="value data" :class="state && `v-${state}`">{{ value }}</span>
+    <span v-if="value" class="value mono" :class="state && `v-${state}`">{{ value }}</span>
     <span v-if="staff" class="visa" :title="staff">{{ initials(staff) }}</span>
     <slot name="end" />
   </li>

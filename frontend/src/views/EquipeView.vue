@@ -34,7 +34,7 @@ async function save() {
   try {
     const f = form.value
     await api(f.id ? `/equipe/${f.id}` : '/equipe', { method: f.id ? 'PUT' : 'POST', body: f })
-    toast(f.id ? `Fiche de ${f.name} mise à jour.` : `${f.name} ajouté·e à l'équipe.`)
+    toast(f.id ? `Fiche de ${f.name} mise à jour.` : `${f.name} rejoint l'équipe.`)
     form.value = null
     load()
   } catch (e) {
@@ -47,7 +47,7 @@ async function remove() {
   if (!confirm(`Retirer ${form.value.name} de l'équipe ? Ses relevés et pointages restent dans les registres.`)) return
   try {
     await api(`/equipe/${form.value.id}`, { method: 'DELETE' })
-    toast(`${form.value.name} retiré·e de l'équipe.`)
+    toast(`${form.value.name} ne fait plus partie de l'équipe.`)
     form.value = null
     load()
   } catch (e) {
@@ -117,13 +117,13 @@ function setPosition() {
     </form>
     </Transition>
 
-    <ul v-if="d" class="register panel list rise-list">
+    <ul v-if="d" class="register panel list">
       <li v-for="m in d.members" :key="m.id">
         <button class="member" @click="edit(m)">
           <span class="visa">{{ initials(m.name) }}</span>
           <span class="grow txt">
             <span class="name">{{ m.name }}</span>
-            <span class="caption">{{ m.postes.map((p) => POSTES[p]).join(' · ') || 'Aucun poste' }}<template v-if="m.weeklyHours"> · <span class="data">{{ m.weeklyHours }} h</span></template></span>
+            <span class="caption">{{ m.postes.map((p) => POSTES[p]).join(', ') || 'Aucun poste' }}<template v-if="m.weeklyHours">, <span class="data">{{ m.weeklyHours }} h</span></template></span>
             <span v-if="!m.hygieneTrainingDone" class="state state-warn">Formation hygiène à prévoir</span>
           </span>
         </button>

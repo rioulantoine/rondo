@@ -82,7 +82,7 @@ async function copyLink() {
 
     <template v-if="d">
       <div class="sum">
-        <span><Users :size="18" :stroke-width="1.7" /> <span class="data">{{ covers }}</span> couverts · <span class="data">{{ active.length }}</span> tables</span>
+        <span><Users :size="18" :stroke-width="1.7" /> <span class="data">{{ covers }}</span> couverts pour <span class="data">{{ active.length }}</span> tables</span>
         <button v-if="!form" class="btn btn-primary small" @click="form = reactive({ slot: d.slots[0], party: 2, firstName: '', lastName: '', phone: '', notes: '' })"><Plus :size="18" :stroke-width="1.7" /> Ajouter</button>
       </div>
 
@@ -105,12 +105,12 @@ async function copyLink() {
       </form>
       </Transition>
 
-      <ul class="register panel list rise-list">
+      <ul class="register panel list">
         <li v-for="r in d.reservations" :key="r.id" class="resa" :class="{ off: r.status === 'annulee' }">
           <span class="data t">{{ r.slot }}</span>
           <span class="grow txt">
-            <span class="name">{{ r.name }} <span class="data caption">· {{ r.party }} pers.</span></span>
-            <span class="caption">{{ [r.phone, r.notes].filter(Boolean).join(' · ') }}</span>
+            <span class="name">{{ r.name }} <span class="data caption">{{ r.party }} pers.</span></span>
+            <span class="caption">{{ [r.phone, r.notes].filter(Boolean).join(', ') }}</span>
             <span class="state" :class="`state-${STATE[r.status]}`">{{ d.statuses[r.status] }}</span>
           </span>
           <span v-if="r.status === 'confirmee'" class="acts">

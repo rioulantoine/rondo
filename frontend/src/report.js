@@ -30,7 +30,7 @@ export function haccpReport(data) {
     doc.setDrawColor(...INK).setLineWidth(0.9).circle(16.8, 15.4, 2.4)
     doc.setFillColor(...INK).roundedRect(13.8, 19.2, 6, 0.7, 0.35, 0.35, 'F')
     doc.setFont('helvetica', 'bold').setFontSize(13).setTextColor(...INK).text('rondo', 21.5, 18)
-    doc.setFont('helvetica', 'normal').setFontSize(9).setTextColor(...SOFT).text(`${data.restaurant} · Registre ${space} · ${period}`, 196, 18, { align: 'right' })
+    doc.setFont('helvetica', 'normal').setFontSize(9).setTextColor(...SOFT).text(`${data.restaurant}, registre ${space}, ${period}`, 196, 18, { align: 'right' })
     doc.setDrawColor(...LINE).setLineWidth(0.3).line(14, 23, 196, 23)
   }
   const table = (title, head, body, opts = {}) => {

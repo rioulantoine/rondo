@@ -139,8 +139,8 @@ async function removeTrace(e) {
         <div v-if="d.summary.tempAlerts.length || dlcList.length" class="panel pad">
           <h2 class="h-ico"><TriangleAlert :size="20" :stroke-width="1.7" /> À traiter</h2>
           <ul class="register">
-            <RegisterEntry v-for="e in d.summary.tempAlerts" :key="e.id" :title="e.equipmentName" :sub="`${time(e.ts)} · ${e.comment}`" :value="`${num(e.value)}°`" state="alert" :staff="e.staff" />
-            <RegisterEntry v-for="x in dlcList" :key="x.e.id" :title="x.e.product" :sub="`DLC ${day(x.e.date)}${x.e.lot ? ' · lot ' + x.e.lot : ''}`" :staff="x.e.staff">
+            <RegisterEntry v-for="e in d.summary.tempAlerts" :key="e.id" :title="e.equipmentName" :sub="`${time(e.ts)}, ${e.comment}`" :value="`${num(e.value)}°`" state="alert" :staff="e.staff" />
+            <RegisterEntry v-for="x in dlcList" :key="x.e.id" :title="x.e.product" :sub="`DLC ${day(x.e.date)}${x.e.lot ? ', lot ' + x.e.lot : ''}`" :staff="x.e.staff">
               <span class="state" :class="`state-${dlcState(x.left).cls}`">{{ dlcState(x.left).label }}</span>
               <template #end><button v-if="x.left <= 0" class="btn btn-secondary small" @click="removeTrace(x.e)">Retiré</button></template>
             </RegisterEntry>
@@ -169,14 +169,14 @@ async function removeTrace(e) {
 
       <!-- ================= Températures ================= -->
       <section v-if="tab === 'temp'" class="stack">
-        <ul v-if="isCurrentMonth" class="register panel eqs rise-list">
+        <ul v-if="isCurrentMonth" class="register panel eqs">
           <li v-for="eq in d.equipments" :key="eq.id">
             <button class="eq-row" :aria-expanded="openEq === eq.id" @click="openTemp(eq)">
               <span class="txt">
                 <span class="eq-name">{{ eq.name }}</span>
                 <span class="caption data">Bornes : {{ num(eq.min, 0) }} à {{ num(eq.max, 0) }} °C</span>
               </span>
-              <span v-if="lastToday(eq.id)" class="data last" :class="{ out: !lastToday(eq.id).ok }">{{ num(lastToday(eq.id).value) }}°</span>
+              <span v-if="lastToday(eq.id)" class="mono last" :class="{ out: !lastToday(eq.id).ok }">{{ num(lastToday(eq.id).value) }}°</span>
               <span v-else class="caption">À relever</span>
             </button>
             <Transition name="open">
@@ -212,7 +212,7 @@ async function removeTrace(e) {
           </div>
           <ul class="register">
             <RegisterEntry v-for="e in (isCurrentMonth ? [...tempsToday].reverse() : monthTemps)" :key="e.id" :number="e.n" :title="e.equipmentName"
-              :sub="`${isCurrentMonth ? '' : day(e.ts) + ' '}${time(e.ts)}${e.comment ? ' · ' + e.comment : ''}`" :value="`${num(e.value)}°`" :state="e.ok ? '' : 'alert'" :staff="e.staff" />
+              :sub="`${isCurrentMonth ? '' : day(e.ts) + ' '}${time(e.ts)}${e.comment ? ', ' + e.comment : ''}`" :value="`${num(e.value)}°`" :state="e.ok ? '' : 'alert'" :staff="e.staff" />
           </ul>
           <p v-if="!(isCurrentMonth ? tempsToday : monthTemps).length" class="muted empty">Aucun relevé {{ isCurrentMonth ? "aujourd'hui" : 'ce mois-là' }}. Touche un point de contrôle pour commencer.</p>
         </div>
@@ -266,7 +266,7 @@ async function removeTrace(e) {
           </div>
           <ul class="register">
             <RegisterEntry v-for="e in monthTraces" :key="e.id" :number="e.n" :title="e.product"
-              :sub="[d.traceTypes[e.type], e.date && 'DLC ' + day(e.date), e.lot && 'lot ' + e.lot, e.supplier, e.temp !== null && e.temp !== undefined && num(e.temp) + ' °C'].filter(Boolean).join(' · ')" :staff="e.staff">
+              :sub="[d.traceTypes[e.type], e.date && 'DLC ' + day(e.date), e.lot && 'lot ' + e.lot, e.supplier, e.temp !== null && e.temp !== undefined && num(e.temp) + ' °C'].filter(Boolean).join(', ')" :staff="e.staff">
               <span v-if="e.removedAt" class="state state-neutral">Retiré</span>
               <span v-else-if="e.type === 'dlc' && e.date && daysUntil(e.date, d.today) <= 3" class="state" :class="`state-${dlcState(daysUntil(e.date, d.today)).cls}`">{{ dlcState(daysUntil(e.date, d.today)).label }}</span>
             </RegisterEntry>

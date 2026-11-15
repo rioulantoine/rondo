@@ -67,7 +67,7 @@ async function logout() {
 
       <template v-if="!chosen">
         <p v-if="loadError" class="error-text" role="alert">{{ loadError }}</p>
-        <ul v-else class="people rise-list" :aria-busy="!people">
+        <ul v-else class="people" :aria-busy="!people">
           <template v-if="!people">
             <li v-for="i in 4" :key="i" class="person skeleton" aria-hidden="true" />
           </template>
@@ -75,7 +75,7 @@ async function logout() {
             <button class="person" @click="choose(p)">
               <span class="visa">{{ initials(p.name) }}</span>
               <span class="who-name">{{ p.name }}</span>
-              <span class="caption">{{ p.postes.map((x) => POSTES[x] || x).join(' · ') || 'Équipe' }}</span>
+              <span class="caption">{{ p.postes.map((x) => POSTES[x] || x).join(', ') || 'Équipe' }}</span>
             </button>
           </li>
           <li>
@@ -119,7 +119,7 @@ async function logout() {
 .person {
   width: 100%; transition: transform var(--dur-press) var(--ease-out), border-color var(--dur-press) ease, box-shadow var(--dur-press) ease; min-height: 128px; display: grid; justify-items: start; align-content: start; gap: 4px;
   padding: 16px; text-align: left; background: var(--sand); color: var(--ink);
-  border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); border-radius: var(--r-l);
+  border: 1px solid var(--line); border-radius: var(--r-l);
   transition: transform 160ms var(--ease-out), border-color 160ms var(--ease-out);
 }
 .person:active { transform: scale(.97); }

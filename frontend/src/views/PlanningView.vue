@@ -110,7 +110,7 @@ async function publish() {
       <div v-if="d.editor" class="pub">
         <span v-if="!d.status.published" class="state state-warn">Brouillon, pas encore publié</span>
         <span v-else-if="!d.status.upToDate" class="state state-warn">Modifié depuis la publication</span>
-        <span v-else class="state state-ok">Publié · à jour</span>
+        <span v-else class="state state-ok">Publié et à jour</span>
         <button v-if="!d.status.upToDate" class="btn btn-primary small" :disabled="busy" @click="publish"><Send :size="18" :stroke-width="1.7" /> Publier la semaine</button>
       </div>
       <p v-else-if="!d.status.published" class="muted">Cette semaine n'est pas encore publiée.</p>
@@ -144,7 +144,7 @@ async function publish() {
       </form>
       </Transition>
 
-      <div class="days rise-list">
+      <div class="days">
         <section v-for="day in byDay" :key="day.date" class="day" :class="{ today: day.date === todayParis() }">
           <h2 class="day-h">{{ dayLabel(day.date) }}</h2>
           <ul class="shifts">
@@ -152,7 +152,7 @@ async function publish() {
               <component :is="d.editor ? 'button' : 'div'" class="shift" @click="edit(s)">
                 <span class="data t">{{ s.start }} – {{ s.end }}</span>
                 <span class="who"><span class="visa sm">{{ initials(s.staff) }}</span>{{ s.staff }}</span>
-                <span v-if="s.space || s.note" class="caption">{{ [SPACES[s.space], s.note].filter(Boolean).join(' · ') }}</span>
+                <span v-if="s.space || s.note" class="caption">{{ [SPACES[s.space], s.note].filter(Boolean).join(', ') }}</span>
               </component>
             </li>
           </ul>
@@ -191,7 +191,7 @@ async function publish() {
 .grow { flex: 1; }
 
 .days { display: grid; gap: 12px; }
-.day { border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline), 0 1px 2px rgb(28 42 74 / .05); border-radius: var(--r-l); padding: 12px; background: var(--sand); }
+.day { border: 1px solid var(--line); border-radius: var(--r-l); padding: 12px; background: var(--sand); }
 .day.today { border-color: var(--sea-deep); }
 .day-h { font-size: 15px; line-height: 20px; margin-bottom: 8px; }
 .day-h::first-letter { text-transform: uppercase; }

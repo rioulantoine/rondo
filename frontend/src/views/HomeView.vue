@@ -34,10 +34,10 @@ const todo = computed(() => {
   if (!d.value) return []
   const out = []
   for (const s of d.value.spaces) {
-    for (const t of s.tempAlerts) out.push({ key: t.id, sp: s.space, cls: 'alert', title: `${t.equipmentName} hors bornes`, sub: `${s.label} · ${num(t.value)} °C à ${time(t.ts)}` })
+    for (const t of s.tempAlerts) out.push({ key: t.id, sp: s.space, cls: 'alert', title: `${t.equipmentName} hors bornes`, sub: `${s.label}, ${num(t.value)} °C à ${time(t.ts)}` })
     for (const a of s.dlcAlerts) {
       const st = dlcState(a.daysLeft)
-      out.push({ key: a.entry.id, sp: s.space, cls: st.cls, title: `${a.entry.product} · ${st.label}`, sub: `${s.label} · DLC ${day(a.entry.date)}` })
+      out.push({ key: a.entry.id, sp: s.space, cls: st.cls, title: a.entry.product, sub: `${st.label}. ${s.label}, DLC du ${day(a.entry.date)}` })
     }
   }
   return out.sort((a, b) => (a.cls === 'alert' ? 0 : 1) - (b.cls === 'alert' ? 0 : 1))
@@ -69,15 +69,15 @@ async function validate(e) {
 
     <template v-if="d">
       <!-- messages du responsable -->
-      <ul v-if="d.alerts.length" class="register panel pad rise-list">
+      <ul v-if="d.alerts.length" class="register panel pad">
         <li v-for="a in d.alerts" :key="a.id" class="row">
           <Megaphone :size="20" :stroke-width="1.7" class="ico-info" />
-          <span class="grow"><span class="title">{{ a.message }}</span><span class="caption">{{ TARGET[a.target] || a.target }} · {{ a.createdBy }}</span></span>
+          <span class="grow"><span class="title">{{ a.message }}</span><span class="caption">{{ TARGET[a.target] || a.target }}, par {{ a.createdBy }}</span></span>
         </li>
       </ul>
 
       <!-- à traiter -->
-      <ul v-if="todo.length" class="register panel pad rise-list">
+      <ul v-if="todo.length" class="register panel pad">
         <li v-for="t in todo" :key="t.key">
           <RouterLink :to="`/registres/${t.sp}`" class="row link">
             <TriangleAlert :size="20" :stroke-width="1.7" :class="`ico-${t.cls}`" />
@@ -92,7 +92,7 @@ async function validate(e) {
         <h2 class="sub">Arrivées hors planning à valider</h2>
         <ul class="register">
           <li v-for="e in d.owner.pendingBadges" :key="e.id" class="row">
-            <span class="grow"><span class="title">{{ e.name }} · <span class="data">{{ day(e.ts) }} {{ time(e.ts) }}</span></span><span class="caption">{{ e.justification }}</span></span>
+            <span class="grow"><span class="title">{{ e.name }}, <span class="data">{{ day(e.ts) }} {{ time(e.ts) }}</span></span><span class="caption">{{ e.justification }}</span></span>
             <button class="btn btn-secondary small" @click="validate(e)">Valider</button>
           </li>
         </ul>
@@ -101,7 +101,7 @@ async function validate(e) {
       <p v-if="!todo.length && !d.owner?.pendingBadges.length" class="state state-ok calm"><Check :size="16" :stroke-width="2" /> Rien à traiter pour l'instant.</p>
 
       <!-- espaces -->
-      <ul class="register panel pad rise-list">
+      <ul class="register panel pad">
         <li v-for="s in d.spaces" :key="s.space">
           <RouterLink :to="`/registres/${s.space}`" class="row link space">
             <span class="ico"><component :is="ICONS[s.space]" :size="22" :stroke-width="1.7" /></span>

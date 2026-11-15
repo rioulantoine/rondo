@@ -43,7 +43,7 @@ function alertLine(s) {
   <div class="stack">
     <h1>Registres</h1>
     <p v-if="error" class="error-text" role="alert">{{ error }}</p>
-    <ul class="register spaces panel rise-list" :aria-busy="!spaces">
+    <ul class="register spaces panel" :aria-busy="!spaces">
       <template v-if="!spaces"><li v-for="i in 3" :key="i" class="skeleton sk" aria-hidden="true" /></template>
       <li v-for="s in spaces" :key="s.space">
         <RouterLink :to="`/registres/${s.space}`" class="row">
