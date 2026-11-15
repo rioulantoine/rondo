@@ -2,6 +2,7 @@
 import { Check, Minus, Sunrise, UtensilsCrossed, Moon, Thermometer, Clock4, CalendarDays, BookMarked, FileText, Users } from 'lucide-vue-next'
 import RondoLogo from '../components/RondoLogo.vue'
 import LiveRegister from '../components/LiveRegister.vue'
+import KitchenScene from '../components/KitchenScene.vue'
 import { OFFRES, FEATURES, TRIAL_DAYS } from '../offres'
 
 const CYCLE = [
@@ -149,6 +150,7 @@ const has = (offre, id) => offre.features.includes(id)
       </section>
 
       <section class="final wrap" v-reveal>
+        <KitchenScene class="final-scene" />
         <h2>Ton prochain relevé, dans Rondo.</h2>
         <RouterLink to="/connexion?mode=create" class="btn btn-primary cta">Créer mon établissement</RouterLink>
       </section>
@@ -162,7 +164,7 @@ const has = (offre, id) => offre.features.includes(id)
 </template>
 
 <style scoped>
-.landing { min-height: 100svh; background: var(--sand); }
+.landing { min-height: 100svh; background: var(--bg); }
 .wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
 .top {
   position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px;
@@ -225,7 +227,7 @@ section { padding-top: 88px; }
 .yes { color: var(--ok); }
 .no { color: var(--line); }
 .offres-mobile { display: none; list-style: none; margin: 0; padding: 0; gap: 16px; }
-.om { border: 1px solid var(--line); border-radius: var(--r-l); padding: 20px; display: grid; gap: 8px; }
+.om { background: var(--sand); border: 1px solid transparent; box-shadow: 0 0 0 .5px var(--hairline); border-radius: var(--r-l); padding: 20px; display: grid; gap: 8px; }
 .om.hl { border-color: var(--sea-deep); background: var(--sand); box-shadow: var(--shadow); }
 .om-head { display: flex; justify-content: space-between; align-items: center; }
 .om-list { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 8px; }
@@ -241,7 +243,9 @@ section { padding-top: 88px; }
 .qa[open] summary::after { transform: translateY(-30%) rotate(-135deg); }
 .qa p { padding: 0 0 20px; max-width: 62ch; }
 
-.final { display: grid; justify-items: start; gap: 8px; padding-bottom: 96px; }
+.final { display: grid; justify-items: center; text-align: center; gap: 8px; padding-bottom: 96px; }
+.final h2 { margin-left: auto; margin-right: auto; }
+.final-scene { max-width: 300px; margin-bottom: 36px; }
 .final h2 { margin-bottom: 16px; }
 .foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding-top: 28px; padding-bottom: calc(28px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
 
