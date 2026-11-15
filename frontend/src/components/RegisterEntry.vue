@@ -14,7 +14,7 @@ defineProps({
 </script>
 
 <template>
-  <li class="entry">
+  <li class="entry" :class="state && ['bleed', `tone-${state}`]">
     <span v-if="number !== null" class="no mono" :aria-label="`Entrée numéro ${number}`">{{ entryNo(number) }}</span>
     <span class="text">
       <span class="title">{{ title }}</span>
@@ -29,6 +29,7 @@ defineProps({
 
 <style scoped>
 .entry { display: flex; align-items: center; gap: 12px; padding: 12px 0; min-height: 64px; }
+.entry.bleed { padding-inline: 16px; }
 .no { width: 3.2em; flex: none; font-size: 13px; color: var(--ink-soft); }
 .text { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .title { font-weight: 500; overflow-wrap: anywhere; }
