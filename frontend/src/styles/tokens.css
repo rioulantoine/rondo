@@ -14,7 +14,7 @@
   --sand: #FFFFFF;
   --sand-dark: #F7F8FA;
   --mist: #EDEFF3;
-  --bg: #F6F7F9;          /* fond de l'appli : les panneaux blancs bordés s'y détachent sans ombre */
+  --bg: #ECF0F4;          /* fond de l'appli, gris bleuté (brume) : les panneaux blancs s'en détachent nettement */
   --line: #DCDFE5;
   --ink: #23272F;
   --ink-soft: #5A606B;
@@ -50,7 +50,7 @@
     --on-dark-soft: #9AA3B5;
     --tint: #1F3A3B; --tint-strong: #2C5452;
     --accent-deep: #BFE3DC;
-    --sand: #121A2B; --sand-dark: #1A2337; --mist: #222C43; --bg: #0A0F1C;
+    --sand: #121A2B; --sand-dark: #1A2337; --mist: #222C43; --bg: #0B1120;
     --line: #27314A; --ink: #E8EAEF; --ink-soft: #9AA3B5;
     --ok: #7FD1A3; --ok-bg: #15301F; --warn: #F2B45A; --warn-bg: #33260F; --alert: #FF9B8E; --alert-bg: #3A1A1A;
     --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px -12px rgb(0 0 0 / .5);
