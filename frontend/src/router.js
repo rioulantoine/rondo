@@ -3,6 +3,7 @@ import { session, loadSession, can } from './api'
 
 const routes = [
   { path: '/bienvenue', component: () => import('./views/LandingView.vue'), meta: { public: true, entry: true } },
+  { path: '/:page(mentions-legales|conditions|confidentialite)', component: () => import('./views/LegalView.vue'), meta: { public: true } },
   { path: '/connexion', component: () => import('./views/LoginView.vue'), meta: { public: true } },
   { path: '/qui', component: () => import('./views/IdentityView.vue'), meta: { needsRestaurant: true } },
   { path: '/', component: () => import('./views/HomeView.vue'), meta: { shell: true } },
