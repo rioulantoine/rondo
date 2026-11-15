@@ -2,6 +2,12 @@
 
 Source d'autorité : charte Rondo v2 (`v1/Charte Rondo.html`). Ce fichier en reprend ce que le code applique ; les jetons vivent dans `frontend/src/styles/tokens.css`.
 
+## Direction (novembre 2026)
+
+Inspirée des interfaces Apple (skill apple-design), sur l'identité de la charte (couleurs, polices, logo inchangés) : fond groupé `--bg` avec panneaux blancs détachés par un filet `--hairline` (pas de bordure), grands titres 34/40 gras, barres en matériau translucide (`--material`), onglets teintés sans pastille, champs remplis, boutons secondaires teintés. Écart assumé : coins 8 / 12 / 18 / 26 px au lieu de 6 / 10 / 14.
+
+Scène de cuisine (`KitchenScene`) : la cloche se lève au passe sur l'assiette qui porte le symbole Rondo. Utilisée à la connexion et dans l'appel final de la présentation ; figée cloche levée en mouvement réduit.
+
 ## Mode
 
 Operate. L'outil s'efface derrière la tâche ; la marque vit dans les détails.
