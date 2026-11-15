@@ -30,4 +30,26 @@ $publish = [];
 foreach ([0, 7] as $plus) $publish[\Rondo\Planning::weekStart(date('Y-m-d', strtotime("+$plus day")))] = ['publishedAt' => date('c'), 'publishedBy' => 'Responsable', 'snapshot' => []];
 $fs->set("config:$code:planningPublish", $publish);
 $fs->set("config:$code:alerts", [['id' => 'alert-1', 'message' => 'Contrôle sanitaire possible cette semaine : registres à jour avant chaque service.', 'target' => 'tous', 'active' => true, 'createdAt' => date('c'), 'createdBy' => 'Responsable']]);
+// une journée de service plausible, pour les démonstrations et les captures
+$today = date('Y-m-d');
+$at = fn(string $hm) => (new DateTimeImmutable("$today $hm", new DateTimeZone('Europe/Paris')))->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d\TH:i:s.v\Z');
+$temp = fn($id, $name, $v, $min, $max, $hm, $who, $c = '') => ['id' => "t-$id", 'ts' => $at($hm), 'equipmentId' => $id, 'equipmentName' => $name, 'value' => $v, 'min' => $min, 'max' => $max, 'ok' => $v >= $min && $v <= $max, 'staff' => $who, 'comment' => $c, 'period' => 'Avant service du matin'];
+$fs->set("log:$code:cuisine:temp:$m", [
+    $temp('frigo1', 'Réfrigérateur 1', 2.8, 0, 4, '08:12', 'Léa Martin'),
+    $temp('frigo2', 'Réfrigérateur 2', 3.4, 0, 4, '08:14', 'Léa Martin'),
+    $temp('chambre', 'Chambre froide', 1.9, 0, 3, '08:17', 'Hugo Lambert'),
+    $temp('congelo', 'Congélateur', -12.0, -25, -18, '08:20', 'Hugo Lambert', 'Porte mal fermée, nouveau relevé dans 30 min'),
+    $temp('vitrine', 'Vitrine réfrigérée', 3.1, 0, 4, '08:26', 'Léa Martin'),
+]);
+$done = fn($hm, $who) => ['done' => true, 'ts' => $at($hm), 'staff' => $who];
+$fs->set("log:$code:cuisine:tasks:$today", ['t1' => $done('08:30', 'Léa Martin'), 't2' => $done('08:41', 'Hugo Lambert'), 't3' => $done('08:55', 'Léa Martin')]);
+$fs->set("log:$code:salle:tasks:$today", ['t1' => $done('11:20', 'Léa Martin'), 't2' => $done('11:32', 'Léa Martin')]);
+$fs->set("log:$code:cuisine:trace:$m", [
+    ['id' => 'tr-1', 'ts' => $at('08:45'), 'type' => 'dlc', 'product' => 'Crème liquide 35 %', 'date' => date('Y-m-d', strtotime('+1 day')), 'lot' => '24-118', 'supplier' => '', 'temp' => null, 'staff' => 'Léa Martin', 'period' => 'Avant service du matin'],
+    ['id' => 'tr-2', 'ts' => $at('09:05'), 'type' => 'reception', 'product' => 'Saumon frais', 'date' => '', 'lot' => 'FR-889', 'supplier' => 'Marée Atlantique', 'temp' => 2.1, 'staff' => 'Hugo Lambert', 'period' => 'Avant service du matin'],
+]);
+$fs->set("log:$code:pointage:$m", [
+    ['id' => 'pt-1', 'memberId' => 'm-lea', 'name' => 'Léa Martin', 'type' => 'arrivee', 'ts' => $at('08:58'), 'plannedStart' => '09:00', 'diffMin' => -2],
+    ['id' => 'pt-2', 'memberId' => 'm-hugo', 'name' => 'Hugo Lambert', 'type' => 'arrivee', 'ts' => $at('08:05'), 'offSchedule' => true, 'justification' => 'Livraison à réceptionner', 'validated' => false],
+]);
 echo "Établissement « sumo-beach » / mot de passe « rondo123 » — PIN Léa 1234, Tom 2345, Hugo 3456\n";
