@@ -1,12 +1,12 @@
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { Eye, EyeOff, ArrowLeft, CircleCheck, TriangleAlert, LoaderCircle } from 'lucide-vue-next'
+import { Eye, EyeOff, ArrowLeft, CircleCheck, TriangleAlert, LoaderCircle, Check } from 'lucide-vue-next'
 import { api, setSession } from '../api'
 import { slugify } from '../format'
 import { OFFRES, TRIAL_DAYS } from '../offres'
 import RondoLogo from '../components/RondoLogo.vue'
-import LiveRegister from '../components/LiveRegister.vue'
+import KitchenScene from '../components/KitchenScene.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -91,8 +91,13 @@ async function submit() {
     <aside class="brand" aria-hidden="true">
       <RondoLogo :size="28" class="b-logo" />
       <div class="b-body">
-        <p class="b-quote">Chaque relevé est une entrée numérotée, datée et visée. C’est ce que l’inspecteur demande.</p>
-        <LiveRegister title="Cuisine · relevés du jour" />
+        <KitchenScene on-dark class="b-scene" />
+        <p class="b-quote">Moins de papier.<br />Plus de service.</p>
+        <ul class="b-points">
+          <li><Check :size="18" :stroke-width="2.2" /> {{ TRIAL_DAYS }} jours gratuits, sans carte bancaire</li>
+          <li><Check :size="18" :stroke-width="2.2" /> Registres prêts pour le contrôle sanitaire</li>
+          <li><Check :size="18" :stroke-width="2.2" /> Sur iPhone, iPad et ordinateur, sans installation</li>
+        </ul>
       </div>
       <p class="b-foot">Hygiène · Équipe · Planning · Réservations</p>
     </aside>
@@ -102,6 +107,8 @@ async function submit() {
         <RouterLink to="/bienvenue" class="back"><ArrowLeft :size="18" :stroke-width="1.7" /> Découvrir Rondo</RouterLink>
         <RondoLogo :size="24" class="m-logo" />
       </div>
+
+      <KitchenScene class="m-scene" />
 
       <form class="form" novalidate @submit.prevent="submit" @keydown="onKey" @keyup="onKey">
         <div v-if="mode !== 'reset'" class="seg" role="tablist" aria-label="Connexion ou création">
@@ -201,17 +208,22 @@ async function submit() {
   .brand {
     display: grid; grid-template-rows: auto 1fr auto; gap: 32px; padding: 40px 48px;
     background: #1C2A4A; color: #FFFFFF;
-    background-image: radial-gradient(120% 80% at 100% 0%, rgb(191 227 220 / .16), transparent 60%);
+    background-image: radial-gradient(90% 60% at 50% 30%, rgb(191 227 220 / .14), transparent 70%), linear-gradient(180deg, #1C2A4A, #141F38);
   }
   .b-logo { color: #BFE3DC; }
-  .b-body { display: grid; gap: 28px; align-content: center; max-width: 520px; width: 100%; justify-self: center; }
-  .b-quote { font-size: 24px; line-height: 32px; font-weight: 500; letter-spacing: -0.01em; color: #FFFFFF; text-wrap: balance; }
+  .b-body { display: grid; gap: 28px; align-content: center; max-width: 480px; width: 100%; justify-self: center; }
+  .b-scene { margin-bottom: 12px; }
+  .b-quote { font-size: 44px; line-height: 1.05; font-weight: 700; letter-spacing: -0.035em; color: #FFFFFF; }
+  .b-points { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; color: #DCE3F2; font-size: 17px; }
+  .b-points li { display: flex; gap: 10px; align-items: center; }
+  .b-points svg { color: #BFE3DC; flex: none; }
   .b-foot { color: #AFC0EA; font-size: 14px; }
-  .brand :deep(.live) { box-shadow: 0 30px 60px -30px rgb(0 0 0 / .6); }
 }
 
 /* ---------- formulaire ---------- */
-.side { display: grid; grid-template-rows: auto 1fr; padding: calc(16px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom)); }
+.m-scene { max-width: 220px; margin: 0 auto 20px; }
+@media (min-width: 1000px) { .m-scene { display: none; } }
+.side { display: grid; grid-template-rows: auto auto 1fr; padding: calc(16px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom)); }
 .side-top { display: flex; justify-content: space-between; align-items: center; min-height: 48px; }
 .back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--ink-soft); text-decoration: none; font-size: 15px; font-weight: 500; }
 @media (hover: hover) and (pointer: fine) { .back:hover { color: var(--sea-deep); } }
@@ -219,7 +231,7 @@ async function submit() {
 .form { width: 100%; max-width: 420px; margin: 0 auto; align-self: center; display: grid; gap: 24px; padding: 24px 0; }
 .fields { display: grid; gap: 18px; }
 .intro { display: grid; gap: 8px; }
-.intro h1 { font-size: 32px; line-height: 36px; letter-spacing: -0.025em; }
+.intro h1 { font-size: 34px; line-height: 40px; letter-spacing: -0.03em; }
 
 .seg { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; background: var(--sand-dark); border: 1px solid var(--line); border-radius: 12px; }
 .seg-ind { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 9px; background: var(--sand); box-shadow: 0 1px 3px rgb(28 42 74 / .12); transition: transform var(--dur-ui) var(--ease-in-out); }
