@@ -58,12 +58,11 @@ async function validate(e) {
 <template>
   <div class="stack home">
     <div class="hello">
-      <p class="caption date">{{ dayLong() }}</p>
+      <p class="date">{{ dayLong() }}</p>
       <h1>Bonjour{{ firstName }}</h1>
-      <p v-if="d?.me?.today.length" class="muted">Tu es de service <span class="data">{{ d.me.today.map((s) => `${s.start} – ${s.end || '…'}`).join(', ') }}</span></p>
+      <p v-if="d?.me?.today.length" class="shift">Tu es de service <span class="data">{{ d.me.today.map((s) => `${s.start} – ${s.end || '…'}`).join(', ') }}</span></p>
+      <RouterLink v-if="badge" to="/pointer" class="btn btn-block big">{{ badge }}</RouterLink>
     </div>
-
-    <RouterLink v-if="badge" to="/pointer" class="btn btn-primary btn-block big">{{ badge }}</RouterLink>
     <p v-if="error" class="error-text" role="alert">{{ error }}</p>
     <div v-if="!d && !error" class="skeleton sk" aria-busy="true" />
 
@@ -78,7 +77,7 @@ async function validate(e) {
 
       <!-- à traiter -->
       <ul v-if="todo.length" class="register panel pad">
-        <li v-for="t in todo" :key="t.key">
+        <li v-for="t in todo" :key="t.key" :class="`bleed tone-${t.cls}`">
           <RouterLink :to="`/registres/${t.sp}`" class="row link">
             <TriangleAlert :size="20" :stroke-width="1.7" :class="`ico-${t.cls}`" />
             <span class="grow"><span class="title">{{ t.title }}</span><span class="caption">{{ t.sub }}</span></span>
@@ -131,11 +130,15 @@ async function validate(e) {
 </template>
 
 <style scoped>
-.hello { display: grid; gap: 4px; }
+/* bandeau d'accueil à la couleur de l'établissement (encre, ou céladon en sombre) */
+.hello { display: grid; gap: 4px; padding: 22px 20px 20px; border-radius: var(--r-xl); background: var(--sea-deep); color: var(--on-sea); }
+.hello h1 { color: inherit; }
+.date { font-size: 14px; opacity: .78; }
 .date::first-letter { text-transform: uppercase; }
-.big { min-height: 56px; font-size: 17px; }
+.shift { opacity: .9; }
+.big { min-height: 52px; margin-top: 14px; font-size: 17px; background: var(--on-sea); color: var(--sea-deep); }
 .sk { height: 280px; }
-.pad { padding: 0 16px; }
+.pad { padding: 0 16px; overflow: hidden; }
 .row { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 0; }
 .link { color: var(--ink); text-decoration: none; }
 .grow { flex: 1; min-width: 0; display: grid; gap: 2px; }
@@ -147,7 +150,7 @@ async function validate(e) {
 .calm { justify-self: start; }
 .sub { font-size: 16px; padding-top: 14px; }
 .small { min-height: 44px; font-size: 14px; padding: 0 14px; }
-.ico { width: 44px; height: 44px; border-radius: var(--r-m); background: var(--mist); color: var(--sea-deep); display: grid; place-items: center; flex: none; }
+.ico { width: 44px; height: 44px; border-radius: var(--r-m); background: var(--tint); color: var(--accent-deep); display: grid; place-items: center; flex: none; }
 .space .title { font-weight: 600; }
 .count { color: var(--ink-soft); }
 .count.done { color: var(--ok); }
