@@ -140,7 +140,7 @@ async function removeTrace(e) {
           <h2 class="h-ico"><TriangleAlert :size="20" :stroke-width="1.7" /> À traiter</h2>
           <ul class="register">
             <RegisterEntry v-for="e in d.summary.tempAlerts" :key="e.id" :title="e.equipmentName" :sub="`${time(e.ts)}, ${e.comment}`" :value="`${num(e.value)}°`" state="alert" :staff="e.staff" />
-            <RegisterEntry v-for="x in dlcList" :key="x.e.id" :title="x.e.product" :sub="`DLC ${day(x.e.date)}${x.e.lot ? ', lot ' + x.e.lot : ''}`" :staff="x.e.staff">
+            <RegisterEntry v-for="x in dlcList" :key="x.e.id" :state="dlcState(x.left).cls" :title="x.e.product" :sub="`DLC ${day(x.e.date)}${x.e.lot ? ', lot ' + x.e.lot : ''}`" :staff="x.e.staff">
               <span class="state" :class="`state-${dlcState(x.left).cls}`">{{ dlcState(x.left).label }}</span>
               <template #end><button v-if="x.left <= 0" class="btn btn-secondary small" @click="removeTrace(x.e)">Retiré</button></template>
             </RegisterEntry>
@@ -170,7 +170,7 @@ async function removeTrace(e) {
       <!-- ================= Températures ================= -->
       <section v-if="tab === 'temp'" class="stack">
         <ul v-if="isCurrentMonth" class="register panel eqs">
-          <li v-for="eq in d.equipments" :key="eq.id">
+          <li v-for="eq in d.equipments" :key="eq.id" :class="lastToday(eq.id) && (lastToday(eq.id).ok ? 'tone-ok' : 'tone-alert')">
             <button class="eq-row" :aria-expanded="openEq === eq.id" @click="openTemp(eq)">
               <span class="txt">
                 <span class="eq-name">{{ eq.name }}</span>
@@ -224,7 +224,7 @@ async function removeTrace(e) {
         <div v-for="g in taskGroups" :key="g.period" class="panel pad">
           <h2 class="group">{{ g.period }} <span class="data caption">{{ g.tasks.filter((t) => d.taskLog[t.id]?.done).length }} / {{ g.tasks.length }}</span></h2>
           <ul class="register">
-            <li v-for="t in g.tasks" :key="t.id">
+            <li v-for="t in g.tasks" :key="t.id" :class="d.taskLog[t.id]?.done && 'bleed tone-ok'">
               <label class="task">
                 <input type="checkbox" :checked="!!d.taskLog[t.id]?.done" @change="toggleTask(t)" />
                 <span class="task-label" :class="{ done: d.taskLog[t.id]?.done }">{{ t.label }}</span>
@@ -265,7 +265,7 @@ async function removeTrace(e) {
             <button class="btn btn-ghost icon" aria-label="Mois suivant" :disabled="isCurrentMonth" @click="goMonth(1)"><ChevronRight :size="20" :stroke-width="1.7" /></button>
           </div>
           <ul class="register">
-            <RegisterEntry v-for="e in monthTraces" :key="e.id" :number="e.n" :title="e.product"
+            <RegisterEntry v-for="e in monthTraces" :key="e.id" :number="e.n" :title="e.product" :state="!e.removedAt && e.type === 'dlc' && e.date && daysUntil(e.date, d.today) <= 3 ? dlcState(daysUntil(e.date, d.today)).cls : ''"
               :sub="[d.traceTypes[e.type], e.date && 'DLC ' + day(e.date), e.lot && 'lot ' + e.lot, e.supplier, e.temp !== null && e.temp !== undefined && num(e.temp) + ' °C'].filter(Boolean).join(', ')" :staff="e.staff">
               <span v-if="e.removedAt" class="state state-neutral">Retiré</span>
               <span v-else-if="e.type === 'dlc' && e.date && daysUntil(e.date, d.today) <= 3" class="state" :class="`state-${dlcState(daysUntil(e.date, d.today)).cls}`">{{ dlcState(daysUntil(e.date, d.today)).label }}</span>
@@ -280,8 +280,10 @@ async function removeTrace(e) {
 
 <style scoped>
 .back { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-soft); text-decoration: none; font-size: 14px; margin-bottom: -8px; justify-self: start; min-height: 32px; }
-.pad { padding: 4px 16px 8px; }
-.pad > h2 { padding-top: 14px; }
+.pad { padding: 4px 16px 8px; overflow: hidden; }
+/* une dernière ligne teintée touche le bas du panneau */
+.pad:has(> .register > .bleed:last-child) { padding-bottom: 0; }
+.pad > h2 { padding-top: 14px; margin-bottom: 8px; }
 .h-ico { display: flex; align-items: center; gap: 8px; color: var(--alert); }
 .all-ok { justify-self: start; }
 .sk { height: 240px; }
@@ -297,6 +299,7 @@ async function removeTrace(e) {
 .q-val { font-size: 13px; color: var(--ink-soft); }
 @media (max-width: 520px) { .quick { grid-template-columns: 1fr; } .quick-btn { grid-template-columns: auto 1fr auto; align-items: center; } }
 
+.eqs { overflow: hidden; }
 .eqs > li { padding: 0 16px; }
 .eq-row { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 68px; padding: 10px 0; border: none; background: none; text-align: left; color: var(--ink); }
 .txt { flex: 1; display: grid; gap: 2px; }
@@ -319,7 +322,7 @@ async function removeTrace(e) {
 .task { display: flex; align-items: center; gap: 14px; min-height: 60px; padding: 8px 0; cursor: pointer; }
 .task input { width: 26px; height: 26px; accent-color: var(--ok); flex: none; margin: 0; }
 .task-label { flex: 1; }
-.task-label.done { color: var(--ink-soft); }
+.task-label.done { color: var(--ink); }
 
 .seg { display: flex; flex-wrap: wrap; gap: 8px; }
 .seg-btn { min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--sand); color: var(--ink); font-size: 14px; font-weight: 500; }
