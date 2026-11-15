@@ -4,9 +4,16 @@ Source d'autorité : charte Rondo v2 (`v1/Charte Rondo.html`). Ce fichier en rep
 
 ## Direction (novembre 2026)
 
-Inspirée des interfaces Apple (skill apple-design), sur l'identité de la charte (couleurs, polices, logo inchangés) : fond groupé `--bg` avec panneaux blancs détachés par un filet `--hairline` (pas de bordure), grands titres 34/40 gras, barres en matériau translucide (`--material`), onglets teintés sans pastille, champs remplis, boutons secondaires teintés. Écart assumé : coins 8 / 12 / 18 / 26 px au lieu de 6 / 10 / 14.
+Style « Minimalism & Swiss » (recommandation du skill ui-ux-pro-max pour les outils professionnels), avec la retenue des interfaces Apple. L'identité de la charte reste : couleurs, Schibsted Grotesk, logo.
 
-Scène de cuisine (`KitchenScene`) : la cloche se lève au passe sur l'assiette qui porte le symbole Rondo. Utilisée à la connexion et dans l'appel final de la présentation ; figée cloche levée en mouvement réduit.
+- Panneaux blancs à bordure d'un pixel sur fond `--bg`, sans ombre. Les ombres sont réservées à ce qui flotte (menu, toast).
+- Coins 6 / 10 / 12 / 16 px. Champs blancs bordés. Bouton principal encre, bouton secondaire blanc bordé.
+- États : un point de couleur et le mot, pas de pastille.
+- IBM Plex Mono seulement pour les numéros d'entrée et les valeurs mesurées du registre (`.mono`). Ailleurs, chiffres alignés dans la police courante (`.data`).
+- Aucun point médian comme séparateur : on écrit des phrases (virgule, « à », « de », « depuis »).
+- Pas de dégradé, pas d'illustration, pas d'animation de démonstration. La page de présentation montre de vraies captures de l'appli (`frontend/public/captures/`, à régénérer quand l'interface change).
+- Connexion : colonne centrée, champs regroupés dans un seul bloc avec leur libellé, comme les formulaires Apple.
+- Le skill a aussi proposé une palette générique (bleu et orange) et un effet verre : non retenus, la charte prime.
 
 ## Mode
 
@@ -39,18 +46,13 @@ Une couleur d'état est toujours accompagnée d'un mot ou d'une icône. La coule
 
 Schibsted Grotesk (400–700) pour tout ; IBM Plex Mono pour °C, heures, lots, DLC, numéros d'entrée. Échelle fixe, rapport 1,2 : titre écran 28/32, section 20/26, corps 16/24, libellé 14/20, légende 13/18, donnée 20/24. Logo : minuscules, approche −0,045 em.
 
-## Formes et mouvement
+## Mouvement
 
-Rayons 6 / 10 / 14 px (18 px pour les grandes surfaces de démonstration). Jetons : `--ease-out` (entrées, retours), `--ease-in-out` (déplacement à l'écran), `--ease-drawer` (ouverture), durées 160 / 220 / 320 ms.
-
-- **Jamais d'animation** sur les gestes répétés cent fois par jour : pointage, cases à cocher, pavé PIN, onglets.
-- **Occasionnel** : changement d'écran (fondu + 6 px), apparition des listes (`.rise-list`, 40 ms par ligne, 8 max), ouverture d'un formulaire sur place (`open`), menu ancré au bouton (`pop`), toast, squelettes de chargement (`.skeleton`).
-- **Démonstration** (page de présentation, connexion) : le registre qui se remplit entrée par entrée, apparitions au défilement. Seul endroit où le mouvement explique.
-- Uniquement `transform` et `opacity` ; survols réservés aux pointeurs fins ; mouvement réduit : fondus conservés, déplacements retirés.
+Des fondus courts (160 ms) au changement d'écran et à l'ouverture d'un formulaire, un retour à la pression sur les boutons, des squelettes pendant les chargements. Rien d'autre : pas de cascade, pas de rebond, aucune animation sur les gestes répétés (pointage, cases, code PIN).
 
 ## Parcours visiteur
 
-`/bienvenue` (présentation : promesse, registre en démonstration, cycle ouverture / service / fermeture, comparatif des offres, questions) → `/connexion` (connexion ou création, offre reprise de l'URL) → `/qui` → l'appli. Prix « à venir » tant qu'ils ne sont pas fixés ; aucune affirmation non vérifiable (ni témoignage, ni chiffre).
+`/bienvenue` (promesse, captures réelles, une journée avec Rondo, fonctions, comparatif des offres, questions) → `/connexion` (connexion ou création, offre reprise de l'URL) → `/qui` → l'appli. Pages légales : `/mentions-legales`, `/conditions`, `/confidentialite`, dont le contenu vit dans `frontend/src/legal.js`. Tarifs non affichés tant qu'ils ne sont pas fixés ; aucune affirmation non vérifiable (ni témoignage, ni chiffre).
 
 ## Icônes
 
